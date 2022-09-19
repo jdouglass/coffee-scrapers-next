@@ -13,6 +13,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
     tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
   },
   rules: {},
   parser: '@typescript-eslint/parser',
