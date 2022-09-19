@@ -7,6 +7,7 @@ module.exports = {
     'standard-with-typescript',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:typescript-sort-keys/recommended',
   ],
   overrides: [],
   parserOptions: {
@@ -17,6 +18,6 @@ module.exports = {
   },
   rules: {},
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint', 'typescript-sort-keys'],
   root: true,
 };
