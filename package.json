@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^18.7.18",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.37.0",
     "eslint": "^8.0.1",
@@ -20,8 +21,12 @@
     "typescript": "*"
   },
   "scripts": {
-    "start": "tsc && node dist/index.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "start": "node dist/client.js",
+    "dev": "nodemon src/abstractFactory/client.ts",
+    "build": "tsc -p .",
     "lint": "eslint ."
+  },
+  "dependencies": {
+    "axios": "^0.27.2"
   }
 }
