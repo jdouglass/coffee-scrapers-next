@@ -5,7 +5,7 @@ import { IVariant } from '../interfaces/variant';
 export interface IScraper {
   getBrand: (item: IProductResponseData) => string;
   getContinent: (country: string) => string;
-  getCountry: (body: string) => string;
+  getCountry: (item: IProductResponseData) => string;
   getDateAdded: (date: string) => string;
   getHandle: (handle: string) => string;
   getImageUrl: (images: IImage[]) => string;

@@ -1,11 +1,10 @@
-import { worldData } from '../data/worldData';
-
 export default class Helper {
   static firstLetterUppercase = (input: string[]): string[] => {
     return input.map((word: string) => {
-      if (word.includes(' ')) {
+      while (word.includes(' ')) {
         let subWord: string[] = word.split(' ');
         subWord = this.firstLetterUppercase(subWord);
+        return subWord.join(' ');
       }
       return ''.concat(word[0].toUpperCase(), word.substring(1).toLowerCase());
     });
@@ -24,5 +23,11 @@ export default class Helper {
       }
       return variety;
     });
+  };
+
+  static convertToUniversalProcess = (process: string): string => {
+    return process === 'Anaerobic Natural Process'
+      ? 'Anaerobic Natural'
+      : process;
   };
 }

@@ -6,13 +6,9 @@ import { IScraper } from './abstractScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
-export default class MonogramScraper implements IScraper {
+export default class PiratesScraper implements IScraper {
   getBrand = (item: IProductResponseData): string => {
-    if (item.title.includes('Atlas')) {
-      const titleOptions: string[] = item.title.split('-');
-      return titleOptions[1].trim();
-    }
-    return 'Monogram';
+    return item.vendor;
   };
 
   getContinent = (country: string): string => {
@@ -24,26 +20,21 @@ export default class MonogramScraper implements IScraper {
   };
 
   getCountry = (item: IProductResponseData): string => {
-    let country: string;
-    if (item.body_html.includes('ORIGIN:')) {
-      country = item.body_html.split('ORIGIN:')[1];
-    } else if (item.body_html.includes('Origin:')) {
-      country = item.body_html.split('Origin:')[1];
+    let reportBody: string;
+    if (item.body_html.includes('Single ')) {
+      reportBody = item.body_html.split('Single ')[1];
     } else {
-      return 'Unknown';
+      reportBody = item.body_html.split('Origin:')[1];
     }
-    country = country
-      .replace('<meta charset="utf-8">', '')
-      .split('<')[0]
-      .trim();
-    if (country.includes(', ')) {
-      const countryOptions = country.split(', ');
-      country = countryOptions[countryOptions.length - 1].trim();
+    reportBody = reportBody.split('<')[0];
+    const country: string = 'Unknown';
+    const countryList = worldData.keys();
+    for (const name of countryList) {
+      if (item.title.includes(name) || reportBody.includes(name)) {
+        return name;
+      }
     }
-    if (country === 'TIMOR-LESTE') {
-      return 'Timor-Leste';
-    }
-    return Helper.firstLetterUppercase([country]).join(' ');
+    return country;
   };
 
   getDateAdded = (date: string): string => {
@@ -71,21 +62,10 @@ export default class MonogramScraper implements IScraper {
   };
 
   getProcess = (body: string): string => {
-    let process: string;
-    if (body.includes('PROCESS:')) {
-      process = body.split('PROCESS:')[1];
-    } else if (body.includes('Process:')) {
-      process = body.split('Process:')[1];
-    } else {
-      process = body.split('Processing:')[1];
-    }
-    let processOptions: string[] = process.split('<');
+    let process: string = body.split('Process:')[1];
+    const processOptions: string[] = process.split('<');
     process = processOptions[0].trim();
-    processOptions = process.split(' ');
-    processOptions = processOptions.map((word) => {
-      return ''.concat(word[0], word.substring(1).toLowerCase());
-    });
-    return processOptions.join(' ');
+    return Helper.convertToUniversalProcess(process);
   };
 
   getProcessCategory = (process: string): string => {
@@ -96,13 +76,7 @@ export default class MonogramScraper implements IScraper {
   };
 
   getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
-    return ''.concat(
-      baseUrl,
-      '/products/',
-      item.handle,
-      '?variant=',
-      item.variants[0].id.toString()
-    );
+    return ''.concat(baseUrl, '/collections/coffee/products/', item.handle);
   };
 
   getSoldOut = (variants: IVariant[]): boolean => {
@@ -117,14 +91,13 @@ export default class MonogramScraper implements IScraper {
 
   getVariety = (body: string): string[] => {
     let variety: string;
-    if (body.includes('VARIETY:')) {
-      variety = body.split('VARIETY:')[1];
+    if (body.includes('Varietal:')) {
+      variety = body.split('Varietal:')[1];
     } else if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
     } else {
       return ['Unknown'];
     }
-    variety = variety.replace('<meta charset="utf-8">', '');
     let varietyOptions: string[] = variety.split('<');
     variety = varietyOptions[0].trim();
     if (variety.includes(', ')) {
@@ -147,17 +120,9 @@ export default class MonogramScraper implements IScraper {
   };
 
   getTitle = (title: string): string => {
-    let titleOptions: string[];
-    if (title.includes('Atlas')) {
-      titleOptions = title.split('-');
-      return titleOptions[titleOptions.length - 1].trim();
-    }
-
-    const titleResult: string = title.split('-')[0];
-    titleOptions = titleResult.split('*');
-    if (titleOptions.length > 1) {
-      return titleResult[titleResult.length - 1].trim();
-    }
-    return titleOptions.toString().trim();
+    title = title.split(':')[0];
+    let titleOptions = title.split(' ');
+    titleOptions = Helper.firstLetterUppercase(titleOptions);
+    return titleOptions.join(' ');
   };
 }
