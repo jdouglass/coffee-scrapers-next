@@ -11,23 +11,31 @@ export default class Helper {
   };
 
   static convertToUniversalVariety = (varieties: string[]): string[] => {
-    return varieties.map((variety) => {
-      if (variety === 'Sl28') {
-        variety = 'SL28';
-      } else if (variety === 'Sl34') {
-        variety = 'SL34';
-      } else if (variety === 'Landrace Cultivar') {
-        variety = 'Ethiopian Landraces';
-      } else if (variety === 'Blend') {
-        variety = 'Various';
+    for (let i = 0; i < varieties.length; i++) {
+      switch (varieties[i]) {
+        case 'Sl28':
+          varieties[i] = 'SL28';
+          break;
+        case 'Sl34':
+          varieties[i] = 'SL34';
+          break;
+        case 'Landrace Cultivar':
+          varieties[i] = 'Ethiopian Landraces';
+          break;
+        case 'Blend':
+          varieties[i] = 'Various';
+          break;
       }
-      return variety;
-    });
+    }
+    return varieties;
   };
 
   static convertToUniversalProcess = (process: string): string => {
-    return process === 'Anaerobic Natural Process'
-      ? 'Anaerobic Natural'
-      : process;
+    switch (process) {
+      case 'Anaerobic Natural Process':
+        process = 'Anaerobic Natural';
+        break;
+    }
+    return process;
   };
 }
