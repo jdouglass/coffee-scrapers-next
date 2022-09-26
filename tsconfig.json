@@ -6,9 +6,10 @@
     "outDir": "dist",
     "sourceMap": true,
     "resolveJsonModule": true,
-    "lib": ["ES6", "DOM"],
+    "lib": ["ES6", "DOM", "ESNext"],
     "esModuleInterop": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "strict": true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
