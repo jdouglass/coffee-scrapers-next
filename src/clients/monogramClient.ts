@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import MonogramScraper from '../abstractFactory/monogramScraper';
+import Helper from '../helper/helper';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
@@ -38,6 +39,8 @@ export class MonogramClient {
         const title = this.factory.getTitle(item.title);
         const variety = this.factory.getVariety(item.body_html);
         const weight = this.factory.getWeight(item.variants);
+        await Helper.uploadToS3(imageUrl, productUrl);
+        await Helper.deleteFromS3(productUrl);
         const product: IProduct = {
           brand,
           country,
