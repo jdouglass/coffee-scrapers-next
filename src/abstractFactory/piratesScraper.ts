@@ -76,7 +76,7 @@ export default class PiratesScraper implements IScraper {
   };
 
   getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
-    return ''.concat(baseUrl, '/collections/coffee/products/', item.handle);
+    return baseUrl + '/collections/coffee/products/' + item.handle;
   };
 
   getSoldOut = (variants: IVariant[]): boolean => {
@@ -121,8 +121,7 @@ export default class PiratesScraper implements IScraper {
 
   getTitle = (title: string): string => {
     title = title.split(':')[0];
-    let titleOptions = title.split(' ');
-    titleOptions = Helper.firstLetterUppercase(titleOptions);
-    return titleOptions.join(' ');
+    const titleOptions = title.split(' ');
+    return Helper.firstLetterUppercase(titleOptions).join(' ');
   };
 }
