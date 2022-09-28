@@ -34,10 +34,7 @@ export class ProductsDatabase {
         country: product.country,
         date_added: product.dateAdded,
         handle: product.handle,
-        image_url: await Helper.uploadToS3(
-          product.imageUrl,
-          product.productUrl
-        ),
+        image_url: await Helper.uploadToS3(product),
         sold_out: product.isSoldOut,
         price: product.price,
         process: product.process,
@@ -54,10 +51,7 @@ export class ProductsDatabase {
         country: product.country,
         date_added: product.dateAdded,
         handle: product.handle,
-        image_url: await Helper.uploadToS3(
-          product.imageUrl,
-          product.productUrl
-        ),
+        image_url: await Helper.uploadToS3(product),
         sold_out: product.isSoldOut,
         price: product.price,
         process: product.process,
