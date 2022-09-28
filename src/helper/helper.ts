@@ -101,7 +101,9 @@ export default class Helper {
     }
   };
 
-  static getBase64FromImageUrl = async (imageUrl: string): Promise<Buffer> => {
+  private static getBase64FromImageUrl = async (
+    imageUrl: string
+  ): Promise<Buffer> => {
     return await axios
       .get(imageUrl, { responseType: 'arraybuffer' })
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
