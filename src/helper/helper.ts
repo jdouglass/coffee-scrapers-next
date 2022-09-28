@@ -9,6 +9,9 @@ import {
 import axios from 'axios';
 import { IProduct } from '../interfaces/product';
 import { v5 as uuidv5 } from 'uuid';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 export default class Helper {
   static namespace: string = 'f2360818-52f8-4f09-b463-8a3887f56810';
