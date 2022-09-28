@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import MonogramScraper from '../abstractFactory/monogramScraper';
+import { ProductsDatabase } from '../database';
 import Helper from '../helper/helper';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
@@ -10,8 +11,6 @@ export class MonogramClient {
   private static baseUrl: string = 'https://monogramcoffee.com';
   private static monogramProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: MonogramScraper = new MonogramScraper();
-
-  constructor() {}
 
   public static async run(): Promise<void> {
     const monogramResponse: AxiosResponse<IProductResponse> = await axios.get(
@@ -39,8 +38,6 @@ export class MonogramClient {
         const title = this.factory.getTitle(item.title);
         const variety = this.factory.getVariety(item.body_html);
         const weight = this.factory.getWeight(item.variants);
-        await Helper.uploadToS3(imageUrl, productUrl);
-        await Helper.deleteFromS3(productUrl);
         const product: IProduct = {
           brand,
           country,
@@ -61,5 +58,6 @@ export class MonogramClient {
         this.monogramProducts.push(product);
       }
     }
+    await ProductsDatabase.updateDb(this.monogramProducts);
   }
 }

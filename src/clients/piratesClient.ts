@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import PiratesScraper from '../abstractFactory/piratesScraper';
+import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
@@ -9,8 +10,6 @@ export class PiratesClient {
   private static baseUrl: string = 'https://monogramcoffee.com';
   private static piratesProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: PiratesScraper = new PiratesScraper();
-
-  constructor() {}
 
   public static async run(): Promise<void> {
     const piratesResponse: AxiosResponse<IProductResponse> = await axios.get(
@@ -61,5 +60,6 @@ export class PiratesClient {
         this.piratesProducts.push(product);
       }
     }
+    await ProductsDatabase.updateDb(this.piratesProducts);
   }
 }
