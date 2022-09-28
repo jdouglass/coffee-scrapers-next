@@ -12,8 +12,8 @@ import { v5 as uuidv5 } from 'uuid';
 
 export default class Helper {
   static namespace: string = 'f2360818-52f8-4f09-b463-8a3887f56810';
-  static region: string = 'ca-central-1';
-  static bucket: string = 'collection-coffee-product-images-dev';
+  static region: string = process.env.AWS_BUCKET_REGION as string;
+  static bucket: string = process.env.AWS_BUCKET_NAME as string;
   static s3Client: S3Client = new S3Client({ region: this.region });
 
   static firstLetterUppercase = (input: string[]): string[] => {
