@@ -79,13 +79,10 @@ export default class MonogramScraper implements IScraper {
     } else {
       process = body.split('Processing:')[1];
     }
-    let processOptions: string[] = process.split('<');
+    process = process.replace('<span>', '');
+    const processOptions: string[] = process.split('<');
     process = processOptions[0].trim();
-    processOptions = process.split(' ');
-    processOptions = processOptions.map((word) => {
-      return ''.concat(word[0], word.substring(1).toLowerCase());
-    });
-    return processOptions.join(' ');
+    return Helper.firstLetterUppercase(process.split(' ')).join(' ');
   };
 
   getProcessCategory = (process: string): string => {
@@ -96,11 +93,11 @@ export default class MonogramScraper implements IScraper {
   };
 
   getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
-    return ''.concat(
-      baseUrl,
-      '/products/',
-      item.handle,
-      '?variant=',
+    return (
+      baseUrl +
+      '/products/' +
+      item.handle +
+      '?variant=' +
       item.variants[0].id.toString()
     );
   };
