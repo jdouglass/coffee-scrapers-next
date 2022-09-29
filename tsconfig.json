@@ -1,16 +1,24 @@
 {
+  "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
-    "target": "ES6",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "rootDir": "src",
     "outDir": "dist",
+    "types": ["node"],
     "sourceMap": true,
     "resolveJsonModule": true,
     "lib": ["ES6", "DOM", "ESNext"],
     "esModuleInterop": true,
     "strictNullChecks": true,
-    "strict": true
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "esm": true
+  }
 }
