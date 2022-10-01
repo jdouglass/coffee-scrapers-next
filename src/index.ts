@@ -7,7 +7,6 @@ const bree = new Bree({
     path.dirname(fileURLToPath(import.meta.url)),
     'abstractFactory'
   ),
-  defaultExtension: 'ts',
   jobs: [
     {
       name: 'client',
