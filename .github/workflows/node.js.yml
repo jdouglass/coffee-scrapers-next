@@ -28,4 +28,4 @@ jobs:
     - run: npm install typescript -g
     - run: yarn install
     - run: tsc -p .
-    - run: sudo pm2 restart scrapers
+    - run: pm2 restart scrapers
