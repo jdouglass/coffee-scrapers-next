@@ -27,6 +27,5 @@ jobs:
     - run: npm install yarn -g
     - run: npm install typescript -g
     - run: yarn install
-    - run: npm prisma generate
     - run: tsc -p .
     - run: pm2 restart scrapers
