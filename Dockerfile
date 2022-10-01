@@ -4,7 +4,7 @@ WORKDIR /usr
 
 COPY package.json yarn.lock ./
 COPY prisma ./prisma
-COPY .env ./
+# COPY .env ./
 COPY tsconfig.json ./
 
 RUN npm install typescript -g
