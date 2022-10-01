@@ -29,9 +29,9 @@ jobs:
           AWS_BUCKET_REGION: ${{ secrets.AWS_BUCKET_REGION }}
       - run: |
           touch .env
-          echo DATABASE_URL=$DATABASE_URL >> .env
-          echo AWS_BUCKET_NAME=$AWS_BUCKET_NAME >> .env
-          echo AWS_BUCKET_REGION=$AWS_BUCKET_REGION >> .env
+          echo DATABASE_URL="$DATABASE_URL" >> .env
+          echo AWS_BUCKET_NAME="$AWS_BUCKET_NAME" >> .env
+          echo AWS_BUCKET_REGION="$AWS_BUCKET_REGION" >> .env
       - run: npm install yarn -g
       - run: npm install typescript -g
       - run: yarn install
