@@ -17,7 +17,15 @@ export default class Helper {
   static namespace: string = 'f2360818-52f8-4f09-b463-8a3887f56810';
   static region: string = process.env.AWS_BUCKET_REGION as string;
   static bucket: string = process.env.AWS_BUCKET_NAME as string;
-  static s3Client: S3Client = new S3Client({ region: this.region });
+  static accessKeyId: string = process.env.AWS_ACCESS_KEY_ID as string;
+  static secretAccessKey: string = process.env.AWS_SECRET_ACCESS_KEY as string;
+  static s3Client: S3Client = new S3Client({
+    region: this.region,
+    credentials: {
+      accessKeyId: this.accessKeyId,
+      secretAccessKey: this.secretAccessKey,
+    },
+  });
 
   static firstLetterUppercase = (input: string[]): string[] => {
     return input.map((word: string) => {
