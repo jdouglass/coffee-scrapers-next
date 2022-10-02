@@ -10,7 +10,7 @@ const bree = new Bree({
   jobs: [
     {
       name: 'client',
-      cron: '*/3 * * * *',
+      cron: '0 * * * *',
     },
   ],
 });
