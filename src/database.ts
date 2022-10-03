@@ -51,7 +51,6 @@ export class ProductsDatabase {
         country: product.country,
         date_added: product.dateAdded,
         handle: product.handle,
-        image_url: product.imageUrl,
         sold_out: product.isSoldOut,
         price: product.price,
         process: product.process,
