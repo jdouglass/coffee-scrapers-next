@@ -1,27 +1,31 @@
 import axios, { AxiosResponse } from 'axios';
-import MonogramScraper from '../abstractFactory/monogramScraper';
+import RevolverScraper from '../abstractFactory/revolverScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 
-export class MonogramClient {
-  private static vendor: string = 'Monogram';
-  private static baseUrl: string = 'https://monogramcoffee.com';
-  private static monogramProducts: Array<IProduct> = new Array<IProduct>();
-  private static factory: MonogramScraper = new MonogramScraper();
+export class RevolverClient {
+  private static vendor: string = 'Revolver Coffee';
+  private static baseUrl: string = 'https://revolvercoffee.ca';
+  private static revolverProducts: Array<IProduct> = new Array<IProduct>();
+  private static factory: RevolverScraper = new RevolverScraper();
 
   public static async run(): Promise<void> {
-    const monogramResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://monogramcoffee.com/collections/whole-bean-coffee/products.json?limit=250'
+    const revolverResponse: AxiosResponse<IProductResponse> = await axios.get(
+      'https://revolvercoffee.ca/collections/coffee/products.json?limit=250'
     );
-    const monogramData: IProductResponseData[] = monogramResponse.data.products;
-    for (const item of monogramData) {
+    const revolverData: IProductResponseData[] = revolverResponse.data.products;
+    for (const item of revolverData) {
       if (
-        !item.title.includes('Decaf') &&
-        !item.title.includes('Gift') &&
+        !item.title.includes('Sample') &&
         !item.title.includes('Instant') &&
-        !item.title.includes('Drip')
+        !item.title.includes('Decaf') &&
+        !item.title.includes('Drip Kit') &&
+        !item.title.includes('Varie') &&
+        !item.title.includes('Tea') &&
+        !item.title.includes('Advent') &&
+        !item.title.includes('Cans')
       ) {
         const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
@@ -34,7 +38,7 @@ export class MonogramClient {
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
-        const title = this.factory.getTitle(item.title);
+        const title = this.factory.getTitle(item.title, brand, country);
         const variety = this.factory.getVariety(item);
         const weight = this.factory.getWeight(item.variants);
         const product: IProduct = {
@@ -54,9 +58,9 @@ export class MonogramClient {
           weight,
           vendor: this.vendor,
         };
-        this.monogramProducts.push(product);
+        this.revolverProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.monogramProducts);
+    await ProductsDatabase.updateDb(this.revolverProducts);
   }
 }

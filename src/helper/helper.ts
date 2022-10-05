@@ -41,6 +41,9 @@ export default class Helper {
   static convertToUniversalVariety = (varieties: string[]): string[] => {
     for (let i = 0; i < varieties.length; i++) {
       switch (varieties[i]) {
+        case 'Sl14':
+          varieties[i] = 'SL14';
+          break;
         case 'Sl28':
           varieties[i] = 'SL28';
           break;
@@ -48,10 +51,22 @@ export default class Helper {
           varieties[i] = 'SL34';
           break;
         case 'Landrace Cultivar':
+        case 'Local Landrace':
+        case 'Local Varieties':
+        case 'Landrace Varieties':
+        case 'Regional Landraces':
+        case 'Ethiopian Landraces':
+        case 'Ethiopian Landrace - 74110':
+        case '71158':
+        case '74110':
+        case '74148':
           varieties[i] = 'Ethiopian Landraces';
           break;
         case 'Blend':
           varieties[i] = 'Various';
+          break;
+        case 'Geisha':
+          varieties[i] = 'Gesha';
           break;
       }
     }

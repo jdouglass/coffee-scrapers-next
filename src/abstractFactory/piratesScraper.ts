@@ -89,8 +89,9 @@ export default class PiratesScraper implements IScraper {
     return isAvailable;
   };
 
-  getVariety = (body: string): string[] => {
+  getVariety = (item: IProductResponseData): string[] => {
     let variety: string;
+    let body: string = item.body_html;
     if (body.includes('Varietal:')) {
       variety = body.split('Varietal:')[1];
     } else if (body.includes('Variety:')) {
@@ -107,6 +108,7 @@ export default class PiratesScraper implements IScraper {
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
   };
 

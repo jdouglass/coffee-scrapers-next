@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "node --experimental-specifier-resolution=node dist/index.js",
-    "dev": "TS_NODE=true NODE_OPTIONS=\"-r ts-node/register\" node .",
+    "test": "node --experimental-specifier-resolution=node --loader ts-node/esm src/abstractFactory/client.ts",
     "build": "tsc -p .",
     "lint": "eslint ."
   },

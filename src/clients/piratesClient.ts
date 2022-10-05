@@ -38,7 +38,7 @@ export class PiratesClient {
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
         const title = this.factory.getTitle(item.title);
-        const variety = this.factory.getVariety(item.body_html);
+        const variety = this.factory.getVariety(item);
         const weight = this.factory.getWeight(item.variants);
         const product: IProduct = {
           brand,

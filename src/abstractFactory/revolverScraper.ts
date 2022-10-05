@@ -5,14 +5,16 @@ import { IVariant } from '../interfaces/variant';
 import { IScraper } from './abstractScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
+import { brands } from '../data/brands';
 
-export default class MonogramScraper implements IScraper {
+export default class RevolverScraper implements IScraper {
   getBrand = (item: IProductResponseData): string => {
-    if (item.title.includes('Atlas')) {
-      const titleOptions: string[] = item.title.split('-');
-      return titleOptions[1].trim();
+    for (const brand of brands) {
+      if (item.title.includes(brand)) {
+        return brand;
+      }
     }
-    return 'Monogram';
+    return 'Unknown';
   };
 
   getContinent = (country: string): string => {
@@ -24,26 +26,16 @@ export default class MonogramScraper implements IScraper {
   };
 
   getCountry = (item: IProductResponseData): string => {
-    let country: string;
-    if (item.body_html.includes('ORIGIN:')) {
-      country = item.body_html.split('ORIGIN:')[1];
-    } else if (item.body_html.includes('Origin:')) {
-      country = item.body_html.split('Origin:')[1];
-    } else {
-      return 'Unknown';
+    let reportBody: string = item.body_html.split('From')[0];
+    reportBody = reportBody.toLowerCase();
+    const country: string = 'Unknown';
+    const countryList = worldData.keys();
+    for (const name of countryList) {
+      if (item.title.includes(name) || reportBody.includes(name)) {
+        return name;
+      }
     }
-    country = country
-      .replace('<meta charset="utf-8">', '')
-      .split('<')[0]
-      .trim();
-    if (country.includes(', ')) {
-      const countryOptions = country.split(', ');
-      country = countryOptions[countryOptions.length - 1].trim();
-    }
-    if (country === 'TIMOR-LESTE') {
-      return 'Timor-Leste';
-    }
-    return Helper.firstLetterUppercase([country]).join(' ');
+    return country;
   };
 
   getDateAdded = (date: string): string => {
@@ -71,18 +63,10 @@ export default class MonogramScraper implements IScraper {
   };
 
   getProcess = (body: string): string => {
-    let process: string;
-    if (body.includes('PROCESS:')) {
-      process = body.split('PROCESS:')[1];
-    } else if (body.includes('Process:')) {
-      process = body.split('Process:')[1];
-    } else {
-      process = body.split('Processing:')[1];
-    }
-    process = process.replace('<span>', '');
+    let process: string = body.split('Process:')[1];
     const processOptions: string[] = process.split('<');
     process = processOptions[0].trim();
-    return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+    return Helper.convertToUniversalProcess(process);
   };
 
   getProcessCategory = (process: string): string => {
@@ -93,13 +77,7 @@ export default class MonogramScraper implements IScraper {
   };
 
   getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
-    return (
-      baseUrl +
-      '/products/' +
-      item.handle +
-      '?variant=' +
-      item.variants[0].id.toString()
-    );
+    return baseUrl + '/collections/coffee/products/' + item.handle;
   };
 
   getSoldOut = (variants: IVariant[]): boolean => {
@@ -113,20 +91,36 @@ export default class MonogramScraper implements IScraper {
   };
 
   getVariety = (item: IProductResponseData): string[] => {
+    if (item.title.includes('Instrumental')) {
+      return ['Caturra', 'Castillo', 'Colombia'];
+    } else if (item.title.includes('Rootbeer')) {
+      return ['Parainema'];
+    }
     let variety: string;
-    let body: string = item.body_html;
-    if (body.includes('VARIETY:')) {
-      variety = body.split('VARIETY:')[1];
+    let body = item.body_html;
+    if (body.includes('Varietal:')) {
+      variety = body.split('Varietal:')[1];
     } else if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
+    } else if (body.includes('Varieties:')) {
+      variety = body.split('Varieties:')[1];
+    } else if (body.includes('Varieites')) {
+      variety = body.split('Varieites:')[1];
     } else {
       return ['Unknown'];
     }
-    variety = variety.replace('<meta charset="utf-8">', '');
     let varietyOptions: string[] = variety.split('<');
     variety = varietyOptions[0].trim();
     if (variety.includes(', ')) {
       varietyOptions = variety.split(', ');
+    } else if (variety.includes(' / ')) {
+      varietyOptions = variety.split(' / ');
+    } else if (variety.includes(' + ')) {
+      varietyOptions = variety.split(' + ');
+    } else if (variety.includes(' &amp; ')) {
+      varietyOptions = variety.split(' &amp; ');
+    } else if (variety.includes(' and ')) {
+      varietyOptions = variety.split(' and ');
     } else {
       varietyOptions = [variety];
     }
@@ -145,18 +139,25 @@ export default class MonogramScraper implements IScraper {
     return variants[0].grams;
   };
 
-  getTitle = (title: string): string => {
-    let titleOptions: string[];
-    if (title.includes('Atlas')) {
-      titleOptions = title.split('-');
-      return titleOptions[titleOptions.length - 1].trim();
+  getTitle = (title: string, brand?: string, country?: string): string => {
+    title = title.split(brand as string)[1];
+    title = title.split('*')[0];
+    if (title.includes(country as string)) {
+      title = title.replace(country as string, '');
     }
-
-    const titleResult: string = title.split('-')[0];
-    titleOptions = titleResult.split('*');
-    if (titleOptions.length > 1) {
-      return titleResult[titleResult.length - 1].trim();
+    if (title.includes('"')) {
+      title = title.replaceAll('"', '');
     }
-    return titleOptions.toString().trim();
+    if (title.includes("'")) {
+      title = title.replaceAll("'", '');
+    }
+    if (title.includes('(')) {
+      title = title.replaceAll('(', '');
+    }
+    if (title.includes(')')) {
+      title = title.replaceAll(')', '');
+    }
+    title = title.replaceAll(/\s+/g, ' ').trim();
+    return title;
   };
 }
