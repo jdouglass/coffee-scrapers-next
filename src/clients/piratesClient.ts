@@ -7,7 +7,7 @@ import { IProductResponseData } from '../interfaces/productResponseData';
 
 export class PiratesClient {
   private static vendor: string = 'Pirates of Coffee';
-  private static baseUrl: string = 'https://monogramcoffee.com';
+  private static baseUrl: string = 'https://piratesofcoffee.com';
   private static piratesProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: PiratesScraper = new PiratesScraper();
 
