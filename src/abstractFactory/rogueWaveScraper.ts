@@ -6,7 +6,7 @@ import { IScraper } from './abstractScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
-export default class RossoScraper implements IScraper {
+export default class RogueWaveScraper implements IScraper {
   getContinent = (country: string): string => {
     const continent: string | undefined = worldData.get(country);
     if (!continent) {
@@ -16,11 +16,22 @@ export default class RossoScraper implements IScraper {
   };
 
   getCountry = (item: IProductResponseData): string => {
-    let reportBody: string = item.body_html.split('Geography')[1];
-    reportBody = reportBody.replace(/<.*>\n.*\n<.*">/, '');
-    reportBody = reportBody.split('<')[0];
-    let georgraphy: string[] = reportBody.split(', ');
-    return georgraphy[georgraphy.length - 1];
+    let reportBody = item.body_html;
+    if (reportBody.includes('Origin:')) {
+      reportBody = reportBody.split('Origin:')[1];
+    } else if (reportBody.includes('Origin</strong>:')) {
+      reportBody = reportBody.split('Origin</strong>:')[1];
+    } else if (reportBody.includes('Region:</strong>')) {
+      reportBody = reportBody.split('Region:</strong>')[1];
+    } else {
+      return 'Unknown';
+    }
+    reportBody = reportBody.replace('</strong>', '');
+    reportBody = reportBody.split('<')[0].trim();
+    if (reportBody.includes(', ')) {
+      reportBody = reportBody.split(', ')[reportBody.split(', ').length - 1];
+    }
+    return reportBody;
   };
 
   getDateAdded = (date: string): string => {
@@ -48,9 +59,21 @@ export default class RossoScraper implements IScraper {
   };
 
   getProcess = (body: string): string => {
-    let process: string = body.split('Process')[1];
-    process = process.replace(/<.*>\n.*<.*">/, '');
-    process = process.split('<')[0];
+    let process: string = 'Unknown';
+    if (body.includes('Process:')) {
+      process = body.split('Process:')[1];
+      process = process.replace('</strong>', '');
+      process = process.replace('&nbsp;', '');
+    } else if (body.includes('Process</strong>:')) {
+      process = body.split('Process</strong>')[1];
+    } else {
+      return process;
+    }
+    process = process.split('<')[0].trim();
+    if (process.includes(' + ')) {
+      let processOptions: string[] = process.split(' + ');
+      process = processOptions.join(', ');
+    }
     return Helper.convertToUniversalProcess(process);
   };
 
@@ -78,20 +101,35 @@ export default class RossoScraper implements IScraper {
   getVariety = (item: IProductResponseData): string[] => {
     let variety: string;
     let body = item.body_html;
-    if (body.includes('Varietal')) {
-      variety = body.split('Varietal')[1];
-      variety = variety.split('Process')[0];
+    if (body.includes('Variety:')) {
+      variety = body.split('Variety:')[1];
+      variety = variety.replace('</strong>', '');
+      variety = variety.replace('</b>', '');
+    } else if (body.includes('Varieties:')) {
+      variety = body.split('Varieties:')[1];
+      variety = variety.replace('</strong>', '');
+    } else if (body.includes('Variety</strong>:')) {
+      variety = body.split('Variety</strong>:')[1];
+    } else if (body.includes('Varieties</strong>:')) {
+      variety = body.split('Varieties</strong>:')[1];
     } else {
       return ['Unknown'];
     }
-    variety = variety.replace(/<.*>\n.*<.*">/, '');
-    variety = variety.replaceAll(/<.*>\n.*<.*">/g, ', ');
     variety = variety.split('<')[0];
+    variety = variety.replace(/\(.*\)/, '').trim();
+    variety = variety.replaceAll(/\s+/g, ' ');
     let varietyOptions: string[];
     if (variety.includes(',')) {
       varietyOptions = variety.split(', ');
+    } else if (variety.includes(' and ')) {
+      varietyOptions = variety.split(' and ');
+    } else if (variety.includes(' + ')) {
+      varietyOptions = variety.split(' + ');
     } else {
       varietyOptions = [variety];
+    }
+    for (let i = 0; i < varietyOptions.length; i++) {
+      varietyOptions[i] = varietyOptions[i].replaceAll(/.*\% /g, '');
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
@@ -109,9 +147,8 @@ export default class RossoScraper implements IScraper {
   };
 
   getTitle = (title: string): string => {
-    if (title.includes('—')) {
-      return title.split('—')[0];
-    }
-    return title;
+    title = title.split('-')[1];
+    title = title.split('|')[0];
+    return title.trim();
   };
 }

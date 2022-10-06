@@ -42,12 +42,15 @@ export default class Helper {
     for (let i = 0; i < varieties.length; i++) {
       switch (varieties[i]) {
         case 'Sl14':
+        case 'Sl-14':
           varieties[i] = 'SL14';
           break;
         case 'Sl28':
+        case 'Sl-28':
           varieties[i] = 'SL28';
           break;
         case 'Sl34':
+        case 'Sl-34':
           varieties[i] = 'SL34';
           break;
         case 'Landrace Cultivar':

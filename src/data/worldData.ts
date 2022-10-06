@@ -28,4 +28,5 @@ export const worldData: Readonly<Map<string, string>> = new Map([
   ['Bolivia', Continent.SouthAmerica],
   ['Timor Leste', Continent.Asia],
   ['Paraguay', Continent.SouthAmerica],
+  ['Myanmar', Continent.Asia],
 ]);

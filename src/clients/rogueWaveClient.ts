@@ -1,26 +1,30 @@
 import axios, { AxiosResponse } from 'axios';
-import RossoScraper from '../abstractFactory/rossoScraper';
+import RogueWaveScraper from '../abstractFactory/rogueWaveScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 
-export class RossoClient {
-  private static vendor: string = 'Rosso Coffee';
-  private static baseUrl: string = 'https://rossocoffeeroasters.com';
-  private static rossoProducts: Array<IProduct> = new Array<IProduct>();
-  private static factory: RossoScraper = new RossoScraper();
+export class RogueWaveClient {
+  private static vendor: string = 'Rogue Wave Coffee';
+  private static baseUrl: string = 'https://roguewavecoffee.ca';
+  private static rogueWaveProducts: Array<IProduct> = new Array<IProduct>();
+  private static factory: RogueWaveScraper = new RogueWaveScraper();
 
   public static async run(): Promise<void> {
-    const rossoResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://www.rossocoffeeroasters.com/collections/coffee/products.json?limit=250'
+    const rogueWaveResponse: AxiosResponse<IProductResponse> = await axios.get(
+      'https://www.roguewavecoffee.ca/collections/coffee/products.json?limit=250'
     );
-    const rossoData: IProductResponseData[] = rossoResponse.data.products;
-    for (const item of rossoData) {
+    const rogueWaveData: IProductResponseData[] =
+      rogueWaveResponse.data.products;
+    for (const item of rogueWaveData) {
       if (
-        !item.title.includes('Instant') &&
+        !item.title.includes('Garage') &&
+        !item.title.includes('Pack') &&
+        !item.title.includes('Surprise') &&
         !item.title.includes('Decaf') &&
-        !item.title.includes('Box')
+        !item.title.includes('Dried Coffee') &&
+        !item.title.includes('LOW CAF')
       ) {
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
@@ -52,9 +56,9 @@ export class RossoClient {
           weight,
           vendor: this.vendor,
         };
-        this.rossoProducts.push(product);
+        this.rogueWaveProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.rossoProducts);
+    await ProductsDatabase.updateDb(this.rogueWaveProducts);
   }
 }
