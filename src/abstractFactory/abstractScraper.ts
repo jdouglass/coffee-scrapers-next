@@ -3,7 +3,7 @@ import { IProductResponseData } from '../interfaces/productResponseData';
 import { IVariant } from '../interfaces/variant';
 
 export interface IScraper {
-  getBrand: (item: IProductResponseData) => string;
+  getBrand?: (item: IProductResponseData) => string;
   getContinent: (country: string) => string;
   getCountry: (item: IProductResponseData) => string;
   getDateAdded: (date: string) => string;
