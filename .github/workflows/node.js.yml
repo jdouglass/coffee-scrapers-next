@@ -32,6 +32,6 @@ jobs:
           echo AWS_SECRET_ACCESS_KEY=\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\" >> .env
       - run: npm install yarn -g
       - run: npm install typescript -g
-      - run: yarn install
+      - run: rm -rf node_modules && yarn install --frozen-lockfile
       - run: tsc -p .
       - run: pm2 restart scrapers
