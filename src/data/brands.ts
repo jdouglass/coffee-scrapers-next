@@ -19,6 +19,7 @@ export const brands: string[] = [
   'La Cabra',
   'Little Sister',
   'Luna',
+  'MAME',
   'Middle State',
   'Monogram',
   'Morgon',
