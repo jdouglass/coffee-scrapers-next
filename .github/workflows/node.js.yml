@@ -30,11 +30,11 @@ jobs:
           echo AWS_BUCKET_REGION=\"${{ secrets.AWS_BUCKET_REGION }}\" >> .env
           echo AWS_ACCESS_KEY_ID=\"${{ secrets.AWS_ACCESS_KEY_ID }}\" >> .env
           echo AWS_SECRET_ACCESS_KEY=\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\" >> .env
-      - run: npm install yarn -g
-      - run: npm install typescript -g
-      - run: rm -rf node_modules && yarn install --frozen-lockfile
-      - run: tsc -p .
-      - run: cp prisma dist/prisma -r
-      - run: cd dist
-      - run: npx prisma generate
-      - run: pm2 restart scrapers
+      - run: |
+          npm install yarn -g
+          npm install typescript -g
+          rm -rf node_modules && yarn install --frozen-lockfile
+          tsc -p .
+          cp prisma dist/prisma -r && cp .env dist/.env
+          cd dist && npx prisma generate
+          pm2 restart scrapers
