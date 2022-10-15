@@ -34,7 +34,7 @@ jobs:
       - run: npm install typescript -g
       - run: rm -rf node_modules && yarn install --frozen-lockfile
       - run: tsc -p .
-      - run: cp prisma dist/prisma
+      - run: cp prisma dist/prisma -r
       - run: cd dist
       - run: npx prisma generate
       - run: pm2 restart scrapers
