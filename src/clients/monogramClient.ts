@@ -54,7 +54,6 @@ export class MonogramClient {
           weight,
           vendor: this.vendor,
         };
-        console.log(product);
         this.monogramProducts.push(product);
       }
     }
