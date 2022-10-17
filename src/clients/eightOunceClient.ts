@@ -55,11 +55,10 @@ export class EightOunceClient {
           weight,
           vendor: this.vendor,
         };
-        console.log(product);
         this.eightOunceProducts.push(product);
       }
     }
-    // await ProductsDatabase.updateDb(this.eightOunceProducts);
+    await ProductsDatabase.updateDb(this.eightOunceProducts);
   }
 }
 
