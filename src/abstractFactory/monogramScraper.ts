@@ -70,14 +70,14 @@ export default class MonogramScraper implements IScraper {
     return variants[0].price;
   };
 
-  getProcess = (body: string): string => {
+  getProcess = (item: IProductResponseData): string => {
     let process: string;
-    if (body.includes('PROCESS:')) {
-      process = body.split('PROCESS:')[1];
-    } else if (body.includes('Process:')) {
-      process = body.split('Process:')[1];
+    if (item.body_html.includes('PROCESS:')) {
+      process = item.body_html.split('PROCESS:')[1];
+    } else if (item.body_html.includes('Process:')) {
+      process = item.body_html.split('Process:')[1];
     } else {
-      process = body.split('Processing:')[1];
+      process = item.body_html.split('Processing:')[1];
     }
     process = process.replace('<span>', '');
     const processOptions: string[] = process.split('<');
@@ -136,13 +136,13 @@ export default class MonogramScraper implements IScraper {
     return varietyOptions;
   };
 
-  getWeight = (variants: IVariant[]): number => {
-    for (const variant of variants) {
+  getWeight = (item: IProductResponseData): number => {
+    for (const variant of item.variants) {
       if (variant.available) {
         return variant.grams;
       }
     }
-    return variants[0].grams;
+    return item.variants[0].grams;
   };
 
   getTitle = (title: string): string => {

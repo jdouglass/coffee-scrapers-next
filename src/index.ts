@@ -25,6 +25,10 @@ const bree = new Bree({
       name: 'rossoClient',
       cron: '0 * * * *',
     },
+    {
+      name: 'eightOunceClient',
+      cron: '0 * * * *',
+    },
   ],
 });
 

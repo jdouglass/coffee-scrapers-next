@@ -30,13 +30,13 @@ export class PiratesClient {
         const handle = this.factory.getHandle(item.handle);
         const imageUrl = this.factory.getImageUrl(item.images);
         const price = this.factory.getPrice(item.variants);
-        const process = this.factory.getProcess(item.body_html);
+        const process = this.factory.getProcess(item);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
         const title = this.factory.getTitle(item.title);
         const variety = this.factory.getVariety(item);
-        const weight = this.factory.getWeight(item.variants);
+        const weight = this.factory.getWeight(item);
         const product: IProduct = {
           brand,
           country,

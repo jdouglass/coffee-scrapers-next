@@ -53,6 +53,7 @@ export const brands: string[] = [
   'Sey',
   'Square Mile',
   'Stumptown',
+  'Subtext',
   'Sunday Coffee Project',
   'Sweet Bloom',
   '3fe',

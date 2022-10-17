@@ -58,14 +58,14 @@ export default class RogueWaveScraper implements IScraper {
     return variants[0].price;
   };
 
-  getProcess = (body: string): string => {
+  getProcess = (item: IProductResponseData): string => {
     let process: string = 'Unknown';
-    if (body.includes('Process:')) {
-      process = body.split('Process:')[1];
+    if (item.body_html.includes('Process:')) {
+      process = item.body_html.split('Process:')[1];
       process = process.replace('</strong>', '');
       process = process.replace('&nbsp;', '');
-    } else if (body.includes('Process</strong>:')) {
-      process = body.split('Process</strong>')[1];
+    } else if (item.body_html.includes('Process</strong>:')) {
+      process = item.body_html.split('Process</strong>')[1];
     } else {
       return process;
     }
@@ -137,13 +137,13 @@ export default class RogueWaveScraper implements IScraper {
     return varietyOptions;
   };
 
-  getWeight = (variants: IVariant[]): number => {
-    for (const variant of variants) {
+  getWeight = (item: IProductResponseData): number => {
+    for (const variant of item.variants) {
       if (variant.available) {
         return variant.grams;
       }
     }
-    return variants[0].grams;
+    return item.variants[0].grams;
   };
 
   getTitle = (title: string): string => {
