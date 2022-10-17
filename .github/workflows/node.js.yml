@@ -30,9 +30,8 @@ jobs:
           echo AWS_BUCKET_REGION=\"${{ secrets.AWS_BUCKET_REGION }}\" >> .env
           echo AWS_ACCESS_KEY_ID=\"${{ secrets.AWS_ACCESS_KEY_ID }}\" >> .env
           echo AWS_SECRET_ACCESS_KEY=\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\" >> .env
-      - run: |
-          npm install yarn -g
-          npm install typescript -g
-          rm -rf node_modules && yarn install --frozen-lockfile
-          yarn build
-          pm2 restart scrapers
+      - run: npm install yarn -g
+      - run: npm install typescript -g
+      - run: rm -rf node_modules && yarn install --frozen-lockfile
+      - run: tsc -p .
+      - run: pm2 restart scrapers
