@@ -58,3 +58,13 @@ export class RossoClient {
     await ProductsDatabase.updateDb(this.rossoProducts);
   }
 }
+
+const main = async (): Promise<void> => {
+  try {
+    await RossoClient.run();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+void main();

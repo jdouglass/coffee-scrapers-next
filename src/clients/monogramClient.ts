@@ -60,3 +60,13 @@ export class MonogramClient {
     await ProductsDatabase.updateDb(this.monogramProducts);
   }
 }
+
+const main = async (): Promise<void> => {
+  try {
+    await MonogramClient.run();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+void main();

@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import { mainModule } from 'process';
 import RevolverScraper from '../abstractFactory/revolverScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
@@ -25,7 +26,8 @@ export class RevolverClient {
         !item.title.includes('Varie') &&
         !item.title.includes('Tea') &&
         !item.title.includes('Advent') &&
-        !item.title.includes('Cans')
+        !item.title.includes('Cans') &&
+        !item.title.includes('Pods')
       ) {
         const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
@@ -64,3 +66,13 @@ export class RevolverClient {
     await ProductsDatabase.updateDb(this.revolverProducts);
   }
 }
+
+const main = async (): Promise<void> => {
+  try {
+    await RevolverClient.run();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+void main();

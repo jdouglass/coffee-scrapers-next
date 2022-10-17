@@ -7,23 +7,23 @@ const bree = new Bree({
   jobs: [
     {
       name: 'monogramClient',
-      cron: '*/48 * * * *',
+      cron: '*/0 * * * *',
     },
     {
       name: 'piratesClient',
-      cron: '*/50 * * * *',
+      cron: '*/0 * * * *',
     },
     {
       name: 'revolverClient',
-      cron: '*/52 * * * *',
+      cron: '*/0 * * * *',
     },
     {
       name: 'rogueWaveClient',
-      cron: '*/54 * * * *',
+      cron: '*/0 * * * *',
     },
     {
       name: 'rossoClient',
-      cron: '*/56 * * * *',
+      cron: '*/0 * * * *',
     },
   ],
 });

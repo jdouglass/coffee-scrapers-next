@@ -63,3 +63,13 @@ export class PiratesClient {
     await ProductsDatabase.updateDb(this.piratesProducts);
   }
 }
+
+const main = async (): Promise<void> => {
+  try {
+    await PiratesClient.run();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+void main();

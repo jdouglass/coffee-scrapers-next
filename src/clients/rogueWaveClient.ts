@@ -62,3 +62,13 @@ export class RogueWaveClient {
     await ProductsDatabase.updateDb(this.rogueWaveProducts);
   }
 }
+
+const main = async (): Promise<void> => {
+  try {
+    await RogueWaveClient.run();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+void main();

@@ -23,7 +23,7 @@
   },
   "scripts": {
     "start": "node --experimental-specifier-resolution=node dist/index.js",
-    "test": "node --experimental-specifier-resolution=node --loader ts-node/esm src/abstractFactory/client.ts",
+    "test": "node --experimental-specifier-resolution=node --loader ts-node/esm src/index.ts",
     "build": "tsc -p .",
     "lint": "eslint ."
   },
