@@ -23,13 +23,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - run: |
-          touch .env
-          echo DATABASE_URL=\"${{ secrets.DATABASE_URL }}\" >> .env
-          echo AWS_BUCKET_NAME=\"${{ secrets.AWS_BUCKET_NAME }}\" >> .env
-          echo AWS_BUCKET_REGION=\"${{ secrets.AWS_BUCKET_REGION }}\" >> .env
-          echo AWS_ACCESS_KEY_ID=\"${{ secrets.AWS_ACCESS_KEY_ID }}\" >> .env
-          echo AWS_SECRET_ACCESS_KEY=\"${{ secrets.AWS_SECRET_ACCESS_KEY }}\" >> .env
       - run: npm install yarn -g
       - run: npm install typescript -g
       - run: rm -rf node_modules && yarn install --frozen-lockfile
