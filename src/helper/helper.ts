@@ -43,21 +43,26 @@ export default class Helper {
       switch (varieties[i]) {
         case 'Sl14':
         case 'Sl-14':
+        case 'Sl 14':
           varieties[i] = 'SL14';
           break;
         case 'Sl28':
         case 'Sl-28':
+        case 'Sl 28':
           varieties[i] = 'SL28';
           break;
         case 'Sl34':
         case 'Sl-34':
+        case 'Sl 34':
           varieties[i] = 'SL34';
           break;
         case 'Landrace Cultivar':
         case 'Local Landrace':
+        case 'Local Landraces':
         case 'Local Varieties':
         case 'Landrace Varieties':
         case 'Regional Landraces':
+        case 'Ethiopian Landrace':
         case 'Ethiopian Landraces':
         case 'Ethiopian Landrace - 74110':
         case '71158':
@@ -66,6 +71,7 @@ export default class Helper {
           varieties[i] = 'Ethiopian Landraces';
           break;
         case 'Blend':
+        case 'Field Blend':
           varieties[i] = 'Various';
           break;
         case 'Geisha':

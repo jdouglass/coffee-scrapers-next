@@ -4,6 +4,7 @@ import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
+import { unwantedTitles } from '../data/unwantedTitles';
 
 export class RogueWaveClient {
   private static vendor: string = 'Rogue Wave Coffee';
@@ -19,12 +20,9 @@ export class RogueWaveClient {
       rogueWaveResponse.data.products;
     for (const item of rogueWaveData) {
       if (
-        !item.title.includes('Garage') &&
-        !item.title.includes('Pack') &&
-        !item.title.includes('Surprise') &&
-        !item.title.includes('Decaf') &&
-        !item.title.includes('Dried Coffee') &&
-        !item.title.includes('LOW CAF')
+        !unwantedTitles.some((unwantedString) =>
+          item.title.includes(unwantedString)
+        )
       ) {
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
@@ -32,13 +30,13 @@ export class RogueWaveClient {
         const handle = this.factory.getHandle(item.handle);
         const imageUrl = this.factory.getImageUrl(item.images);
         const price = this.factory.getPrice(item.variants);
-        const process = this.factory.getProcess(item.body_html);
+        const process = this.factory.getProcess(item);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
         const title = this.factory.getTitle(item.title);
         const variety = this.factory.getVariety(item);
-        const weight = this.factory.getWeight(item.variants);
+        const weight = this.factory.getWeight(item);
         const product: IProduct = {
           brand: this.vendor,
           country,

@@ -1,28 +1,30 @@
 import axios, { AxiosResponse } from 'axios';
-import RossoScraper from '../abstractFactory/rossoScraper';
+import EightOunceScraper from '../abstractFactory/eightOunceScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 
-export class RossoClient {
-  private static vendor: string = 'Rosso Coffee';
-  private static baseUrl: string = 'https://rossocoffeeroasters.com';
-  private static rossoProducts: Array<IProduct> = new Array<IProduct>();
-  private static factory: RossoScraper = new RossoScraper();
+export class EightOunceClient {
+  private static vendor: string = 'Eight Ounce Coffee';
+  private static baseUrl: string = 'https://eightouncecoffee.ca';
+  private static eightOunceProducts: Array<IProduct> = new Array<IProduct>();
+  private static factory: EightOunceScraper = new EightOunceScraper();
 
   public static async run(): Promise<void> {
-    const rossoResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://www.rossocoffeeroasters.com/collections/coffee/products.json?limit=250'
+    const eightOunceResponse: AxiosResponse<IProductResponse> = await axios.get(
+      'https://eightouncecoffee.ca/collections/newest-coffee/products.json?limit=250'
     );
-    const rossoData: IProductResponseData[] = rossoResponse.data.products;
-    for (const item of rossoData) {
+    const eightOunceData: IProductResponseData[] =
+      eightOunceResponse.data.products;
+    for (const item of eightOunceData) {
       if (
         !unwantedTitles.some((unwantedString) =>
           item.title.includes(unwantedString)
         )
       ) {
+        const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
         const dateAdded = this.factory.getDateAdded(item.published_at);
@@ -33,11 +35,11 @@ export class RossoClient {
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
-        const title = this.factory.getTitle(item.title);
+        const title = this.factory.getTitle(item.title, brand);
         const variety = this.factory.getVariety(item);
         const weight = this.factory.getWeight(item);
         const product: IProduct = {
-          brand: this.vendor,
+          brand,
           country,
           continent,
           dateAdded,
@@ -53,16 +55,17 @@ export class RossoClient {
           weight,
           vendor: this.vendor,
         };
-        this.rossoProducts.push(product);
+        console.log(product);
+        this.eightOunceProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.rossoProducts);
+    // await ProductsDatabase.updateDb(this.eightOunceProducts);
   }
 }
 
 const main = async (): Promise<void> => {
   try {
-    await RossoClient.run();
+    await EightOunceClient.run();
   } catch (error) {
     console.error(error);
   }

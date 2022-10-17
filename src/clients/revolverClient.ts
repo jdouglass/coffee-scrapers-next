@@ -1,10 +1,10 @@
 import axios, { AxiosResponse } from 'axios';
-import { mainModule } from 'process';
 import RevolverScraper from '../abstractFactory/revolverScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
+import { unwantedTitles } from '../data/unwantedTitles';
 
 export class RevolverClient {
   private static vendor: string = 'Revolver Coffee';
@@ -19,15 +19,9 @@ export class RevolverClient {
     const revolverData: IProductResponseData[] = revolverResponse.data.products;
     for (const item of revolverData) {
       if (
-        !item.title.includes('Sample') &&
-        !item.title.includes('Instant') &&
-        !item.title.includes('Decaf') &&
-        !item.title.includes('Drip Kit') &&
-        !item.title.includes('Varie') &&
-        !item.title.includes('Tea') &&
-        !item.title.includes('Advent') &&
-        !item.title.includes('Cans') &&
-        !item.title.includes('Pods')
+        !unwantedTitles.some((unwantedString) =>
+          item.title.includes(unwantedString)
+        )
       ) {
         const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
@@ -36,13 +30,13 @@ export class RevolverClient {
         const handle = this.factory.getHandle(item.handle);
         const imageUrl = this.factory.getImageUrl(item.images);
         const price = this.factory.getPrice(item.variants);
-        const process = this.factory.getProcess(item.body_html);
+        const process = this.factory.getProcess(item);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
         const title = this.factory.getTitle(item.title, brand, country);
         const variety = this.factory.getVariety(item);
-        const weight = this.factory.getWeight(item.variants);
+        const weight = this.factory.getWeight(item);
         const product: IProduct = {
           brand,
           country,

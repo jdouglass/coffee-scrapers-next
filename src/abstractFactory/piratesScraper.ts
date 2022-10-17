@@ -61,8 +61,8 @@ export default class PiratesScraper implements IScraper {
     return variants[0].price;
   };
 
-  getProcess = (body: string): string => {
-    let process: string = body.split('Process:')[1];
+  getProcess = (item: IProductResponseData): string => {
+    let process: string = item.body_html.split('Process:')[1];
     const processOptions: string[] = process.split('<');
     process = processOptions[0].trim();
     return Helper.convertToUniversalProcess(process);
@@ -112,13 +112,13 @@ export default class PiratesScraper implements IScraper {
     return varietyOptions;
   };
 
-  getWeight = (variants: IVariant[]): number => {
-    for (const variant of variants) {
+  getWeight = (item: IProductResponseData): number => {
+    for (const variant of item.variants) {
       if (variant.available) {
         return variant.grams;
       }
     }
-    return variants[0].grams;
+    return item.variants[0].grams;
   };
 
   getTitle = (title: string): string => {

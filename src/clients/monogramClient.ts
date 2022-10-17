@@ -4,6 +4,7 @@ import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
+import { unwantedTitles } from '../data/unwantedTitles';
 
 export class MonogramClient {
   private static vendor: string = 'Monogram';
@@ -18,10 +19,9 @@ export class MonogramClient {
     const monogramData: IProductResponseData[] = monogramResponse.data.products;
     for (const item of monogramData) {
       if (
-        !item.title.includes('Decaf') &&
-        !item.title.includes('Gift') &&
-        !item.title.includes('Instant') &&
-        !item.title.includes('Drip')
+        !unwantedTitles.some((unwantedString) =>
+          item.title.includes(unwantedString)
+        )
       ) {
         const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
@@ -30,13 +30,13 @@ export class MonogramClient {
         const handle = this.factory.getHandle(item.handle);
         const imageUrl = this.factory.getImageUrl(item.images);
         const price = this.factory.getPrice(item.variants);
-        const process = this.factory.getProcess(item.body_html);
+        const process = this.factory.getProcess(item);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
         const title = this.factory.getTitle(item.title);
         const variety = this.factory.getVariety(item);
-        const weight = this.factory.getWeight(item.variants);
+        const weight = this.factory.getWeight(item);
         const product: IProduct = {
           brand,
           country,
@@ -54,6 +54,7 @@ export class MonogramClient {
           weight,
           vendor: this.vendor,
         };
+        console.log(product);
         this.monogramProducts.push(product);
       }
     }
