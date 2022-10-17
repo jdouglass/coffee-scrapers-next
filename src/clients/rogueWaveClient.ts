@@ -4,6 +4,7 @@ import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
+import { unwantedTitles } from '../data/unwantedTitles';
 
 export class RogueWaveClient {
   private static vendor: string = 'Rogue Wave Coffee';
@@ -19,12 +20,9 @@ export class RogueWaveClient {
       rogueWaveResponse.data.products;
     for (const item of rogueWaveData) {
       if (
-        !item.title.includes('Garage') &&
-        !item.title.includes('Pack') &&
-        !item.title.includes('Surprise') &&
-        !item.title.includes('Decaf') &&
-        !item.title.includes('Dried Coffee') &&
-        !item.title.includes('LOW CAF')
+        !unwantedTitles.some((unwantedString) =>
+          item.title.includes(unwantedString)
+        )
       ) {
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);

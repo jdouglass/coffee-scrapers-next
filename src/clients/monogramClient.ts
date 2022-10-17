@@ -4,6 +4,7 @@ import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
+import { unwantedTitles } from '../data/unwantedTitles';
 
 export class MonogramClient {
   private static vendor: string = 'Monogram';
@@ -18,10 +19,9 @@ export class MonogramClient {
     const monogramData: IProductResponseData[] = monogramResponse.data.products;
     for (const item of monogramData) {
       if (
-        !item.title.includes('Decaf') &&
-        !item.title.includes('Gift') &&
-        !item.title.includes('Instant') &&
-        !item.title.includes('Drip')
+        !unwantedTitles.some((unwantedString) =>
+          item.title.includes(unwantedString)
+        )
       ) {
         const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
@@ -54,10 +54,11 @@ export class MonogramClient {
           weight,
           vendor: this.vendor,
         };
+        console.log(product);
         this.monogramProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.monogramProducts);
+    // await ProductsDatabase.updateDb(this.monogramProducts);
   }
 }
 

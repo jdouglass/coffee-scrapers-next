@@ -4,6 +4,7 @@ import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
+import { unwantedTitles } from '../data/unwantedTitles';
 
 export class RossoClient {
   private static vendor: string = 'Rosso Coffee';
@@ -18,9 +19,9 @@ export class RossoClient {
     const rossoData: IProductResponseData[] = rossoResponse.data.products;
     for (const item of rossoData) {
       if (
-        !item.title.includes('Instant') &&
-        !item.title.includes('Decaf') &&
-        !item.title.includes('Box')
+        !unwantedTitles.some((unwantedString) =>
+          item.title.includes(unwantedString)
+        )
       ) {
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
