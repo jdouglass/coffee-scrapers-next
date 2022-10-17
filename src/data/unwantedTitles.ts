@@ -16,6 +16,7 @@ export const unwantedTitles: string[] = [
   'Panama Ninety Plus Estates',
   'Pods',
   'Sample',
+  'SUBSCRIPTION',
   'Subscription',
   'Surprise',
   'Tea',
