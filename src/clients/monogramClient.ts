@@ -58,7 +58,7 @@ export class MonogramClient {
         this.monogramProducts.push(product);
       }
     }
-    // await ProductsDatabase.updateDb(this.monogramProducts);
+    await ProductsDatabase.updateDb(this.monogramProducts);
   }
 }
 
