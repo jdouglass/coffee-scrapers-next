@@ -1,7 +1,6 @@
 import Bree from 'bree';
 import { fileURLToPath } from 'node:url';
 import * as path from 'node:path';
-import { IConfig } from './interfaces/config';
 import configData from '../src/config.json' assert { type: 'json' };
 
 const cron: string = configData.cronSchedule;
