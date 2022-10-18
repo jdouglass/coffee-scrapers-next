@@ -1,6 +1,6 @@
-import { IImage } from '../interfaces/image';
-import { IProductResponseData } from '../interfaces/productResponseData';
-import { IVariant } from '../interfaces/variant';
+import { IImage } from './image';
+import { IProductResponseData } from './productResponseData';
+import { IVariant } from './variant';
 
 export interface IScraper {
   getBrand?: (item: IProductResponseData) => string;

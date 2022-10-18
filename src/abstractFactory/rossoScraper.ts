@@ -2,7 +2,7 @@ import { ProcessCategory } from '../enums/processCategory';
 import { IImage } from '../interfaces/image';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { IVariant } from '../interfaces/variant';
-import { IScraper } from './abstractScraper';
+import { IScraper } from '../interfaces/scraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
