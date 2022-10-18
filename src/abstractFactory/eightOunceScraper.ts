@@ -113,10 +113,10 @@ export default class EightOunceScraper implements IScraper {
 
   getProcessCategory = (process: string): string => {
     if (
-      process === 'Washed' ||
-      process === 'Natural' ||
-      process === 'Honey' ||
-      process === 'Unknown'
+      process === ProcessCategory[ProcessCategory.Washed] ||
+      process === ProcessCategory[ProcessCategory.Natural] ||
+      process === ProcessCategory[ProcessCategory.Honey] ||
+      process === ProcessCategory[ProcessCategory.Unknown]
     ) {
       return process;
     }
