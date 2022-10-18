@@ -4,34 +4,34 @@ import * as path from 'node:path';
 import { IConfig } from './interfaces/config';
 import configData from '../src/config.json' assert { type: 'json' };
 
-const config: IConfig = configData;
+const cron: string = configData.cronSchedule;
 
 const bree = new Bree({
   root: path.join(path.dirname(fileURLToPath(import.meta.url)), 'clients'),
   jobs: [
     {
       name: 'monogramClient',
-      cron: config.cronSchedule,
+      cron,
     },
     {
       name: 'piratesClient',
-      cron: config.cronSchedule,
+      cron,
     },
     {
       name: 'revolverClient',
-      cron: config.cronSchedule,
+      cron,
     },
     {
       name: 'rogueWaveClient',
-      cron: config.cronSchedule,
+      cron,
     },
     {
       name: 'rossoClient',
-      cron: config.cronSchedule,
+      cron,
     },
     {
       name: 'eightOunceClient',
-      cron: config.cronSchedule,
+      cron,
     },
   ],
 });
