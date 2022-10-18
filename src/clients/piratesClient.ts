@@ -5,12 +5,15 @@ import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
+import { IConfig } from '../interfaces/config';
+import config from '../config.json' assert { type: 'json' };
 
 export class PiratesClient {
   private static vendor: string = 'Pirates of Coffee';
   private static baseUrl: string = 'https://piratesofcoffee.com';
   private static piratesProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: PiratesScraper = new PiratesScraper();
+  private static config: IConfig = config;
 
   public static async run(): Promise<void> {
     const piratesResponse: AxiosResponse<IProductResponse> = await axios.get(
@@ -57,7 +60,9 @@ export class PiratesClient {
         this.piratesProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.piratesProducts);
+    if (this.config.useDatabase) {
+      await ProductsDatabase.updateDb(this.piratesProducts);
+    }
   }
 }
 

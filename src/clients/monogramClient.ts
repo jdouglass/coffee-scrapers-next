@@ -5,12 +5,15 @@ import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
+import { IConfig } from '../interfaces/config';
+import config from '../config.json' assert { type: 'json' };
 
 export class MonogramClient {
   private static vendor: string = 'Monogram';
   private static baseUrl: string = 'https://monogramcoffee.com';
   private static monogramProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: MonogramScraper = new MonogramScraper();
+  private static config: IConfig = config;
 
   public static async run(): Promise<void> {
     const monogramResponse: AxiosResponse<IProductResponse> = await axios.get(
@@ -57,7 +60,9 @@ export class MonogramClient {
         this.monogramProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.monogramProducts);
+    if (this.config.useDatabase) {
+      await ProductsDatabase.updateDb(this.monogramProducts);
+    }
   }
 }
 

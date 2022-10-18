@@ -5,12 +5,15 @@ import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
+import { IConfig } from '../interfaces/config';
+import config from '../config.json' assert { type: 'json' };
 
 export class RevolverClient {
   private static vendor: string = 'Revolver Coffee';
   private static baseUrl: string = 'https://revolvercoffee.ca';
   private static revolverProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: RevolverScraper = new RevolverScraper();
+  private static config: IConfig = config;
 
   public static async run(): Promise<void> {
     const revolverResponse: AxiosResponse<IProductResponse> = await axios.get(
@@ -57,7 +60,9 @@ export class RevolverClient {
         this.revolverProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.revolverProducts);
+    if (this.config.useDatabase) {
+      await ProductsDatabase.updateDb(this.revolverProducts);
+    }
   }
 }
 

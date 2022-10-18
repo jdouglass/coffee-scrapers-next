@@ -5,12 +5,15 @@ import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
+import { IConfig } from '../interfaces/config';
+import config from '../config.json' assert { type: 'json' };
 
 export class RossoClient {
   private static vendor: string = 'Rosso Coffee';
   private static baseUrl: string = 'https://rossocoffeeroasters.com';
   private static rossoProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: RossoScraper = new RossoScraper();
+  private static config: IConfig = config;
 
   public static async run(): Promise<void> {
     const rossoResponse: AxiosResponse<IProductResponse> = await axios.get(
@@ -56,7 +59,9 @@ export class RossoClient {
         this.rossoProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.rossoProducts);
+    if (this.config.useDatabase) {
+      await ProductsDatabase.updateDb(this.rossoProducts);
+    }
   }
 }
 

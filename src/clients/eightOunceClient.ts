@@ -5,12 +5,15 @@ import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
+import { IConfig } from '../interfaces/config';
+import config from '../config.json' assert { type: 'json' };
 
 export class EightOunceClient {
   private static vendor: string = 'Eight Ounce Coffee';
   private static baseUrl: string = 'https://eightouncecoffee.ca';
   private static eightOunceProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: EightOunceScraper = new EightOunceScraper();
+  private static config: IConfig = config;
 
   public static async run(): Promise<void> {
     const eightOunceResponse: AxiosResponse<IProductResponse> = await axios.get(
@@ -58,7 +61,9 @@ export class EightOunceClient {
         this.eightOunceProducts.push(product);
       }
     }
-    await ProductsDatabase.updateDb(this.eightOunceProducts);
+    if (this.config.useDatabase) {
+      await ProductsDatabase.updateDb(this.eightOunceProducts);
+    }
   }
 }
 
