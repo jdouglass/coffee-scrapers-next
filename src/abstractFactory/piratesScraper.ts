@@ -69,7 +69,12 @@ export default class PiratesScraper implements IScraper {
   };
 
   getProcessCategory = (process: string): string => {
-    if (process === 'Washed' || process === 'Natural' || process === 'Honey') {
+    if (
+      process === ProcessCategory[ProcessCategory.Washed] ||
+      process === ProcessCategory[ProcessCategory.Natural] ||
+      process === ProcessCategory[ProcessCategory.Honey] ||
+      process === ProcessCategory[ProcessCategory.Unknown]
+    ) {
       return process;
     }
     return ProcessCategory[ProcessCategory.Experimental];
