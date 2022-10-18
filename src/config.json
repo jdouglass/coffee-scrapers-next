@@ -1,3 +1,4 @@
 {
+  "cronSchedule": "0 * * * *",
   "useDatabase": true
 }
