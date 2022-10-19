@@ -116,24 +116,14 @@ export default class RevolverScraper implements IScraper {
     }
     let varietyOptions: string[] = variety.split('<');
     variety = varietyOptions[0].trim();
-    if (variety.includes(' / ')) {
-      varietyOptions = variety.split(' / ');
-      variety = varietyOptions.join(', ');
-    }
-    if (variety.includes(' + ')) {
-      varietyOptions = variety.split(' + ');
-      variety = varietyOptions.join(', ');
-    }
-    if (variety.includes(' &amp; ')) {
-      varietyOptions = variety.split(' &amp; ');
-      variety = varietyOptions.join(' & ');
-    }
-    if (variety.includes(' and ')) {
-      varietyOptions = variety.split(' and ');
-      variety = varietyOptions.join(', ');
-    }
-    if (variety.includes(', ')) {
-      varietyOptions = variety.split(', ');
+    if (
+      variety.includes(', ') ||
+      variety.includes(' &amp; ') ||
+      variety.includes(' + ') ||
+      variety.includes(' and ') ||
+      variety.includes(' / ')
+    ) {
+      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
     } else {
       varietyOptions = [variety];
     }

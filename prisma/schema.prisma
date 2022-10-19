@@ -25,6 +25,6 @@ model products {
   image_url        String   @db.Text
   sold_out         Boolean  @db.Boolean
   date_added       DateTime @db.Timestamp()
-  vendor           String   @db.VarChar(20)
+  vendor           String   @db.VarChar(50)
   handle           String   @db.Text
 }
