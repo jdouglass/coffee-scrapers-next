@@ -27,6 +27,5 @@ jobs:
       - run: npm install typescript -g
       - run: rm -rf node_modules && yarn install --frozen-lockfile
       - run: tsc -p .
-      - run: pm2 stop all && pm2 kill
       - run: pm2 start "yarn start" --name scrapers --time
       - run: pm2 save
