@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import RogueWaveScraper from '../abstractFactory/rogueWaveScraper';
+import RogueWaveScraper from '../scraperFactory/rogueWaveScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';

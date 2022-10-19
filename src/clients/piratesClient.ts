@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import PiratesScraper from '../abstractFactory/piratesScraper';
+import PiratesScraper from '../scraperFactory/piratesScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
