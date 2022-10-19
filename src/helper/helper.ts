@@ -10,6 +10,7 @@ import axios from 'axios';
 import { IProduct } from '../interfaces/product';
 import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
+import puppeteer from 'puppeteer';
 
 dotenv.config();
 
@@ -44,18 +45,22 @@ export default class Helper {
         case 'Sl14':
         case 'Sl-14':
         case 'Sl 14':
-          varieties[i] = 'SL14';
+          varieties[i] = 'SL-14';
           break;
         case 'Sl28':
         case 'Sl-28':
         case 'Sl 28':
-          varieties[i] = 'SL28';
+          varieties[i] = 'SL-28';
           break;
         case 'Sl34':
         case 'Sl-34':
         case 'Sl 34':
-          varieties[i] = 'SL34';
+          varieties[i] = 'SL-34';
           break;
+        case 'Sl38':
+          varieties[i] = 'SL-38';
+          break;
+        case 'Jarc 74110':
         case 'Landrace Cultivar':
         case 'Local Landrace':
         case 'Local Landraces':
@@ -63,10 +68,10 @@ export default class Helper {
         case 'Landrace Varieties':
         case 'Regional Landraces':
         case 'Ethiopian Landrace':
-        case 'Ethiopian Landraces':
         case 'Ethiopian Landrace - 74110':
         case '71158':
         case '74110':
+        case '74112':
         case '74148':
           varieties[i] = 'Ethiopian Landraces';
           break;
@@ -145,5 +150,31 @@ export default class Helper {
   private static getImageType = async (imageUrl: string): Promise<string> => {
     const image = await axios.get(imageUrl, { responseType: 'arraybuffer' });
     return image.headers['content-type'];
+  };
+
+  public static getSubtextBodyText = async (
+    productUrl: string
+  ): Promise<(string | null)[]> => {
+    let bodyText: (string | null)[] = [''];
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.goto(productUrl);
+    await page.waitForSelector('.shg-row');
+    bodyText = await page.$$eval('.shg-row > div > div > div > p', (elements) =>
+      elements.map((element) => {
+        return element.textContent;
+      })
+    );
+    await browser.close();
+    return bodyText;
+  };
+
+  public static getPageTitle = async (productUrl: string): Promise<string> => {
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    await page.goto(productUrl);
+    const title = await page.title();
+    await browser.close();
+    return title;
   };
 }

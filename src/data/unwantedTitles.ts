@@ -1,7 +1,6 @@
 export const unwantedTitles: string[] = [
   'Advent',
   'BAGS',
-  'Blend',
   'Box',
   'Cans',
   'Capsule',
