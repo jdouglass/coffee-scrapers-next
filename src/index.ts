@@ -32,6 +32,10 @@ const bree = new Bree({
       name: 'eightOunceClient',
       cron,
     },
+    {
+      name: 'subtextClient',
+      cron,
+    },
   ],
 });
 
