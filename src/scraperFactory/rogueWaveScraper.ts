@@ -124,12 +124,14 @@ export default class RogueWaveScraper implements IScraper {
     variety = variety.replace(/\(.*\)/, '').trim();
     variety = variety.replaceAll(/\s+/g, ' ');
     let varietyOptions: string[];
-    if (variety.includes(',')) {
-      varietyOptions = variety.split(', ');
-    } else if (variety.includes(' and ')) {
-      varietyOptions = variety.split(' and ');
-    } else if (variety.includes(' + ')) {
-      varietyOptions = variety.split(' + ');
+    if (
+      variety.includes(', ') ||
+      variety.includes(' &amp; ') ||
+      variety.includes(' + ') ||
+      variety.includes(' and ') ||
+      variety.includes(' / ')
+    ) {
+      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
     } else {
       varietyOptions = [variety];
     }
