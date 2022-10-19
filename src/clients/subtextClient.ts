@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import PiratesScraper from '../scraperFactory/piratesScraper';
+import SubtextScraper from '../scraperFactory/subtextScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
@@ -7,26 +7,40 @@ import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json' assert { type: 'json' };
+import Helper from '../helper/helper';
 
-export class PiratesClient {
-  private static vendor: string = 'Pirates of Coffee';
-  private static baseUrl: string = 'https://piratesofcoffee.com';
-  private static piratesProducts: Array<IProduct> = new Array<IProduct>();
-  private static factory: PiratesScraper = new PiratesScraper();
+export class SubtextClient {
+  private static vendor: string = 'Subtext Coffee Roasters';
+  private static baseUrl: string = 'https://subtext.coffee';
+  private static subtextProducts: Array<IProduct> = new Array<IProduct>();
+  private static factory: SubtextScraper = new SubtextScraper();
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const piratesResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://piratesofcoffee.com/collections/coffee/products.json?limit=250'
+    const subtextResponse: AxiosResponse<IProductResponse> = await axios.get(
+      'https://www.subtext.coffee/collections/filter-coffee-beans/products.json?limit=250'
     );
-    const piratesData: IProductResponseData[] = piratesResponse.data.products;
-    for (const item of piratesData) {
+
+    const subtextData: IProductResponseData[] = subtextResponse.data.products;
+    for (let i = 0; i < subtextData.length; i++) {
+      let item = subtextData[i];
+      const productUrl =
+        this.baseUrl +
+        '/collections/filter-coffee-beans/products/' +
+        item.handle;
+      const newBodyText: (string | null)[] = await Helper.getSubtextBodyText(
+        productUrl
+      );
+      item.title = await Helper.getPageTitle(productUrl);
+      if (newBodyText) {
+        item.body_html = newBodyText.join('\n');
+      }
       if (
         !unwantedTitles.some((unwantedString) =>
           item.title.includes(unwantedString)
         )
       ) {
-        const brand = this.factory.getBrand(item);
+        const brand = this.vendor;
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
         const dateAdded = this.factory.getDateAdded(item.published_at);
@@ -57,18 +71,19 @@ export class PiratesClient {
           weight,
           vendor: this.vendor,
         };
-        this.piratesProducts.push(product);
+        console.log(product);
+        this.subtextProducts.push(product);
       }
     }
     if (this.config.useDatabase) {
-      await ProductsDatabase.updateDb(this.piratesProducts);
+      await ProductsDatabase.updateDb(this.subtextProducts);
     }
   }
 }
 
 const main = async (): Promise<void> => {
   try {
-    await PiratesClient.run();
+    await SubtextClient.run();
   } catch (error) {
     console.error(error);
   }

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import EightOunceScraper from '../abstractFactory/eightOunceScraper';
+import EightOunceScraper from '../scraperFactory/eightOunceScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
