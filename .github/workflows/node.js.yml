@@ -29,3 +29,4 @@ jobs:
       - run: tsc -p .
       - run: pm2 start "yarn start" --name scrapers --time
       - run: pm2 save
+      - run: echo "test"
