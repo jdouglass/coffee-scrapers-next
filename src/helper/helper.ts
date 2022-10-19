@@ -65,6 +65,7 @@ export default class Helper {
           varieties[i] = 'SL-38';
           break;
         case 'Jarc 74110':
+        case 'Jarc Varietals':
         case 'Landrace Cultivar':
         case 'Local Landrace':
         case 'Local Landraces':
