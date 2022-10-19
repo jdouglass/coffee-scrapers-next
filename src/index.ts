@@ -36,5 +36,3 @@ const bree = new Bree({
 });
 
 await bree.start();
-
-console.log('test');
