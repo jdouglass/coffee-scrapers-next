@@ -110,7 +110,7 @@ export default class Helper {
       Key: key,
       Body: await this.getBase64FromImageUrl(product.imageUrl),
       ContentEncoding: 'base64',
-      ContentType: await this.getImageType(product.imageUrl),
+      ContentType: 'image/webp',
     };
     let collectionImageUrl: string = product.imageUrl;
     try {
@@ -144,7 +144,7 @@ export default class Helper {
     }
   };
 
-  public static getBase64FromImageUrl = async (
+  private static getBase64FromImageUrl = async (
     imageUrl: string
   ): Promise<Buffer> => {
     return await axios
@@ -156,11 +156,6 @@ export default class Helper {
           .toFormat('webp')
           .toBuffer();
       });
-  };
-
-  private static getImageType = async (imageUrl: string): Promise<string> => {
-    const image = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    return image.headers['content-type'];
   };
 
   public static getSubtextBodyText = async (
