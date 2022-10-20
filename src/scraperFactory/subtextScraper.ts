@@ -30,6 +30,9 @@ export default class SubtextScraper implements IScraper {
   };
 
   getImageUrl = (images: IImage[]) => {
+    if (images.length >= 2) {
+      return images[1].src;
+    }
     return images[0].src;
   };
 

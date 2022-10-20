@@ -12,6 +12,7 @@ import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
 import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer';
 import config from '../config.json' assert { type: 'json' };
+import sharp from 'sharp';
 
 dotenv.config();
 
@@ -109,7 +110,7 @@ export default class Helper {
       Key: key,
       Body: await this.getBase64FromImageUrl(product.imageUrl),
       ContentEncoding: 'base64',
-      ContentType: await this.getImageType(product.imageUrl),
+      ContentType: 'image/webp',
     };
     let collectionImageUrl: string = product.imageUrl;
     try {
@@ -149,12 +150,12 @@ export default class Helper {
     return await axios
       .get(imageUrl, { responseType: 'arraybuffer' })
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      .then((response) => Buffer.from(response.data));
-  };
-
-  private static getImageType = async (imageUrl: string): Promise<string> => {
-    const image = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-    return image.headers['content-type'];
+      .then((response) => {
+        return sharp(Buffer.from(response.data))
+          .resize(350, null)
+          .toFormat('webp')
+          .toBuffer();
+      });
   };
 
   public static getSubtextBodyText = async (
