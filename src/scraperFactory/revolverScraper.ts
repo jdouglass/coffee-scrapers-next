@@ -63,10 +63,14 @@ export default class RevolverScraper implements IScraper {
   };
 
   getProcess = (item: IProductResponseData): string => {
-    let process: string = item.body_html.split('Process:')[1];
-    const processOptions: string[] = process.split('<');
-    process = processOptions[0].trim();
-    return Helper.convertToUniversalProcess(process);
+    let process = 'Unknown';
+    if (item.body_html.includes('Process:')) {
+      process = item.body_html.split('Process:')[1];
+      const processOptions: string[] = process.split('<');
+      process = processOptions[0].trim();
+      return Helper.convertToUniversalProcess(process);
+    }
+    return process;
   };
 
   getProcessCategory = (process: string): string => {
