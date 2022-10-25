@@ -30,8 +30,12 @@ export default class Helper {
     },
   });
   static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
-    ? { headless: config.isHeadless }
-    : { headless: config.isHeadless, executablePath: config.chromePath };
+    ? { headless: config.isHeadless, timeout: 0 }
+    : {
+        headless: config.isHeadless,
+        executablePath: config.chromePath,
+        timeout: 0,
+      };
 
   static firstLetterUppercase = (input: string[]): string[] => {
     return input.map((word: string) => {
