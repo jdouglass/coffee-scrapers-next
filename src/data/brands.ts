@@ -19,6 +19,7 @@ export const brands: string[] = [
   'Fritz',
   'Gardelli',
   'George Howell',
+  'Ghost Roaster',
   'House of Funk',
   'Intelligentsia',
   'Karasu',

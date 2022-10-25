@@ -83,7 +83,9 @@ export default class SubtextScraper implements IScraper {
   getVariety = (item: IProductResponseData): string[] => {
     let variety = item.body_html.split('Varieties')[1];
     variety = variety.split('\n')[0].trim();
-    let varietyOptions = variety.split(/, | & /);
+    let varietyOptions = variety
+      .split(/, | & /)
+      .map((variety: string) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     varietyOptions = Array.from([...new Set(varietyOptions)]);

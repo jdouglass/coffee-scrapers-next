@@ -128,10 +128,14 @@ export default class MonogramScraper implements IScraper {
       return ['Unknown'];
     }
     variety = variety.replace('<meta charset="utf-8">', '');
+    variety = variety.replace('<span data-mce-fragment="1">', '');
+    variety = variety.replace('</span>', '');
     let varietyOptions: string[] = variety.split('<');
     variety = varietyOptions[0].trim();
     if (variety.includes(', ')) {
-      varietyOptions = variety.split(', ');
+      varietyOptions = variety
+        .split(', ')
+        .map((variety: string) => variety.trim());
     } else {
       varietyOptions = [variety];
     }

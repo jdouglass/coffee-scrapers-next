@@ -74,41 +74,47 @@ export default class EightOunceScraper implements IScraper {
   };
 
   getProcess = (item: IProductResponseData): string => {
-    const defaultProcess = 'Unknown';
-    const maxProcessLength = 75;
-    let process: string;
-    if (item.body_html.includes('PROCESS')) {
-      process = item.body_html.split('PROCESS')[1];
-    } else if (item.body_html.includes('Process')) {
-      process = item.body_html.split('Process')[1];
-    } else if (item.body_html.includes('BEANS')) {
-      process = item.body_html.split('BEANS')[1];
-      process = process.split(', ')[0];
-    } else {
-      return defaultProcess;
-    }
-    process = process.replace('</strong>', '');
-    process = process.split(':')[1].trim();
-    if (process.includes('<')) {
-      process = process.split('<')[0].trim();
-    }
-    if (process.length >= maxProcessLength) {
-      if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
-        return ProcessCategory[ProcessCategory.Washed];
-      } else if (
-        item.title.includes(ProcessCategory[ProcessCategory.Natural])
-      ) {
-        return ProcessCategory[ProcessCategory.Natural];
-      } else if (item.title.includes(ProcessCategory[ProcessCategory.Honey])) {
-        return ProcessCategory[ProcessCategory.Honey];
+    try {
+      const defaultProcess = 'Unknown';
+      const maxProcessLength = 75;
+      let process: string;
+      if (item.body_html.includes('PROCESS')) {
+        process = item.body_html.split('PROCESS')[1];
+      } else if (item.body_html.includes('Process')) {
+        process = item.body_html.split('Process')[1];
+      } else if (item.body_html.includes('BEANS')) {
+        process = item.body_html.split('BEANS')[1];
+        process = process.split(', ')[0];
       } else {
         return defaultProcess;
       }
+      process = process.replace('</strong>', '');
+      process = process.split(':')[1].trim();
+      if (process.includes('<')) {
+        process = process.split('<')[0].trim();
+      }
+      if (process.length >= maxProcessLength) {
+        if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
+          return ProcessCategory[ProcessCategory.Washed];
+        } else if (
+          item.title.includes(ProcessCategory[ProcessCategory.Natural])
+        ) {
+          return ProcessCategory[ProcessCategory.Natural];
+        } else if (
+          item.title.includes(ProcessCategory[ProcessCategory.Honey])
+        ) {
+          return ProcessCategory[ProcessCategory.Honey];
+        } else {
+          return defaultProcess;
+        }
+      }
+      if (process.includes('.')) {
+        process = process.split('.')[0];
+      }
+      return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+    } catch {
+      return 'Unknown';
     }
-    if (process.includes('.')) {
-      process = process.split('.')[0];
-    }
-    return Helper.firstLetterUppercase(process.split(' ')).join(' ');
   };
 
   getProcessCategory = (process: string): string => {
@@ -138,49 +144,53 @@ export default class EightOunceScraper implements IScraper {
   };
 
   getVariety = (item: IProductResponseData): string[] => {
-    let variety: string;
-    let body: string = item.body_html;
-    if (body.includes('VARIET')) {
-      variety = body.split('VARIET')[1];
-    } else if (body.includes('Variet')) {
-      variety = body.split('Variet')[1];
-    } else if (body.includes('BEANS')) {
-      variety = body.split('BEANS')[1];
-      variety = variety.split(', ')[1];
-    } else {
+    try {
+      let variety: string;
+      let body: string = item.body_html;
+      if (body.includes('VARIET')) {
+        variety = body.split('VARIET')[1];
+      } else if (body.includes('Variet')) {
+        variety = body.split('Variet')[1];
+      } else if (body.includes('BEANS')) {
+        variety = body.split('BEANS')[1];
+        variety = variety.split(', ')[1];
+      } else {
+        return ['Unknown'];
+      }
+      variety = variety.replace('</strong>', '');
+      variety = variety.split(':')[1].trim();
+      variety = variety.split('<')[0].trim();
+      if (variety.includes('SL 34 Ruiru 11')) {
+        variety = variety.replace('SL 34 ', 'SL 34, ');
+      }
+      if (variety === 'Red and Yellow Catuai') {
+        return [variety];
+      }
+      let varietyOptions: string[];
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+
+      for (let i = 0; i < varietyOptions.length; i++) {
+        if (varietyOptions[i].includes('%')) {
+          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+        }
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      varietyOptions = Array.from([...new Set(varietyOptions)]);
+      return varietyOptions;
+    } catch {
       return ['Unknown'];
     }
-    variety = variety.replace('</strong>', '');
-    variety = variety.split(':')[1].trim();
-    variety = variety.split('<')[0].trim();
-    if (variety.includes('SL 34 Ruiru 11')) {
-      variety = variety.replace('SL 34 ', 'SL 34, ');
-    }
-    if (variety === 'Red and Yellow Catuai') {
-      return [variety];
-    }
-    let varietyOptions: string[];
-    if (
-      variety.includes(', ') ||
-      variety.includes(' &amp; ') ||
-      variety.includes(' + ') ||
-      variety.includes(' and ') ||
-      variety.includes(' / ')
-    ) {
-      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
-    } else {
-      varietyOptions = [variety];
-    }
-
-    for (let i = 0; i < varietyOptions.length; i++) {
-      if (varietyOptions[i].includes('%')) {
-        varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
-      }
-    }
-    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
   };
 
   getWeight = (item: IProductResponseData): number => {
