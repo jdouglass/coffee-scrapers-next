@@ -24,43 +24,47 @@ export class ProductsDatabase {
   }
 
   private static async addOrUpdateProduct(product: IProduct): Promise<void> {
-    await this.prisma.products.upsert({
-      where: {
-        product_url: product.productUrl,
-      },
-      create: {
-        brand: product.brand,
-        continent: product.continent,
-        country: product.country,
-        date_added: product.dateAdded,
-        handle: product.handle,
-        image_url: await Helper.uploadToS3(product),
-        sold_out: product.isSoldOut,
-        price: product.price,
-        process: product.process,
-        process_category: product.processCategory,
-        product_url: product.productUrl,
-        title: product.title,
-        variety: product.variety,
-        vendor: product.vendor,
-        weight: product.weight,
-      },
-      update: {
-        brand: product.brand,
-        continent: product.continent,
-        country: product.country,
-        date_added: product.dateAdded,
-        handle: product.handle,
-        sold_out: product.isSoldOut,
-        price: product.price,
-        process: product.process,
-        process_category: product.processCategory,
-        title: product.title,
-        variety: product.variety,
-        vendor: product.vendor,
-        weight: product.weight,
-      },
-    });
+    try {
+      await this.prisma.products.upsert({
+        where: {
+          product_url: product.productUrl,
+        },
+        create: {
+          brand: product.brand,
+          continent: product.continent,
+          country: product.country,
+          date_added: product.dateAdded,
+          handle: product.handle,
+          image_url: await Helper.uploadToS3(product),
+          sold_out: product.isSoldOut,
+          price: product.price,
+          process: product.process,
+          process_category: product.processCategory,
+          product_url: product.productUrl,
+          title: product.title,
+          variety: product.variety,
+          vendor: product.vendor,
+          weight: product.weight,
+        },
+        update: {
+          brand: product.brand,
+          continent: product.continent,
+          country: product.country,
+          date_added: product.dateAdded,
+          handle: product.handle,
+          sold_out: product.isSoldOut,
+          price: product.price,
+          process: product.process,
+          process_category: product.processCategory,
+          title: product.title,
+          variety: product.variety,
+          vendor: product.vendor,
+          weight: product.weight,
+        },
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   public static async updateDb(scrapedProducts: IProduct[]): Promise<void> {
