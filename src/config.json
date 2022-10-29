@@ -3,5 +3,5 @@
   "cronSchedule": "0 * * * *",
   "isHeadless": true,
   "useDatabase": true,
-  "devMode": false
+  "devMode": true
 }
