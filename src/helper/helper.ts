@@ -11,7 +11,7 @@ import { IProduct } from '../interfaces/product';
 import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
 import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer';
-import config from '../config.json' assert { type: 'json' };
+import config from '../config.json';
 import sharp from 'sharp';
 
 dotenv.config();

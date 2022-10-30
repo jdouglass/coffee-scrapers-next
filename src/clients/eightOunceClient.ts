@@ -6,7 +6,7 @@ import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
-import configData from '../config.json' assert { type: 'json' };
+import configData from '../config.json';
 
 export class EightOunceClient {
   private static vendor: string = 'Eight Ounce Coffee';
