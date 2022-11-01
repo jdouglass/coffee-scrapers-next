@@ -25,7 +25,7 @@ export class ProductsDatabase {
   }
 
   private static async addOrUpdateProduct(product: IProduct): Promise<void> {
-    if (product.vendor !== BaseUrl.Hatch) {
+    if (product.vendor !== 'Hatch Coffee Roasters') {
       try {
         await this.prisma.products.upsert({
           where: {
