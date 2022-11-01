@@ -1,49 +1,49 @@
-export const apps = [
+module.exports = [
   {
     name: 'eightOunce',
-    script: 'dist/clients/eightOunceClient.js',
+    script: 'dist/src/clients/eightOunceClient.js',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'monogram',
-    script: 'dist/clients/monogramClient.js',
+    script: 'dist/src/clients/monogramClient.js',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'pirates',
-    script: 'dist/clients/piratesClient.js',
+    script: 'dist/src/clients/piratesClient.js',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'revolver',
-    script: 'dist/clients/revolverClient.js',
+    script: 'dist/src/clients/revolverClient.js',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'rogueWave',
-    script: 'dist/clients/rogueWaveClient.js',
+    script: 'dist/src/clients/rogueWaveClient.js',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'rosso',
-    script: 'dist/clients/rossoClient.js',
+    script: 'dist/src/clients/rossoClient.js',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'subtext',
-    script: 'dist/clients/subtextClient.js',
+    script: 'dist/src/clients/subtextClient.js',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'hatch',
-    script: 'dist/clients/hatchClient.js',
+    script: 'dist/src/clients/hatchClient.js',
     time: true,
     cron: '0 * * * *',
   },
