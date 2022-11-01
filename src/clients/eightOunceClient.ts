@@ -6,11 +6,12 @@ import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
-import configData from '../config.json' assert { type: 'json' };
+import configData from '../config.json';
+import { BaseUrl } from '../enums/baseUrls';
 
 export class EightOunceClient {
   private static vendor: string = 'Eight Ounce Coffee';
-  private static baseUrl: string = 'https://eightouncecoffee.ca';
+  private static baseUrl: string = BaseUrl.EightOunce;
   private static eightOunceProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: EightOunceScraper = new EightOunceScraper();
   private static config: IConfig = configData;

@@ -58,7 +58,10 @@ export default class EightOunceScraper implements IScraper {
   };
 
   getImageUrl = (images: IImage[]) => {
-    return images[0].src;
+    if (images.length !== 0) {
+      return images[0].src;
+    }
+    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
   getPrice = (variants: IVariant[]): string => {
@@ -196,8 +199,12 @@ export default class EightOunceScraper implements IScraper {
   getWeight = (item: IProductResponseData): number => {
     let bodyWeight: string = '';
     let weight = 0;
-    if (item.title.includes('(') && item.title.includes(')')) {
-      let titleWeight: string = item.title.split('(')[1];
+    if (
+      item.title.includes('(') &&
+      (item.title.includes('g') || item.title.includes('G'))
+    ) {
+      let titleWeight: string =
+        item.title.split('(')[item.title.split('(').length - 1];
       if (titleWeight.includes('g')) {
         return Number(titleWeight.split('g')[0].trim());
       }
@@ -222,7 +229,10 @@ export default class EightOunceScraper implements IScraper {
         return variant.grams;
       }
     }
-    return item.variants[0].grams;
+    if (item.variants[0].grams) {
+      return item.variants[0].grams;
+    }
+    return 0;
   };
 
   getTitle = (title: string, brand?: string): string => {

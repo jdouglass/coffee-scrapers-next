@@ -55,7 +55,10 @@ export default class MonogramScraper implements IScraper {
   };
 
   getImageUrl = (images: IImage[]) => {
-    return images[0].src;
+    if (images.length !== 0) {
+      return images[0].src;
+    }
+    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
   getPrice = (variants: IVariant[]): string => {

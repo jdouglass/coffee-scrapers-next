@@ -47,7 +47,10 @@ export default class RevolverScraper implements IScraper {
   };
 
   getImageUrl = (images: IImage[]) => {
-    return images[0].src;
+    if (images.length !== 0) {
+      return images[0].src;
+    }
+    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
   getPrice = (variants: IVariant[]): string => {
@@ -100,41 +103,46 @@ export default class RevolverScraper implements IScraper {
   };
 
   getVariety = (item: IProductResponseData): string[] => {
-    if (item.title.includes('Instrumental')) {
-      return ['Caturra', 'Castillo', 'Colombia'];
-    } else if (item.title.includes('Rootbeer')) {
-      return ['Parainema'];
-    }
-    let variety: string;
-    let body = item.body_html;
-    if (body.includes('Varietal:')) {
-      variety = body.split('Varietal:')[1];
-    } else if (body.includes('Variety:')) {
-      variety = body.split('Variety:')[1];
-    } else if (body.includes('Varieties:')) {
-      variety = body.split('Varieties:')[1];
-    } else if (body.includes('Varieites')) {
-      variety = body.split('Varieites:')[1];
-    } else {
+    try {
+      if (item.title.includes('Instrumental')) {
+        return ['Caturra', 'Castillo', 'Colombia'];
+      } else if (item.title.includes('Rootbeer')) {
+        return ['Parainema'];
+      }
+      let variety: string;
+      let body = item.body_html;
+      if (body.includes('Varietal:')) {
+        variety = body.split('Varietal:')[1];
+      } else if (body.includes('Variety:')) {
+        variety = body.split('Variety:')[1];
+      } else if (body.includes('Varieties:')) {
+        variety = body.split('Varieties:')[1];
+      } else if (body.includes('Varieites')) {
+        variety = body.split('Varieites:')[1];
+      } else {
+        return ['Unknown'];
+      }
+      let varietyOptions: string[] = variety.split('<');
+      variety = varietyOptions[0].trim();
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      varietyOptions = Array.from([...new Set(varietyOptions)]);
+      return varietyOptions;
+    } catch (err) {
+      console.log(err);
       return ['Unknown'];
     }
-    let varietyOptions: string[] = variety.split('<');
-    variety = varietyOptions[0].trim();
-    if (
-      variety.includes(', ') ||
-      variety.includes(' &amp; ') ||
-      variety.includes(' + ') ||
-      variety.includes(' and ') ||
-      variety.includes(' / ')
-    ) {
-      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
-    } else {
-      varietyOptions = [variety];
-    }
-    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
   };
 
   getWeight = (item: IProductResponseData): number => {
@@ -147,24 +155,34 @@ export default class RevolverScraper implements IScraper {
   };
 
   getTitle = (title: string, brand?: string, country?: string): string => {
-    title = title.split(brand as string)[1];
-    title = title.split('*')[0];
-    if (title.includes(country as string)) {
-      title = title.replace(country as string, '');
+    try {
+      let newTitle = title;
+      if (title.includes(brand as string)) {
+        newTitle = title.split(brand as string)[1];
+      }
+      if (newTitle.includes('*')) {
+        newTitle = newTitle.split('*')[0];
+      }
+      if (newTitle.includes(country as string)) {
+        newTitle = newTitle.replace(country as string, '');
+      }
+      if (newTitle.includes('"')) {
+        newTitle = newTitle.replaceAll('"', '');
+      }
+      if (newTitle.includes("'")) {
+        newTitle = newTitle.replaceAll("'", '');
+      }
+      if (newTitle.includes('(')) {
+        newTitle = newTitle.replaceAll('(', '');
+      }
+      if (newTitle.includes(')')) {
+        newTitle = newTitle.replaceAll(')', '');
+      }
+      newTitle = newTitle.replaceAll(/\s+/g, ' ').trim();
+      return newTitle;
+    } catch (err) {
+      console.error(err);
+      return title;
     }
-    if (title.includes('"')) {
-      title = title.replaceAll('"', '');
-    }
-    if (title.includes("'")) {
-      title = title.replaceAll("'", '');
-    }
-    if (title.includes('(')) {
-      title = title.replaceAll('(', '');
-    }
-    if (title.includes(')')) {
-      title = title.replaceAll(')', '');
-    }
-    title = title.replaceAll(/\s+/g, ' ').trim();
-    return title;
   };
 }

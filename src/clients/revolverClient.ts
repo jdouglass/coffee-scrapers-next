@@ -6,11 +6,12 @@ import { IProductResponse } from '../interfaces/productResponse';
 import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
-import config from '../config.json' assert { type: 'json' };
+import config from '../config.json';
+import { BaseUrl } from '../enums/baseUrls';
 
 export class RevolverClient {
   private static vendor: string = 'Revolver Coffee';
-  private static baseUrl: string = 'https://revolvercoffee.ca';
+  private static baseUrl: string = BaseUrl.Revolver;
   private static revolverProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: RevolverScraper = new RevolverScraper();
   private static config: IConfig = config;
