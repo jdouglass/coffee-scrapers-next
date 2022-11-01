@@ -8,10 +8,11 @@ import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import Helper from '../helper/helper';
+import { BaseUrl } from '../enums/baseUrls';
 
 export class SubtextClient {
   private static vendor: string = 'Subtext Coffee Roasters';
-  private static baseUrl: string = 'https://subtext.coffee';
+  private static baseUrl: string = BaseUrl.Subtext;
   private static subtextProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: SubtextScraper = new SubtextScraper();
   private static config: IConfig = config;
@@ -23,7 +24,7 @@ export class SubtextClient {
 
     const subtextData: IProductResponseData[] = subtextResponse.data.products;
     for (let i = 0; i < subtextData.length; i++) {
-      let item = subtextData[i];
+      const item = subtextData[i];
       const productUrl =
         this.baseUrl +
         '/collections/filter-coffee-beans/products/' +

@@ -7,10 +7,11 @@ import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
+import { BaseUrl } from '../enums/baseUrls';
 
 export class RogueWaveClient {
   private static vendor: string = 'Rogue Wave Coffee';
-  private static baseUrl: string = 'https://roguewavecoffee.ca';
+  private static baseUrl: string = BaseUrl.RogueWave;
   private static rogueWaveProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: RogueWaveScraper = new RogueWaveScraper();
   private static config: IConfig = config;

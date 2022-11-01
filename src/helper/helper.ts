@@ -82,6 +82,7 @@ export default class Helper {
         case '74110':
         case '74112':
         case '74148':
+        case '74158':
           varieties[i] = 'Ethiopian Landraces';
           break;
         case 'Blend':
@@ -152,8 +153,8 @@ export default class Helper {
   ): Promise<Buffer> => {
     return await axios
       .get(imageUrl, { responseType: 'arraybuffer' })
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       .then((response) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return sharp(Buffer.from(response.data))
           .resize(350, null)
           .toFormat('webp')
@@ -186,4 +187,38 @@ export default class Helper {
     await browser.close();
     return title;
   };
+
+  public static getHatchProductUrls = async (
+    initialProductPageUrl: string
+  ): Promise<string[]> => {
+    const browser = await puppeteer.launch(this.puppeteerConfig);
+    const page = await browser.newPage();
+    await page.goto(initialProductPageUrl);
+    const initialProductPageUrls = await this.getAllHrefs(page);
+    const firstPageProductUrls = initialProductPageUrls.filter(
+      this.isHatchProductUrl
+    );
+    const productUrls = new Set(firstPageProductUrls);
+    const productPageUrls = initialProductPageUrls.filter((url) => {
+      return url.includes('/shop/all/');
+    });
+    for (const url of productPageUrls) {
+      await page.goto(url);
+      const pageUrls = await this.getAllHrefs(page);
+      const productPageUrls = pageUrls.filter(this.isHatchProductUrl);
+      for (const productUrl of productPageUrls) {
+        productUrls.add(productUrl);
+      }
+    }
+    await browser.close();
+    return Array.from(productUrls);
+  };
+
+  private static isHatchProductUrl = (url: string): boolean => {
+    return url.includes('/shop/product/');
+  };
+
+  private static async getAllHrefs(page: puppeteer.Page): Promise<string[]> {
+    return await page.$$eval('a', (as) => as.map((a) => a.href));
+  }
 }

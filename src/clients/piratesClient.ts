@@ -7,10 +7,11 @@ import { IProductResponseData } from '../interfaces/productResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
+import { BaseUrl } from '../enums/baseUrls';
 
 export class PiratesClient {
   private static vendor: string = 'Pirates of Coffee';
-  private static baseUrl: string = 'https://piratesofcoffee.com';
+  private static baseUrl: string = BaseUrl.PiratesOfCoffee;
   private static piratesProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: PiratesScraper = new PiratesScraper();
   private static config: IConfig = config;
