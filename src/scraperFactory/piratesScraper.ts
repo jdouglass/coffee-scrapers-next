@@ -55,13 +55,13 @@ export default class PiratesScraper implements IScraper {
   getPrice = (variants: IVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
-        return Number(variant.price);
+        return Number(Number(variant.price).toFixed(2));
       }
     });
     if (!price) {
-      return Number(variants[0].price);
+      return Number(Number(variants[0].price).toFixed(2));
     }
-    return Number(variants[0].price);
+    return Number(Number(variants[0].price).toFixed(2));
   };
 
   getProcess = (item: IProductResponseData): string => {

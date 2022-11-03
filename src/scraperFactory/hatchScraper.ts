@@ -49,10 +49,11 @@ export default class HatchScraper implements IPuppeteerScraper {
     const priceContent =
       (await priceElement?.evaluate((el) => el.textContent)) ?? '';
     if (priceContent !== '') {
-      const price = priceContent.split('$')[1];
-      return Number(price.split(' ')[0].trim());
+      let price = priceContent.split('$')[1];
+      price = price.split(' ')[0].trim();
+      return Number(Number(price).toFixed(2));
     }
-    return 0.0;
+    return 0;
   };
 
   getProcess = async (page: Page): Promise<string> => {
