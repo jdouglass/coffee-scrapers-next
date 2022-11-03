@@ -44,15 +44,15 @@ export default class HatchScraper implements IPuppeteerScraper {
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = async (page: Page): Promise<string> => {
+  getPrice = async (page: Page): Promise<number> => {
     const priceElement = await page.$('.product-price');
     const priceContent =
       (await priceElement?.evaluate((el) => el.textContent)) ?? '';
     if (priceContent !== '') {
       const price = priceContent.split('$')[1];
-      return price.split(' ')[0].trim();
+      return Number(price.split(' ')[0].trim());
     }
-    return '0.00';
+    return 0.0;
   };
 
   getProcess = async (page: Page): Promise<string> => {

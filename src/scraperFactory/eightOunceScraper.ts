@@ -27,7 +27,7 @@ export default class EightOunceScraper implements IScraper {
 
   getCountry = (item: IProductResponseData): string => {
     const defaultCountry = 'Unknown';
-    for (let [country, continent] of worldData) {
+    for (const [country, continent] of worldData) {
       if (item.title.includes(country)) {
         return country;
       }
@@ -40,7 +40,7 @@ export default class EightOunceScraper implements IScraper {
     }
     country = country.split('<')[0].trim();
     if (country.includes(', ')) {
-      let locations = country.split(', ');
+      const locations = country.split(', ');
       country = locations[locations.length - 1].trim();
     }
     if (country !== '') {
@@ -64,16 +64,16 @@ export default class EightOunceScraper implements IScraper {
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = (variants: IVariant[]): string => {
+  getPrice = (variants: IVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
-        return variant.price;
+        return Number(variant.price);
       }
     });
     if (!price) {
-      return variants[0].price;
+      return Number(variants[0].price);
     }
-    return variants[0].price;
+    return Number(variants[0].price);
   };
 
   getProcess = (item: IProductResponseData): string => {
@@ -149,7 +149,7 @@ export default class EightOunceScraper implements IScraper {
   getVariety = (item: IProductResponseData): string[] => {
     try {
       let variety: string;
-      let body: string = item.body_html;
+      const body: string = item.body_html;
       if (body.includes('VARIET')) {
         variety = body.split('VARIET')[1];
       } else if (body.includes('Variet')) {
@@ -203,7 +203,7 @@ export default class EightOunceScraper implements IScraper {
       item.title.includes('(') &&
       (item.title.includes('g') || item.title.includes('G'))
     ) {
-      let titleWeight: string =
+      const titleWeight: string =
         item.title.split('(')[item.title.split('(').length - 1];
       if (titleWeight.includes('g')) {
         return Number(titleWeight.split('g')[0].trim());

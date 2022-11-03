@@ -14,7 +14,7 @@ model products {
   id               Int      @id @unique @default(autoincrement())
   brand            String   @db.VarChar(50)
   title            String   @db.VarChar(100)
-  price            String   @db.VarChar(6)
+  price            Decimal  @db.Decimal(6, 2)
   weight           Int      @db.Integer
   process          String   @db.Text
   process_category String   @db.VarChar(20)

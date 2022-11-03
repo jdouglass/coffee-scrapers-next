@@ -49,16 +49,16 @@ export default class RogueWaveScraper implements IScraper {
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = (variants: IVariant[]): string => {
+  getPrice = (variants: IVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
-        return variant.price;
+        return Number(variant.price);
       }
     });
     if (!price) {
-      return variants[0].price;
+      return Number(variants[0].price);
     }
-    return variants[0].price;
+    return Number(variants[0].price);
   };
 
   getProcess = (item: IProductResponseData): string => {
@@ -74,7 +74,7 @@ export default class RogueWaveScraper implements IScraper {
     }
     process = process.split('<')[0].trim();
     if (process.includes(' + ')) {
-      let processOptions: string[] = process.split(' + ');
+      const processOptions: string[] = process.split(' + ');
       process = processOptions.join(', ');
     }
     return Helper.convertToUniversalProcess(process);
@@ -108,7 +108,7 @@ export default class RogueWaveScraper implements IScraper {
 
   getVariety = (item: IProductResponseData): string[] => {
     let variety: string;
-    let body = item.body_html;
+    const body = item.body_html;
     if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
       variety = variety.replace('</strong>', '');

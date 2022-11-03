@@ -6,7 +6,7 @@ export interface IProduct {
   handle: string;
   imageUrl: string;
   isSoldOut: boolean;
-  price: string;
+  price: number;
   process: string;
   processCategory: string;
   productUrl: string;

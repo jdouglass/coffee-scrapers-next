@@ -8,7 +8,7 @@ export interface IPuppeteerScraper {
   getDateAdded: () => string;
   getHandle: (productUrl: string) => string;
   getImageUrl: (images: IHatchImage[]) => string;
-  getPrice: (page: Page) => Promise<string>;
+  getPrice: (page: Page) => Promise<number>;
   getProcess: (page: Page) => Promise<string>;
   getProcessCategory: (process: string) => string;
   getProductUrl: (id: number, baseUrl: string) => string;

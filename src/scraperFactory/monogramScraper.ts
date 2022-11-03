@@ -61,16 +61,16 @@ export default class MonogramScraper implements IScraper {
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = (variants: IVariant[]): string => {
+  getPrice = (variants: IVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
-        return variant.price;
+        return Number(variant.price);
       }
     });
     if (!price) {
-      return variants[0].price;
+      return Number(variants[0].price);
     }
-    return variants[0].price;
+    return Number(variants[0].price);
   };
 
   getProcess = (item: IProductResponseData): string => {
@@ -122,7 +122,7 @@ export default class MonogramScraper implements IScraper {
 
   getVariety = (item: IProductResponseData): string[] => {
     let variety: string;
-    let body: string = item.body_html;
+    const body: string = item.body_html;
     if (body.includes('VARIETY:')) {
       variety = body.split('VARIETY:')[1];
     } else if (body.includes('Variety:')) {

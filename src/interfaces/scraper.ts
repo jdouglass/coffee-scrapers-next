@@ -9,7 +9,7 @@ export interface IScraper {
   getDateAdded: (date: string) => string;
   getHandle: (handle: string) => string;
   getImageUrl: (images: IImage[]) => string;
-  getPrice: (variants: IVariant[]) => string;
+  getPrice: (variants: IVariant[]) => number;
   getProcess: (item: IProductResponseData) => string;
   getProcessCategory: (process: string) => string;
   getProductUrl: (item: IProductResponseData, baseUrl: string) => string;
