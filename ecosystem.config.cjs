@@ -47,4 +47,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'library',
+    script: 'dist/src/clients/libraryClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
