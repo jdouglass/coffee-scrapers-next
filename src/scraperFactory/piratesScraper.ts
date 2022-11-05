@@ -129,7 +129,8 @@ export default class PiratesScraper implements IScraper {
     return item.variants[0].grams;
   };
 
-  getTitle = (title: string): string => {
+  getTitle = (item: IProductResponseData): string => {
+    let title = item.title;
     title = title.split(':')[0];
     const titleOptions = title.split(' ');
     return Helper.firstLetterUppercase(titleOptions).join(' ');

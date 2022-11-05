@@ -156,7 +156,8 @@ export default class RogueWaveScraper implements IScraper {
     return item.variants[0].grams;
   };
 
-  getTitle = (title: string): string => {
+  getTitle = (item: IProductResponseData): string => {
+    let title = item.title;
     title = title.split('-')[1];
     title = title.split('|')[0];
     return title.trim();

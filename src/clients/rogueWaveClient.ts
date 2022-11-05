@@ -38,7 +38,7 @@ export class RogueWaveClient {
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
-        const title = this.factory.getTitle(item.title);
+        const title = this.factory.getTitle(item);
         const variety = this.factory.getVariety(item);
         const weight = this.factory.getWeight(item);
         const product: IProduct = {

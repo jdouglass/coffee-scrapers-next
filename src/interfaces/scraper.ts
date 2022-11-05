@@ -14,7 +14,11 @@ export interface IScraper {
   getProcessCategory: (process: string) => string;
   getProductUrl: (item: IProductResponseData, baseUrl: string) => string;
   getSoldOut: (variants: IVariant[]) => boolean;
-  getTitle: (title: string, brand?: string, country?: string) => string;
+  getTitle: (
+    item: IProductResponseData,
+    brand?: string,
+    country?: string
+  ) => string;
   getVariety: (item: IProductResponseData) => string[];
   getWeight: (item: IProductResponseData) => number;
 }

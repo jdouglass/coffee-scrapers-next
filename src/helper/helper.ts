@@ -53,24 +53,29 @@ export default class Helper {
         case 'Sl14':
         case 'Sl-14':
         case 'Sl 14':
+        case 'Sl - 14':
           varieties[i] = 'SL-14';
           break;
         case 'Sl28':
         case 'Sl-28':
         case 'Sl 28':
+        case 'Sl - 28':
           varieties[i] = 'SL-28';
           break;
         case 'Sl34':
         case 'Sl-34':
         case 'Sl 34':
+        case 'Sl - 34':
           varieties[i] = 'SL-34';
           break;
         case 'Sl38':
+        case 'Sl - 38':
           varieties[i] = 'SL-38';
           break;
         case 'Jarc 74110':
         case 'Jarc Varietals':
         case 'Landrace Cultivar':
+        case 'Landrace Varietals':
         case 'Local Landrace':
         case 'Local Landraces':
         case 'Local Varieties':

@@ -104,7 +104,7 @@ export default class SubtextScraper implements IScraper {
     return item.variants[0].grams;
   };
 
-  getTitle = (title: string): string => {
-    return title.split(' | ')[0].trim();
+  getTitle = (item: IProductResponseData): string => {
+    return item.title.split(' | ')[0].trim();
   };
 }

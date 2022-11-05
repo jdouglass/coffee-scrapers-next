@@ -235,7 +235,8 @@ export default class EightOunceScraper implements IScraper {
     return 0;
   };
 
-  getTitle = (title: string, brand?: string): string => {
+  getTitle = (item: IProductResponseData, brand?: string): string => {
+    let title = item.title;
     if (title.includes('-')) {
       title = title.split('-')[1];
     } else {
