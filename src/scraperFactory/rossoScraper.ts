@@ -116,7 +116,8 @@ export default class RossoScraper implements IScraper {
     return item.variants[0].grams;
   };
 
-  getTitle = (title: string): string => {
+  getTitle = (item: IProductResponseData): string => {
+    const title = item.title;
     if (title.includes('—')) {
       return title.split('—')[0];
     }

@@ -154,7 +154,12 @@ export default class RevolverScraper implements IScraper {
     return item.variants[0].grams;
   };
 
-  getTitle = (title: string, brand?: string, country?: string): string => {
+  getTitle = (
+    item: IProductResponseData,
+    brand?: string,
+    country?: string
+  ): string => {
+    const title = item.title;
     try {
       let newTitle = title;
       if (title.includes(brand as string)) {

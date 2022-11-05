@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import RevolverScraper from '../scraperFactory/revolverScraper';
+import LibraryScraper from '../scraperFactory/libraryScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IProductResponse } from '../interfaces/productResponse';
@@ -9,25 +9,24 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 
-export class RevolverClient {
-  private static vendor: string = 'Revolver Coffee';
-  private static baseUrl: string = BaseUrl.Revolver;
-  private static revolverProducts: Array<IProduct> = new Array<IProduct>();
-  private static factory: RevolverScraper = new RevolverScraper();
+export class LibraryClient {
+  private static vendor: string = 'Library Specialty Coffee';
+  private static baseUrl: string = BaseUrl.LibrarySpecialtyCoffee;
+  private static libraryProducts: Array<IProduct> = new Array<IProduct>();
+  private static factory: LibraryScraper = new LibraryScraper();
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const revolverResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://revolvercoffee.ca/collections/coffee/products.json?limit=250'
+    const libraryResponse: AxiosResponse<IProductResponse> = await axios.get(
+      'https://www.thelibraryspecialtycoffee.com/collections/frontpage/products.json?limit=250'
     );
-    const revolverData: IProductResponseData[] = revolverResponse.data.products;
-    for (const item of revolverData) {
+    const libraryData: IProductResponseData[] = libraryResponse.data.products;
+    for (const item of libraryData) {
       if (
         !unwantedTitles.some((unwantedString) =>
           item.title.includes(unwantedString)
         )
       ) {
-        const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
         const dateAdded = this.factory.getDateAdded(item.published_at);
@@ -38,11 +37,11 @@ export class RevolverClient {
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
-        const title = this.factory.getTitle(item, brand, country);
+        const title = this.factory.getTitle(item);
         const variety = this.factory.getVariety(item);
         const weight = this.factory.getWeight(item);
         const product: IProduct = {
-          brand,
+          brand: this.vendor,
           country,
           continent,
           dateAdded,
@@ -58,18 +57,18 @@ export class RevolverClient {
           weight,
           vendor: this.vendor,
         };
-        this.revolverProducts.push(product);
+        this.libraryProducts.push(product);
       }
     }
     if (this.config.useDatabase) {
-      await ProductsDatabase.updateDb(this.revolverProducts);
+      await ProductsDatabase.updateDb(this.libraryProducts);
     }
   }
 }
 
 const main = async (): Promise<void> => {
   try {
-    await RevolverClient.run();
+    await LibraryClient.run();
   } catch (error) {
     console.error(error);
   }

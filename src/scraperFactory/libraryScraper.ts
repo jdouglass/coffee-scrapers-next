@@ -6,15 +6,7 @@ import { IScraper } from '../interfaces/scraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
-export default class MonogramScraper implements IScraper {
-  getBrand = (item: IProductResponseData): string => {
-    if (item.title.includes('Atlas')) {
-      const titleOptions: string[] = item.title.split('-');
-      return titleOptions[1].trim();
-    }
-    return 'Monogram';
-  };
-
+export default class LibraryScraper implements IScraper {
   getContinent = (country: string): string => {
     const continent: string | undefined = worldData.get(country);
     if (!continent) {
@@ -24,26 +16,14 @@ export default class MonogramScraper implements IScraper {
   };
 
   getCountry = (item: IProductResponseData): string => {
-    let country: string;
-    if (item.body_html.includes('ORIGIN:')) {
-      country = item.body_html.split('ORIGIN:')[1];
-    } else if (item.body_html.includes('Origin:')) {
-      country = item.body_html.split('Origin:')[1];
-    } else {
-      return 'Unknown';
+    let country = item.title
+      .split(' - ')
+      [item.title.split(' - ').length - 1].trim();
+    country = Helper.firstLetterUppercase([country]).toString();
+    if (worldData.has(country)) {
+      return country;
     }
-    country = country
-      .replace('<meta charset="utf-8">', '')
-      .split('<')[0]
-      .trim();
-    if (country.includes(', ')) {
-      const countryOptions = country.split(', ');
-      country = countryOptions[countryOptions.length - 1].trim();
-    }
-    if (country === 'TIMOR-LESTE') {
-      return 'Timor-Leste';
-    }
-    return Helper.firstLetterUppercase([country]).join(' ');
+    return 'Unknown';
   };
 
   getDateAdded = (date: string): string => {
@@ -74,18 +54,12 @@ export default class MonogramScraper implements IScraper {
   };
 
   getProcess = (item: IProductResponseData): string => {
-    let process: string;
-    if (item.body_html.includes('PROCESS:')) {
-      process = item.body_html.split('PROCESS:')[1];
-    } else if (item.body_html.includes('Process:')) {
-      process = item.body_html.split('Process:')[1];
-    } else {
-      process = item.body_html.split('Processing:')[1];
+    if (item.body_html.includes('Processing:')) {
+      let process: string = item.body_html.split('Processing:')[1];
+      process = process.split('<')[0].trim();
+      return Helper.convertToUniversalProcess(process);
     }
-    process = process.replace('<span>', '');
-    const processOptions: string[] = process.split('<');
-    process = processOptions[0].trim();
-    return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+    return 'Unknown';
   };
 
   getProcessCategory = (process: string): string => {
@@ -101,9 +75,20 @@ export default class MonogramScraper implements IScraper {
   };
 
   getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
+    for (const variant of item.variants) {
+      if (variant.available) {
+        return (
+          baseUrl +
+          '/collections/frontpage/products/' +
+          item.handle +
+          '?variant=' +
+          variant.id.toString()
+        );
+      }
+    }
     return (
       baseUrl +
-      '/products/' +
+      '/collections/frontpage/products/' +
       item.handle +
       '?variant=' +
       item.variants[0].id.toString()
@@ -122,23 +107,16 @@ export default class MonogramScraper implements IScraper {
 
   getVariety = (item: IProductResponseData): string[] => {
     let variety: string;
-    const body: string = item.body_html;
-    if (body.includes('VARIETY:')) {
-      variety = body.split('VARIETY:')[1];
-    } else if (body.includes('Variety:')) {
+    const body = item.body_html;
+    if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
+      variety = variety.split('<')[0].trim();
     } else {
       return ['Unknown'];
     }
-    variety = variety.replace('<meta charset="utf-8">', '');
-    variety = variety.replace('<span data-mce-fragment="1">', '');
-    variety = variety.replace('</span>', '');
-    let varietyOptions: string[] = variety.split('<');
-    variety = varietyOptions[0].trim();
-    if (variety.includes(', ')) {
-      varietyOptions = variety
-        .split(', ')
-        .map((variety: string) => variety.trim());
+    let varietyOptions: string[];
+    if (variety.includes(',')) {
+      varietyOptions = variety.split(', ');
     } else {
       varietyOptions = [variety];
     }
@@ -158,17 +136,11 @@ export default class MonogramScraper implements IScraper {
   };
 
   getTitle = (item: IProductResponseData): string => {
-    let titleOptions: string[];
-    if (item.title.includes('Atlas')) {
-      titleOptions = item.title.split('-');
-      return titleOptions[titleOptions.length - 1].trim();
+    if (item.title.includes(' - ') && this.getCountry(item) !== 'Unknown') {
+      const titleElements: string[] = item.title.split(' - ');
+      titleElements.pop();
+      return titleElements.join(' - ');
     }
-
-    const titleResult: string = item.title.split('-')[0];
-    titleOptions = titleResult.split('*');
-    if (titleOptions.length > 1) {
-      return titleResult[titleResult.length - 1].trim();
-    }
-    return titleOptions.toString().trim();
+    return item.title;
   };
 }
