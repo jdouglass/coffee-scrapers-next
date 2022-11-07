@@ -53,4 +53,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'pallet',
+    script: 'dist/src/clients/palletClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
