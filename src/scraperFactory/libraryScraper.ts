@@ -1,12 +1,12 @@
 import { ProcessCategory } from '../enums/processCategory';
-import { IImage } from '../interfaces/image';
-import { IProductResponseData } from '../interfaces/productResponseData';
-import { IVariant } from '../interfaces/variant';
-import { IScraper } from '../interfaces/scraper';
+import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
+import { IShopifyProductResponseData } from '../interfaces/shopifyResponseData';
+import { IShopifyVariant } from '../interfaces/shopifyVariant';
+import { IShopifyScraper } from '../interfaces/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
-export default class LibraryScraper implements IScraper {
+export default class LibraryScraper implements IShopifyScraper {
   getContinent = (country: string): string => {
     const continent: string | undefined = worldData.get(country);
     if (!continent) {
@@ -15,7 +15,7 @@ export default class LibraryScraper implements IScraper {
     return continent;
   };
 
-  getCountry = (item: IProductResponseData): string => {
+  getCountry = (item: IShopifyProductResponseData): string => {
     let country = item.title
       .split(' - ')
       [item.title.split(' - ').length - 1].trim();
@@ -34,14 +34,14 @@ export default class LibraryScraper implements IScraper {
     return handle;
   };
 
-  getImageUrl = (images: IImage[]) => {
+  getImageUrl = (images: IShopifyImage[]) => {
     if (images.length !== 0) {
       return images[0].src;
     }
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = (variants: IVariant[]): number => {
+  getPrice = (variants: IShopifyVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
         return Number(Number(variant.price).toFixed(2));
@@ -53,7 +53,7 @@ export default class LibraryScraper implements IScraper {
     return Number(Number(variants[0].price).toFixed(2));
   };
 
-  getProcess = (item: IProductResponseData): string => {
+  getProcess = (item: IShopifyProductResponseData): string => {
     if (item.body_html.includes('Processing:')) {
       let process: string = item.body_html.split('Processing:')[1];
       process = process.split('<')[0].trim();
@@ -74,7 +74,10 @@ export default class LibraryScraper implements IScraper {
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
+  getProductUrl = (
+    item: IShopifyProductResponseData,
+    baseUrl: string
+  ): string => {
     for (const variant of item.variants) {
       if (variant.available) {
         return (
@@ -95,7 +98,7 @@ export default class LibraryScraper implements IScraper {
     );
   };
 
-  getSoldOut = (variants: IVariant[]): boolean => {
+  getSoldOut = (variants: IShopifyVariant[]): boolean => {
     let isAvailable = true;
     for (const variant of variants) {
       if (variant.available) {
@@ -105,7 +108,7 @@ export default class LibraryScraper implements IScraper {
     return isAvailable;
   };
 
-  getVariety = (item: IProductResponseData): string[] => {
+  getVariety = (item: IShopifyProductResponseData): string[] => {
     let variety: string;
     const body = item.body_html;
     if (body.includes('Variety:')) {
@@ -126,7 +129,7 @@ export default class LibraryScraper implements IScraper {
     return varietyOptions;
   };
 
-  getWeight = (item: IProductResponseData): number => {
+  getWeight = (item: IShopifyProductResponseData): number => {
     for (const variant of item.variants) {
       if (variant.available) {
         return variant.grams;
@@ -135,7 +138,7 @@ export default class LibraryScraper implements IScraper {
     return item.variants[0].grams;
   };
 
-  getTitle = (item: IProductResponseData): string => {
+  getTitle = (item: IShopifyProductResponseData): string => {
     if (item.title.includes(' - ') && this.getCountry(item) !== 'Unknown') {
       const titleElements: string[] = item.title.split(' - ');
       titleElements.pop();

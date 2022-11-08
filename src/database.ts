@@ -1,5 +1,4 @@
 import { PrismaClient, products } from '@prisma/client';
-import { BaseUrl } from './enums/baseUrls';
 import Helper from './helper/helper';
 import { IProduct } from './interfaces/product';
 

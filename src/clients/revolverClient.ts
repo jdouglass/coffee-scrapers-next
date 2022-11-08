@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import RevolverScraper from '../scraperFactory/revolverScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -17,10 +17,12 @@ export class RevolverClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const revolverResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://revolvercoffee.ca/collections/coffee/products.json?limit=250'
-    );
-    const revolverData: IProductResponseData[] = revolverResponse.data.products;
+    const revolverResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://revolvercoffee.ca/collections/coffee/products.json?limit=250'
+      );
+    const revolverData: IShopifyProductResponseData[] =
+      revolverResponse.data.products;
     for (const item of revolverData) {
       if (
         !unwantedTitles.some((unwantedString) =>

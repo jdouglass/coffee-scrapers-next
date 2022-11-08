@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import MonogramScraper from '../scraperFactory/monogramScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -17,10 +17,12 @@ export class MonogramClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const monogramResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://monogramcoffee.com/collections/whole-bean-coffee/products.json?limit=250'
-    );
-    const monogramData: IProductResponseData[] = monogramResponse.data.products;
+    const monogramResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://monogramcoffee.com/collections/whole-bean-coffee/products.json?limit=250'
+      );
+    const monogramData: IShopifyProductResponseData[] =
+      monogramResponse.data.products;
     for (const item of monogramData) {
       if (
         !unwantedTitles.some((unwantedString) =>

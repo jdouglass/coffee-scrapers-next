@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import SubtextScraper from '../scraperFactory/subtextScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -18,11 +18,13 @@ export class SubtextClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const subtextResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://www.subtext.coffee/collections/filter-coffee-beans/products.json?limit=250'
-    );
+    const subtextResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://www.subtext.coffee/collections/filter-coffee-beans/products.json?limit=250'
+      );
 
-    const subtextData: IProductResponseData[] = subtextResponse.data.products;
+    const subtextData: IShopifyProductResponseData[] =
+      subtextResponse.data.products;
     for (let i = 0; i < subtextData.length; i++) {
       const item = subtextData[i];
       const productUrl =

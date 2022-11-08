@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import LibraryScraper from '../scraperFactory/libraryScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -17,10 +17,12 @@ export class LibraryClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const libraryResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://www.thelibraryspecialtycoffee.com/collections/frontpage/products.json?limit=250'
-    );
-    const libraryData: IProductResponseData[] = libraryResponse.data.products;
+    const libraryResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://www.thelibraryspecialtycoffee.com/collections/frontpage/products.json?limit=250'
+      );
+    const libraryData: IShopifyProductResponseData[] =
+      libraryResponse.data.products;
     for (const item of libraryData) {
       if (
         !unwantedTitles.some((unwantedString) =>

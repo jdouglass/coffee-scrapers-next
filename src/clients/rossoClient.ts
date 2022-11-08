@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import RossoScraper from '../scraperFactory/rossoScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -17,10 +17,12 @@ export class RossoClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const rossoResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://www.rossocoffeeroasters.com/collections/coffee/products.json?limit=250'
-    );
-    const rossoData: IProductResponseData[] = rossoResponse.data.products;
+    const rossoResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://www.rossocoffeeroasters.com/collections/coffee/products.json?limit=250'
+      );
+    const rossoData: IShopifyProductResponseData[] =
+      rossoResponse.data.products;
     for (const item of rossoData) {
       if (
         !unwantedTitles.some((unwantedString) =>

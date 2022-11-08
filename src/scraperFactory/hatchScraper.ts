@@ -2,10 +2,10 @@ import { ProcessCategory } from '../enums/processCategory';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { Page } from 'puppeteer';
-import { IPuppeteerScraper } from '../interfaces/puppeteerScraper';
-import { IHatchImage } from '../interfaces/hatchImage';
+import { ICrateJoyScraper } from '../interfaces/crateJoy/crateJoyScraper';
+import { ICrateJoyImage } from '../interfaces/crateJoy/crateJoyImage';
 
-export default class HatchScraper implements IPuppeteerScraper {
+export default class HatchScraper implements ICrateJoyScraper {
   getContinent = (country: string): string => {
     return worldData.get(country) ?? 'Unknown';
   };
@@ -37,7 +37,7 @@ export default class HatchScraper implements IPuppeteerScraper {
     return slug;
   };
 
-  getImageUrl = (images: IHatchImage[]): string => {
+  getImageUrl = (images: ICrateJoyImage[]): string => {
     if (images.length !== 0) {
       return 'https:' + images[0].url;
     }

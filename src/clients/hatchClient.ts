@@ -7,7 +7,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer';
 import Helper from '../helper/helper';
-import { IHatchProductResponseData } from '../interfaces/hatchProductResponseData';
+import { ICrateJoyProductResponseData } from '../interfaces/crateJoy/crateJoyProductResponseData';
 import { BaseUrl } from '../enums/baseUrls';
 
 export class HatchClient {
@@ -46,7 +46,7 @@ export class HatchClient {
             productCategory.includes(unwantedString)
         )
       ) {
-        const hatchResponse: AxiosResponse<IHatchProductResponseData> =
+        const hatchResponse: AxiosResponse<ICrateJoyProductResponseData> =
           await axios.get(HatchClient.baseUrl + '/v1/store/api/products/' + id);
 
         const brand = this.vendor;

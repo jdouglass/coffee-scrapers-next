@@ -1,14 +1,14 @@
 import { ProcessCategory } from '../enums/processCategory';
-import { IImage } from '../interfaces/image';
-import { IProductResponseData } from '../interfaces/productResponseData';
-import { IVariant } from '../interfaces/variant';
-import { IScraper } from '../interfaces/scraper';
+import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
+import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
 
-export default class EightOunceScraper implements IScraper {
-  getBrand = (item: IProductResponseData): string => {
+export default class EightOunceScraper implements IShopifyScraper {
+  getBrand = (item: IShopifyProductResponseData): string => {
     for (const brand of brands) {
       if (item.title.includes(brand)) {
         return brand;
@@ -25,7 +25,7 @@ export default class EightOunceScraper implements IScraper {
     return continent;
   };
 
-  getCountry = (item: IProductResponseData): string => {
+  getCountry = (item: IShopifyProductResponseData): string => {
     const defaultCountry = 'Unknown';
     for (const [country, continent] of worldData) {
       if (item.title.includes(country)) {
@@ -57,14 +57,14 @@ export default class EightOunceScraper implements IScraper {
     return handle;
   };
 
-  getImageUrl = (images: IImage[]) => {
+  getImageUrl = (images: IShopifyImage[]) => {
     if (images.length !== 0) {
       return images[0].src;
     }
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = (variants: IVariant[]): number => {
+  getPrice = (variants: IShopifyVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
         return Number(Number(variant.price).toFixed(2));
@@ -76,7 +76,7 @@ export default class EightOunceScraper implements IScraper {
     return Number(Number(variants[0].price).toFixed(2));
   };
 
-  getProcess = (item: IProductResponseData): string => {
+  getProcess = (item: IShopifyProductResponseData): string => {
     try {
       const defaultProcess = 'Unknown';
       const maxProcessLength = 75;
@@ -132,11 +132,14 @@ export default class EightOunceScraper implements IScraper {
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
+  getProductUrl = (
+    item: IShopifyProductResponseData,
+    baseUrl: string
+  ): string => {
     return baseUrl + '/products/' + item.handle;
   };
 
-  getSoldOut = (variants: IVariant[]): boolean => {
+  getSoldOut = (variants: IShopifyVariant[]): boolean => {
     let isAvailable = true;
     for (const variant of variants) {
       if (variant.available) {
@@ -146,7 +149,7 @@ export default class EightOunceScraper implements IScraper {
     return isAvailable;
   };
 
-  getVariety = (item: IProductResponseData): string[] => {
+  getVariety = (item: IShopifyProductResponseData): string[] => {
     try {
       let variety: string;
       const body: string = item.body_html;
@@ -196,7 +199,7 @@ export default class EightOunceScraper implements IScraper {
     }
   };
 
-  getWeight = (item: IProductResponseData): number => {
+  getWeight = (item: IShopifyProductResponseData): number => {
     let bodyWeight: string = '';
     let weight = 0;
     if (
@@ -235,7 +238,7 @@ export default class EightOunceScraper implements IScraper {
     return 0;
   };
 
-  getTitle = (item: IProductResponseData, brand?: string): string => {
+  getTitle = (item: IShopifyProductResponseData, brand?: string): string => {
     let title = item.title;
     if (title.includes('-')) {
       title = title.split('-')[1];
