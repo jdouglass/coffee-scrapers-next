@@ -193,15 +193,16 @@ export default class Helper {
     return title;
   };
 
-  public static getHatchProductUrls = async (
-    initialProductPageUrl: string
+  public static getProductUrls = async (
+    initialProductPageUrl: string,
+    partialProductUrl: string
   ): Promise<string[]> => {
     const browser = await puppeteer.launch(this.puppeteerConfig);
     const page = await browser.newPage();
     await page.goto(initialProductPageUrl);
     const initialProductPageUrls = await this.getAllHrefs(page);
-    const firstPageProductUrls = initialProductPageUrls.filter(
-      this.isHatchProductUrl
+    const firstPageProductUrls = initialProductPageUrls.filter((url) =>
+      url.includes(partialProductUrl)
     );
     const productUrls = new Set(firstPageProductUrls);
     const productPageUrls = initialProductPageUrls.filter((url) => {
@@ -210,17 +211,15 @@ export default class Helper {
     for (const url of productPageUrls) {
       await page.goto(url);
       const pageUrls = await this.getAllHrefs(page);
-      const productPageUrls = pageUrls.filter(this.isHatchProductUrl);
+      const productPageUrls = pageUrls.filter((url) =>
+        url.includes(partialProductUrl)
+      );
       for (const productUrl of productPageUrls) {
         productUrls.add(productUrl);
       }
     }
     await browser.close();
     return Array.from(productUrls);
-  };
-
-  private static isHatchProductUrl = (url: string): boolean => {
-    return url.includes('/shop/product/');
   };
 
   private static async getAllHrefs(page: puppeteer.Page): Promise<string[]> {

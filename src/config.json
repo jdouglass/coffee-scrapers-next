@@ -2,6 +2,6 @@
   "chromePath": "/usr/bin/chromium-browser",
   "cronSchedule": "0 * * * *",
   "isHeadless": true,
-  "useDatabase": true,
+  "useDatabase": false,
   "devMode": true
 }

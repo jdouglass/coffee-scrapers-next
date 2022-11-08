@@ -24,8 +24,9 @@ export class HatchClient {
       };
 
   public static async run(): Promise<void> {
-    const productUrls = await Helper.getHatchProductUrls(
-      this.baseUrl + '/shop/all'
+    const productUrls = await Helper.getProductUrls(
+      this.baseUrl + '/shop/all',
+      '/shop/product/'
     );
 
     for (const url of productUrls) {
