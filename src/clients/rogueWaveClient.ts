@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import RogueWaveScraper from '../scraperFactory/rogueWaveScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -17,10 +17,11 @@ export class RogueWaveClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const rogueWaveResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://www.roguewavecoffee.ca/collections/coffee/products.json?limit=250'
-    );
-    const rogueWaveData: IProductResponseData[] =
+    const rogueWaveResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://www.roguewavecoffee.ca/collections/coffee/products.json?limit=250'
+      );
+    const rogueWaveData: IShopifyProductResponseData[] =
       rogueWaveResponse.data.products;
     for (const item of rogueWaveData) {
       if (

@@ -1,12 +1,12 @@
 import { ProcessCategory } from '../enums/processCategory';
-import { IImage } from '../interfaces/image';
-import { IProductResponseData } from '../interfaces/productResponseData';
-import { IVariant } from '../interfaces/variant';
-import { IScraper } from '../interfaces/scraper';
+import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
+import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
-export default class RossoScraper implements IScraper {
+export default class RossoScraper implements IShopifyScraper {
   getContinent = (country: string): string => {
     const continent: string | undefined = worldData.get(country);
     if (!continent) {
@@ -15,7 +15,7 @@ export default class RossoScraper implements IScraper {
     return continent;
   };
 
-  getCountry = (item: IProductResponseData): string => {
+  getCountry = (item: IShopifyProductResponseData): string => {
     let reportBody: string = item.body_html.split('Geography')[1];
     reportBody = reportBody.replace(/<.*>\n.*\n<.*">/, '');
     reportBody = reportBody.split('<')[0];
@@ -31,14 +31,14 @@ export default class RossoScraper implements IScraper {
     return handle;
   };
 
-  getImageUrl = (images: IImage[]) => {
+  getImageUrl = (images: IShopifyImage[]) => {
     if (images.length !== 0) {
       return images[0].src;
     }
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = (variants: IVariant[]): number => {
+  getPrice = (variants: IShopifyVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
         return Number(Number(variant.price).toFixed(2));
@@ -50,7 +50,7 @@ export default class RossoScraper implements IScraper {
     return Number(Number(variants[0].price).toFixed(2));
   };
 
-  getProcess = (item: IProductResponseData): string => {
+  getProcess = (item: IShopifyProductResponseData): string => {
     let process: string = item.body_html.split('Process')[1];
     process = process.replace(/<.*>\n.*<.*">/, '');
     process = process.split('<')[0];
@@ -69,11 +69,14 @@ export default class RossoScraper implements IScraper {
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
+  getProductUrl = (
+    item: IShopifyProductResponseData,
+    baseUrl: string
+  ): string => {
     return baseUrl + '/collections/coffee/products/' + item.handle;
   };
 
-  getSoldOut = (variants: IVariant[]): boolean => {
+  getSoldOut = (variants: IShopifyVariant[]): boolean => {
     let isAvailable = true;
     for (const variant of variants) {
       if (variant.available) {
@@ -83,7 +86,7 @@ export default class RossoScraper implements IScraper {
     return isAvailable;
   };
 
-  getVariety = (item: IProductResponseData): string[] => {
+  getVariety = (item: IShopifyProductResponseData): string[] => {
     let variety: string;
     const body = item.body_html;
     if (body.includes('Varietal')) {
@@ -107,7 +110,7 @@ export default class RossoScraper implements IScraper {
     return varietyOptions;
   };
 
-  getWeight = (item: IProductResponseData): number => {
+  getWeight = (item: IShopifyProductResponseData): number => {
     for (const variant of item.variants) {
       if (variant.available) {
         return variant.grams;
@@ -116,7 +119,7 @@ export default class RossoScraper implements IScraper {
     return item.variants[0].grams;
   };
 
-  getTitle = (item: IProductResponseData): string => {
+  getTitle = (item: IShopifyProductResponseData): string => {
     const title = item.title;
     if (title.includes('—')) {
       return title.split('—')[0];

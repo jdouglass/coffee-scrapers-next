@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import EightOunceScraper from '../scraperFactory/eightOunceScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import configData from '../config.json';
@@ -17,10 +17,11 @@ export class EightOunceClient {
   private static config: IConfig = configData;
 
   public static async run(): Promise<void> {
-    const eightOunceResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://eightouncecoffee.ca/collections/newest-coffee/products.json?limit=250'
-    );
-    const eightOunceData: IProductResponseData[] =
+    const eightOunceResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://eightouncecoffee.ca/collections/newest-coffee/products.json?limit=250'
+      );
+    const eightOunceData: IShopifyProductResponseData[] =
       eightOunceResponse.data.products;
     for (const item of eightOunceData) {
       if (

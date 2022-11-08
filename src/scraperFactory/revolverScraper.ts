@@ -1,14 +1,14 @@
 import { ProcessCategory } from '../enums/processCategory';
-import { IImage } from '../interfaces/image';
-import { IProductResponseData } from '../interfaces/productResponseData';
-import { IVariant } from '../interfaces/variant';
-import { IScraper } from '../interfaces/scraper';
+import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
+import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
 
-export default class RevolverScraper implements IScraper {
-  getBrand = (item: IProductResponseData): string => {
+export default class RevolverScraper implements IShopifyScraper {
+  getBrand = (item: IShopifyProductResponseData): string => {
     for (const brand of brands) {
       if (item.title.includes(brand)) {
         return brand;
@@ -25,7 +25,7 @@ export default class RevolverScraper implements IScraper {
     return continent;
   };
 
-  getCountry = (item: IProductResponseData): string => {
+  getCountry = (item: IShopifyProductResponseData): string => {
     let reportBody: string = item.body_html.split('From')[0];
     reportBody = reportBody.toLowerCase();
     const country: string = 'Unknown';
@@ -46,14 +46,14 @@ export default class RevolverScraper implements IScraper {
     return handle;
   };
 
-  getImageUrl = (images: IImage[]) => {
+  getImageUrl = (images: IShopifyImage[]) => {
     if (images.length !== 0) {
       return images[0].src;
     }
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = (variants: IVariant[]): number => {
+  getPrice = (variants: IShopifyVariant[]): number => {
     const price: any = variants.map((variant) => {
       if (variant.available) {
         return Number(Number(variant.price).toFixed(2));
@@ -65,7 +65,7 @@ export default class RevolverScraper implements IScraper {
     return Number(Number(variants[0].price).toFixed(2));
   };
 
-  getProcess = (item: IProductResponseData): string => {
+  getProcess = (item: IShopifyProductResponseData): string => {
     let process = 'Unknown';
     if (item.body_html.includes('Process:')) {
       process = item.body_html.split('Process:')[1];
@@ -88,11 +88,14 @@ export default class RevolverScraper implements IScraper {
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getProductUrl = (item: IProductResponseData, baseUrl: string): string => {
+  getProductUrl = (
+    item: IShopifyProductResponseData,
+    baseUrl: string
+  ): string => {
     return baseUrl + '/collections/coffee/products/' + item.handle;
   };
 
-  getSoldOut = (variants: IVariant[]): boolean => {
+  getSoldOut = (variants: IShopifyVariant[]): boolean => {
     let isAvailable = true;
     for (const variant of variants) {
       if (variant.available) {
@@ -102,7 +105,7 @@ export default class RevolverScraper implements IScraper {
     return isAvailable;
   };
 
-  getVariety = (item: IProductResponseData): string[] => {
+  getVariety = (item: IShopifyProductResponseData): string[] => {
     try {
       if (item.title.includes('Instrumental')) {
         return ['Caturra', 'Castillo', 'Colombia'];
@@ -145,7 +148,7 @@ export default class RevolverScraper implements IScraper {
     }
   };
 
-  getWeight = (item: IProductResponseData): number => {
+  getWeight = (item: IShopifyProductResponseData): number => {
     for (const variant of item.variants) {
       if (variant.available) {
         return variant.grams;
@@ -155,7 +158,7 @@ export default class RevolverScraper implements IScraper {
   };
 
   getTitle = (
-    item: IProductResponseData,
+    item: IShopifyProductResponseData,
     brand?: string,
     country?: string
   ): string => {

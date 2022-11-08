@@ -1,4 +1,4 @@
-export interface IVariant {
+export interface IShopifyVariant {
   available: boolean;
   grams: number;
   id: number;

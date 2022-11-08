@@ -2,8 +2,8 @@ import axios, { AxiosResponse } from 'axios';
 import PalletScraper from '../scraperFactory/palletScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IProductResponse } from '../interfaces/productResponse';
-import { IProductResponseData } from '../interfaces/productResponseData';
+import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -17,10 +17,12 @@ export class PalletClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const palletResponse: AxiosResponse<IProductResponse> = await axios.get(
-      'https://palletcoffeeroasters.com/collections/coffee/products.json?limit=250'
-    );
-    const palletData: IProductResponseData[] = palletResponse.data.products;
+    const palletResponse: AxiosResponse<IShopifyProductResponse> =
+      await axios.get(
+        'https://palletcoffeeroasters.com/collections/coffee/products.json?limit=250'
+      );
+    const palletData: IShopifyProductResponseData[] =
+      palletResponse.data.products;
     for (const item of palletData) {
       if (
         !unwantedTitles.some((unwantedString) =>
