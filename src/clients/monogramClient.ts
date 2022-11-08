@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import MonogramScraper from '../scraperFactory/monogramScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
