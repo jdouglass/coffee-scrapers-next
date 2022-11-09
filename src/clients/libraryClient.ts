@@ -8,9 +8,10 @@ import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class LibraryClient {
-  private static vendor: string = 'Library Specialty Coffee';
+  private static vendor: string = Vendor.Library;
   private static baseUrl: string = BaseUrl.LibrarySpecialtyCoffee;
   private static libraryProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: LibraryScraper = new LibraryScraper();

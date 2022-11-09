@@ -8,9 +8,10 @@ import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class PiratesClient {
-  private static vendor: string = 'Pirates of Coffee';
+  private static vendor: string = Vendor.Pirates;
   private static baseUrl: string = BaseUrl.PiratesOfCoffee;
   private static piratesProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: PiratesScraper = new PiratesScraper();

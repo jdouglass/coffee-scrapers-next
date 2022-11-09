@@ -8,9 +8,10 @@ import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class RossoClient {
-  private static vendor: string = 'Rosso Coffee';
+  private static vendor: string = Vendor.Rosso;
   private static baseUrl: string = BaseUrl.Rosso;
   private static rossoProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: RossoScraper = new RossoScraper();

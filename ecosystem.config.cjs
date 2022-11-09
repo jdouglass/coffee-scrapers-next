@@ -59,4 +59,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'luna',
+    script: 'dist/src/clients/lunaClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];

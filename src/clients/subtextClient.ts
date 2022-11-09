@@ -9,9 +9,10 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class SubtextClient {
-  private static vendor: string = 'Subtext Coffee Roasters';
+  private static vendor: string = Vendor.Subtext;
   private static baseUrl: string = BaseUrl.Subtext;
   private static subtextProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: SubtextScraper = new SubtextScraper();
