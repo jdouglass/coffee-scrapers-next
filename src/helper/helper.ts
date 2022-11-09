@@ -13,6 +13,7 @@ import * as dotenv from 'dotenv';
 import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer';
 import config from '../config.json';
 import sharp from 'sharp';
+import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData';
 
 dotenv.config();
 
@@ -76,6 +77,7 @@ export default class Helper {
         case 'Jarc Varietals':
         case 'Landrace Cultivar':
         case 'Landrace Varietals':
+        case 'local landrace':
         case 'Local Landrace':
         case 'Local Landraces':
         case 'Local Varieties':
@@ -96,6 +98,9 @@ export default class Helper {
           break;
         case 'Geisha':
           varieties[i] = 'Gesha';
+          break;
+        case 'Ihcafe90':
+          varieties[i] = 'IHCafe90';
           break;
       }
     }
@@ -224,5 +229,17 @@ export default class Helper {
 
   private static async getAllHrefs(page: puppeteer.Page): Promise<string[]> {
     return await page.$$eval('a', (as) => as.map((a) => a.href));
+  }
+
+  public static isActiveProduct(
+    item: IWordpressProductResponseData,
+    productUrls: string[]
+  ): boolean {
+    for (const url of productUrls) {
+      if (item.guid.rendered === url) {
+        return true;
+      }
+    }
+    return false;
   }
 }

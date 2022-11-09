@@ -1,4 +1,5 @@
 import { PrismaClient, products } from '@prisma/client';
+import { Vendor } from './enums/vendors';
 import Helper from './helper/helper';
 import { IProduct } from './interfaces/product';
 
@@ -24,7 +25,7 @@ export class ProductsDatabase {
   }
 
   private static async addOrUpdateProduct(product: IProduct): Promise<void> {
-    if (product.vendor !== 'Hatch Coffee Roasters') {
+    if (product.vendor !== Vendor.Hatch && product.vendor !== Vendor.Luna) {
       try {
         await this.prisma.products.upsert({
           where: {

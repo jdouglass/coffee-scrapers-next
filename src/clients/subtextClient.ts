@@ -2,16 +2,17 @@ import axios, { AxiosResponse } from 'axios';
 import SubtextScraper from '../scraperFactory/subtextScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class SubtextClient {
-  private static vendor: string = 'Subtext Coffee Roasters';
+  private static vendor: string = Vendor.Subtext;
   private static baseUrl: string = BaseUrl.Subtext;
   private static subtextProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: SubtextScraper = new SubtextScraper();

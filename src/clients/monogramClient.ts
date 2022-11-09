@@ -2,15 +2,16 @@ import axios, { AxiosResponse } from 'axios';
 import MonogramScraper from '../scraperFactory/monogramScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class MonogramClient {
-  private static vendor: string = 'Monogram';
+  private static vendor: string = Vendor.Monogram;
   private static baseUrl: string = BaseUrl.Monogram;
   private static monogramProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: MonogramScraper = new MonogramScraper();

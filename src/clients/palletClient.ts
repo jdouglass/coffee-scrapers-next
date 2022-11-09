@@ -2,15 +2,16 @@ import axios, { AxiosResponse } from 'axios';
 import PalletScraper from '../scraperFactory/palletScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class PalletClient {
-  private static vendor: string = 'Pallet Coffee Roasters';
+  private static vendor: string = Vendor.Pallet;
   private static baseUrl: string = BaseUrl.Pallet;
   private static palletProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: PalletScraper = new PalletScraper();

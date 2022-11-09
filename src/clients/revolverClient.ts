@@ -2,15 +2,16 @@ import axios, { AxiosResponse } from 'axios';
 import RevolverScraper from '../scraperFactory/revolverScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IShopifyProductResponse } from '../interfaces/shopify/productResponse';
+import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
 
 export class RevolverClient {
-  private static vendor: string = 'Revolver Coffee';
+  private static vendor: string = Vendor.Revolver;
   private static baseUrl: string = BaseUrl.Revolver;
   private static revolverProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: RevolverScraper = new RevolverScraper();
