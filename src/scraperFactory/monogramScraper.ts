@@ -9,9 +9,9 @@ import { Page } from 'puppeteer';
 
 export default class MonogramScraper implements IShopifyScraper {
   getBrand = (item: IShopifyProductResponseData): string => {
-    if (item.title.includes('Atlas')) {
+    if (item.handle.includes('atlas')) {
       const titleOptions: string[] = item.title.split('-');
-      return titleOptions[1].trim();
+      return titleOptions[0].trim();
     }
     return 'Monogram';
   };
@@ -206,7 +206,7 @@ export default class MonogramScraper implements IShopifyScraper {
 
   getTitle = (item: IShopifyProductResponseData): string => {
     let titleOptions: string[];
-    if (item.title.includes('Atlas')) {
+    if (item.handle.includes('atlas')) {
       titleOptions = item.title.split('-');
       return titleOptions[titleOptions.length - 1].trim();
     }
