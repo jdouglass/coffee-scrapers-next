@@ -65,4 +65,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'angryRoaster',
+    script: 'dist/src/clients/angryRoasterClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
