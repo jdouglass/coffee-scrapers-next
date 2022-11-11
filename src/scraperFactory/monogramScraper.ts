@@ -5,6 +5,7 @@ import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
+import { Page } from 'puppeteer';
 
 export default class MonogramScraper implements IShopifyScraper {
   getBrand = (item: IShopifyProductResponseData): string => {
@@ -23,14 +24,28 @@ export default class MonogramScraper implements IShopifyScraper {
     return continent;
   };
 
-  getCountry = (item: IShopifyProductResponseData): string => {
+  getCountry = async (
+    item: IShopifyProductResponseData,
+    page?: Page
+  ): Promise<string> => {
     let country: string;
     if (item.body_html.includes('ORIGIN:')) {
       country = item.body_html.split('ORIGIN:')[1];
     } else if (item.body_html.includes('Origin:')) {
       country = item.body_html.split('Origin:')[1];
     } else {
-      return 'Unknown';
+      const productDescriptionElement = await page?.$(
+        '.metafield-multi_line_text_field'
+      );
+      const descriptionContent =
+        (await productDescriptionElement?.evaluate((el) => el.textContent)) ??
+        '';
+      if (descriptionContent.includes('Origin:')) {
+        country = descriptionContent.split('Origin:')[1];
+        country = country.split('\n')[0].trim();
+      } else {
+        return 'Unknown';
+      }
     }
     country = country
       .replace('<meta charset="utf-8">', '')
@@ -73,7 +88,10 @@ export default class MonogramScraper implements IShopifyScraper {
     return Number(Number(variants[0].price).toFixed(2));
   };
 
-  getProcess = (item: IShopifyProductResponseData): string => {
+  getProcess = async (
+    item: IShopifyProductResponseData,
+    page?: Page
+  ): Promise<string> => {
     let process: string;
     if (item.body_html.includes('PROCESS:')) {
       process = item.body_html.split('PROCESS:')[1];
@@ -82,10 +100,19 @@ export default class MonogramScraper implements IShopifyScraper {
     } else {
       process = item.body_html.split('Processing:')[1];
     }
-    process = process.replace('<span>', '');
-    const processOptions: string[] = process.split('<');
-    process = processOptions[0].trim();
-    return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+    if (process) {
+      process = process.replace('<span>', '');
+      const processOptions: string[] = process.split('<');
+      process = processOptions[0].trim();
+      return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+    }
+    const productDescriptionElement = await page?.$(
+      '.metafield-multi_line_text_field'
+    );
+    const descriptionContent =
+      (await productDescriptionElement?.evaluate((el) => el.textContent)) ?? '';
+    process = descriptionContent.split('Processing:')[1];
+    return process.split('\n')[0].trim();
   };
 
   getProcessCategory = (process: string): string => {
@@ -123,24 +150,41 @@ export default class MonogramScraper implements IShopifyScraper {
     return isAvailable;
   };
 
-  getVariety = (item: IShopifyProductResponseData): string[] => {
-    let variety: string;
+  getVariety = async (
+    item: IShopifyProductResponseData,
+    page?: Page
+  ): Promise<string[]> => {
+    let variety: string = '';
     const body: string = item.body_html;
     if (body.includes('VARIETY:')) {
       variety = body.split('VARIETY:')[1];
     } else if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
     } else {
-      return ['Unknown'];
+      const productDescriptionElement = await page?.$(
+        '.metafield-multi_line_text_field'
+      );
+      const descriptionContent =
+        (await productDescriptionElement?.evaluate((el) => el.textContent)) ??
+        '';
+      if (descriptionContent.includes('Variety:')) {
+        variety = descriptionContent.split('Variety:')[1];
+        variety = variety.split('\n')[0].trim();
+      } else {
+        return ['Unknown'];
+      }
     }
     variety = variety.replace('<meta charset="utf-8">', '');
     variety = variety.replace('<span data-mce-fragment="1">', '');
     variety = variety.replace('</span>', '');
-    let varietyOptions: string[] = variety.split('<');
-    variety = varietyOptions[0].trim();
-    if (variety.includes(', ')) {
+    let varietyOptions = [''];
+    if (variety.includes('<')) {
+      varietyOptions = variety.split('<');
+      variety = varietyOptions[0].trim();
+    }
+    if (variety.includes(',')) {
       varietyOptions = variety
-        .split(', ')
+        .split(/,\s+/)
         .map((variety: string) => variety.trim());
     } else {
       varietyOptions = [variety];
