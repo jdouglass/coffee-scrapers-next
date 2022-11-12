@@ -18,10 +18,11 @@ export class HatchClient {
   private static factory: HatchScraper = new HatchScraper();
   private static config: IConfig = config;
   private static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
-    ? { headless: config.isHeadless }
+    ? { headless: config.isHeadless, timeout: config.timeout }
     : {
         headless: config.isHeadless,
         executablePath: config.chromePath,
+        timeout: config.timeout,
       };
 
   public static async run(): Promise<void> {
