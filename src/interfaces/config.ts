@@ -3,5 +3,6 @@ export interface IConfig {
   cronSchedule: string;
   devMode: boolean;
   isHeadless: boolean;
+  timeout: number;
   useDatabase: boolean;
 }
