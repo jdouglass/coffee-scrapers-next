@@ -4,5 +4,5 @@
   "devMode": true,
   "isHeadless": true,
   "timeout": 0,
-  "useDatabase": false
+  "useDatabase": true
 }
