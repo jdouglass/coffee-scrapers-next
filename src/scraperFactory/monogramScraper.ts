@@ -40,11 +40,16 @@ export default class MonogramScraper implements IShopifyScraper {
       const descriptionContent =
         (await productDescriptionElement?.evaluate((el) => el.textContent)) ??
         '';
-      if (descriptionContent.includes('Origin:')) {
-        country = descriptionContent.split('Origin:')[1];
-        country = country.split('\n')[0].trim();
+      if (descriptionContent.includes('Origin')) {
+        country = descriptionContent.split('Origin')[1];
+      } else if (descriptionContent.includes('ORIGIN')) {
+        country = descriptionContent.split('ORIGIN')[1];
       } else {
         return 'Unknown';
+      }
+      if (country !== '') {
+        country = country.split('\n')[0].trim();
+        country = country.split(':')[1].trim();
       }
     }
     country = country
@@ -111,8 +116,19 @@ export default class MonogramScraper implements IShopifyScraper {
     );
     const descriptionContent =
       (await productDescriptionElement?.evaluate((el) => el.textContent)) ?? '';
-    process = descriptionContent.split('Processing:')[1];
-    return process.split('\n')[0].trim();
+    if (descriptionContent.includes('Process')) {
+      process = descriptionContent.split('Process')[1];
+    } else if (descriptionContent.includes('PROCESS')) {
+      process = descriptionContent.split('PROCESS')[1];
+    }
+    if (process !== '') {
+      process = process.split('\n')[0].trim();
+      process = process.split(':')[1].trim();
+      process = Helper.firstLetterUppercase([process]).join();
+      process = Helper.convertToUniversalProcess(process);
+      return process;
+    }
+    return 'Unknown';
   };
 
   getProcessCategory = (process: string): string => {
@@ -167,9 +183,15 @@ export default class MonogramScraper implements IShopifyScraper {
       const descriptionContent =
         (await productDescriptionElement?.evaluate((el) => el.textContent)) ??
         '';
-      if (descriptionContent.includes('Variety:')) {
-        variety = descriptionContent.split('Variety:')[1];
+      if (descriptionContent.includes('Variety')) {
+        variety = descriptionContent.split('Variety')[1];
+      } else if (descriptionContent.includes('VARIETY')) {
+        variety = descriptionContent.split('VARIETY')[1];
+      }
+      if (variety !== '') {
         variety = variety.split('\n')[0].trim();
+        variety = variety.split(':')[1].trim();
+        variety = Helper.firstLetterUppercase([variety]).join();
       } else {
         return ['Unknown'];
       }
