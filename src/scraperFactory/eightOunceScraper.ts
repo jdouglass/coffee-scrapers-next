@@ -216,16 +216,18 @@ export default class EightOunceScraper implements IShopifyScraper {
     if (item.body_html.includes('Quantity')) {
       bodyWeight = item.body_html.split('Quantity')[1];
     }
-    bodyWeight = bodyWeight.replace('</strong>', '');
-    bodyWeight = bodyWeight.split(':')[1].trim();
-    if (bodyWeight.includes('g')) {
-      bodyWeight = bodyWeight.split('g')[0];
-    } else {
-      bodyWeight = bodyWeight.split('G')[0];
-    }
-    weight = Number(bodyWeight.trim());
-    if (weight !== 0 && weight !== NaN) {
-      return weight;
+    if (bodyWeight !== '') {
+      bodyWeight = bodyWeight.replace('</strong>', '');
+      bodyWeight = bodyWeight.split(':')[1].trim();
+      if (bodyWeight.includes('g')) {
+        bodyWeight = bodyWeight.split('g')[0];
+      } else {
+        bodyWeight = bodyWeight.split('G')[0];
+      }
+      weight = Number(bodyWeight.trim());
+      if (weight !== 0 && weight !== NaN) {
+        return weight;
+      }
     }
     for (const variant of item.variants) {
       if (variant.available) {
