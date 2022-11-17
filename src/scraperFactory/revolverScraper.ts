@@ -149,12 +149,19 @@ export default class RevolverScraper implements IShopifyScraper {
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
-    for (const variant of item.variants) {
-      if (variant.available) {
-        return variant.grams;
-      }
+    let body = item.body_html;
+    body = body.replaceAll(/<(br|span) data-mce-fragment=\"1\">/g, ' ');
+    const words = body.split(' ');
+    const weightOptions = words.filter((word) => word.match(/\d+g/g));
+    let weight = weightOptions[0];
+    weight = weight.split('g')[0].trim();
+    if (weight.includes('>')) {
+      weight = weight.split('>')[weight.split('>').length - 1].trim();
     }
-    return item.variants[0].grams;
+    if (!isNaN(parseInt(weight))) {
+      return parseInt(weight);
+    }
+    return 0;
   };
 
   getTitle = (
