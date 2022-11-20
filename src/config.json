@@ -3,6 +3,7 @@
   "cronSchedule": "0 * * * *",
   "devMode": true,
   "isHeadless": true,
+  "logProducts": false,
   "timeout": 0,
-  "useDatabase": true
+  "useDatabase": false
 }

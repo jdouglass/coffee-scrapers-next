@@ -218,6 +218,7 @@ export default class EightOunceScraper implements IShopifyScraper {
     }
     if (bodyWeight !== '') {
       bodyWeight = bodyWeight.replace('</strong>', '');
+      bodyWeight = bodyWeight.replace('Available in', '');
       bodyWeight = bodyWeight.split(':')[1].trim();
       if (bodyWeight.includes('g')) {
         bodyWeight = bodyWeight.split('g')[0];

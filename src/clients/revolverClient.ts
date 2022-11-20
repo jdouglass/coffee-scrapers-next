@@ -61,7 +61,7 @@ export class RevolverClient {
           weight,
           vendor: this.vendor,
         };
-        if (this.config.devMode) {
+        if (this.config.logProducts) {
           console.log(product);
         }
         this.revolverProducts.push(product);

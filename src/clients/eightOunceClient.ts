@@ -61,6 +61,9 @@ export class EightOunceClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.eightOunceProducts.push(product);
       }
     }
