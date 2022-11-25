@@ -5,5 +5,5 @@
   "isHeadless": true,
   "logProducts": false,
   "timeout": 0,
-  "useDatabase": false
+  "useDatabase": true
 }
