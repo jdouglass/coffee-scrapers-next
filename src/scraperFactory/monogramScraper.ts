@@ -97,15 +97,16 @@ export default class MonogramScraper implements IShopifyScraper {
     item: IShopifyProductResponseData,
     page?: Page
   ): Promise<string> => {
-    let process: string;
+    let process = '';
     if (item.body_html.includes('PROCESS:')) {
       process = item.body_html.split('PROCESS:')[1];
     } else if (item.body_html.includes('Process:')) {
       process = item.body_html.split('Process:')[1];
-    } else {
+    } else if (item.body_html.includes('Processing:')) {
       process = item.body_html.split('Processing:')[1];
     }
-    if (process) {
+
+    if (process !== '') {
       process = process.replace('<span>', '');
       const processOptions: string[] = process.split('<');
       process = processOptions[0].trim();
