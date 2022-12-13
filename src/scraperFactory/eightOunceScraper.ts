@@ -202,7 +202,30 @@ export default class EightOunceScraper implements IShopifyScraper {
   getWeight = (item: IShopifyProductResponseData): number => {
     let bodyWeight: string = '';
     let weight = 0;
-    if (
+    if (item.title.includes('kg') || item.title.includes('KG')) {
+      if (item.title.includes('(')) {
+        const titleWeight: string =
+          item.title.split('(')[item.title.split('(').length - 1];
+        if (titleWeight.includes('kg')) {
+          return Number(titleWeight.split('kg')[0].trim()) * 1000;
+        }
+        return Number(titleWeight.split('KG')[0]) * 1000;
+      }
+      if (item.title.includes('kg')) {
+        let titleWeight = item.title.split('kg')[0];
+        console.log(titleWeight);
+        titleWeight = titleWeight
+          .split(' ')
+          [titleWeight.split(' ').length - 1].trim();
+        console.log(titleWeight);
+        return Number(titleWeight) * 1000;
+      }
+      let titleWeight = item.title.split('KG')[0];
+      titleWeight = titleWeight
+        .split(' ')
+        [titleWeight.split(' ').length - 1].trim();
+      return Number(titleWeight.split('KG')[0]) * 1000;
+    } else if (
       item.title.includes('(') &&
       (item.title.includes('g') || item.title.includes('G'))
     ) {
