@@ -61,6 +61,9 @@ export class PiratesClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.piratesProducts.push(product);
       }
     }

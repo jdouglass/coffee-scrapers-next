@@ -60,6 +60,9 @@ export class LibraryClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.libraryProducts.push(product);
       }
     }

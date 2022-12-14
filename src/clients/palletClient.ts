@@ -60,6 +60,9 @@ export class PalletClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.palletProducts.push(product);
       }
     }

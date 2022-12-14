@@ -75,6 +75,9 @@ export class SubtextClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.subtextProducts.push(product);
       }
     }

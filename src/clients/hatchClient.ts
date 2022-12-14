@@ -86,6 +86,9 @@ export class HatchClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.hatchProducts.push(product);
       }
       await browser.close();

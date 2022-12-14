@@ -83,6 +83,9 @@ export class LunaClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.lunaProducts.push(product);
       }
       await browser.close();

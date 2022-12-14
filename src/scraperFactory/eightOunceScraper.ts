@@ -249,7 +249,7 @@ export default class EightOunceScraper implements IShopifyScraper {
         bodyWeight = bodyWeight.split('G')[0];
       }
       weight = Number(bodyWeight.trim());
-      if (weight !== 0 && weight !== NaN) {
+      if (weight !== 0) {
         return weight;
       }
     }

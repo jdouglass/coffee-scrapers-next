@@ -60,6 +60,9 @@ export class RossoClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.rossoProducts.push(product);
       }
     }

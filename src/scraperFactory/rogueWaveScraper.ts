@@ -112,8 +112,9 @@ export default class RogueWaveScraper implements IShopifyScraper {
   getVariety = (item: IShopifyProductResponseData): string[] => {
     let variety: string;
     const body = item.body_html;
-    if (body.includes('Variety:')) {
-      variety = body.split('Variety:')[1];
+    if (body.includes('Variet')) {
+      variety = body.split('Variet')[1];
+      variety = variety.split(':')[1];
       variety = variety.replace('</strong>', '');
       variety = variety.replace('</b>', '');
     } else if (body.includes('Varieties:')) {

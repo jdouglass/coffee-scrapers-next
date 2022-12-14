@@ -62,6 +62,9 @@ export class AngryRoasterClient {
           weight,
           vendor: this.vendor,
         };
+        if (this.config.logProducts) {
+          console.log(product);
+        }
         this.angryRoasterProducts.push(product);
       }
     }
