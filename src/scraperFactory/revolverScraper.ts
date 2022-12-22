@@ -177,7 +177,6 @@ export default class RevolverScraper implements IShopifyScraper {
       }
       if (newTitle.includes('*')) {
         const titleOptions = newTitle.split('*');
-        console.log(titleOptions);
         if (titleOptions.length > 3) {
           newTitle = titleOptions[titleOptions.length - 4];
         } else {
