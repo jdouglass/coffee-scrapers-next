@@ -81,7 +81,13 @@ export default class EightOunceScraper implements IShopifyScraper {
       const defaultProcess = 'Unknown';
       const maxProcessLength = 75;
       let process: string;
-      if (item.body_html.includes('PROCESS')) {
+      if (item.title.includes(':') && item.title.includes(',')) {
+        process = item.title.substring(
+          item.title.indexOf(':') + 1,
+          item.title.indexOf(',')
+        );
+        process = process.trim();
+      } else if (item.body_html.includes('PROCESS')) {
         process = item.body_html.split('PROCESS')[1];
       } else if (item.body_html.includes('Process')) {
         process = item.body_html.split('Process')[1];
