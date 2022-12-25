@@ -28,7 +28,8 @@ export class LunaClient {
   public static async run(): Promise<void> {
     const productUrls = await Helper.getProductUrls(
       this.baseUrl + '/product-category/coffee',
-      '/product/'
+      '/product/',
+      '/product-category/coffee'
     );
 
     const lunaResponse: AxiosResponse<IWordpressProductResponseData[]> =
