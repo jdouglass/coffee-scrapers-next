@@ -71,4 +71,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'prototype',
+    script: 'dist/src/clients/prototypeClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
