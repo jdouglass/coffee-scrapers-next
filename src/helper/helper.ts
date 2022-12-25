@@ -200,7 +200,8 @@ export default class Helper {
 
   public static getProductUrls = async (
     initialProductPageUrl: string,
-    partialProductUrl: string
+    partialProductUrl: string,
+    initialProductPageUrlSubstring: string
   ): Promise<string[]> => {
     const browser = await puppeteer.launch(this.puppeteerConfig);
     const page = await browser.newPage();
@@ -211,7 +212,7 @@ export default class Helper {
     );
     const productUrls = new Set(firstPageProductUrls);
     const productPageUrls = initialProductPageUrls.filter((url) => {
-      return url.includes('/shop/all/');
+      return url.includes(initialProductPageUrlSubstring);
     });
     for (const url of productPageUrls) {
       await page.goto(url);

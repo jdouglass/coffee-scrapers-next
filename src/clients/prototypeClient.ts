@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import HatchScraper from '../scraperFactory/hatchScraper';
+import PrototypeScraper from '../scraperFactory/prototypeScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { unwantedTitles } from '../data/unwantedTitles';
@@ -10,12 +10,14 @@ import Helper from '../helper/helper';
 import { ICrateJoyProductResponseData } from '../interfaces/crateJoy/crateJoyProductResponseData';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squareSpaceResponseData';
+import { ISquareSpaceProductResponse } from '../interfaces/squareSpace/squareSpaceProductResponse';
 
-export class HatchClient {
-  private static vendor: string = Vendor.Hatch;
-  private static baseUrl: string = BaseUrl.Hatch;
-  private static hatchProducts: Array<IProduct> = new Array<IProduct>();
-  private static factory: HatchScraper = new HatchScraper();
+export class PrototypeClient {
+  private static vendor: string = Vendor.Prototype;
+  private static baseUrl: string = BaseUrl.Prototype;
+  private static prototypeProducts: Array<IProduct> = new Array<IProduct>();
+  private static factory: PrototypeScraper = new PrototypeScraper();
   private static config: IConfig = config;
   private static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
     ? { headless: config.isHeadless, timeout: config.timeout }
@@ -27,9 +29,9 @@ export class HatchClient {
 
   public static async run(): Promise<void> {
     const productUrls = await Helper.getProductUrls(
-      this.baseUrl + '/shop/all',
-      '/shop/product/',
-      '/shop/all'
+      this.baseUrl + '/shop/',
+      '/shop/',
+      '/shop/'
     );
 
     for (const url of productUrls) {
@@ -37,39 +39,40 @@ export class HatchClient {
       const browser = await puppeteer.launch(this.puppeteerConfig);
       const page = await browser.newPage();
       await page.goto(url);
-      const productTitleElement = await page.$('.product-title');
+      const productTitleElement = await page.$('.ProductItem-details-title');
       const productTitle =
         (await productTitleElement?.evaluate((el) => el.textContent)) ?? '';
-      const productCategoryElement = await page.$('.product-category');
-      const productCategory =
-        (await productCategoryElement?.evaluate((el) => el.textContent)) ?? '';
       if (
-        !unwantedTitles.some(
-          (unwantedString) =>
-            productTitle.includes(unwantedString) ||
-            productCategory.includes(unwantedString)
+        !unwantedTitles.some((unwantedString) =>
+          productTitle.includes(unwantedString)
         )
       ) {
-        const hatchResponse: AxiosResponse<ICrateJoyProductResponseData> =
-          await axios.get(HatchClient.baseUrl + '/v1/store/api/products/' + id);
+        const prototypeResponse: AxiosResponse<ISquareSpaceProductResponse> =
+          await axios.get(
+            PrototypeClient.baseUrl + '/shop/' + id + '?format=json-pretty'
+          );
 
         const brand = this.vendor;
-        const country = await this.factory.getCountry(page);
+        const country = this.factory.getCountry(prototypeResponse.data.item);
         const continent = this.factory.getContinent(country);
-        const dateAdded = this.factory.getDateAdded();
-        const handle = this.factory.getHandle(hatchResponse.data.slug);
-        const imageUrl = this.factory.getImageUrl(hatchResponse.data.images);
-        const price = await this.factory.getPrice(page);
-        const process = await this.factory.getProcess(page);
+        const dateAdded = this.factory.getDateAdded(
+          prototypeResponse.data.item
+        );
+        const handle = this.factory.getHandle(prototypeResponse.data.item);
+        const imageUrl = this.factory.getImageUrl(
+          prototypeResponse.data.item.items[0].assetUrl
+        );
+        const price = this.factory.getPrice(prototypeResponse.data.item);
+        const process = this.factory.getProcess(prototypeResponse.data.item);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(
-          hatchResponse.data.id,
-          this.baseUrl
+          this.baseUrl,
+          prototypeResponse.data.item
         );
         const isSoldOut = await this.factory.getSoldOut(page);
-        const title = await this.factory.getTitle(page);
-        const variety = await this.factory.getVariety(page);
-        const weight = this.factory.getWeight(hatchResponse.data.slug);
+        const title = this.factory.getTitle(prototypeResponse.data.item);
+        const variety = this.factory.getVariety(prototypeResponse.data.item);
+        const weight = this.factory.getWeight(prototypeResponse.data.item);
         const product: IProduct = {
           brand,
           country,
@@ -90,20 +93,20 @@ export class HatchClient {
         if (this.config.logProducts) {
           console.log(product);
         }
-        this.hatchProducts.push(product);
+        this.prototypeProducts.push(product);
       }
       await browser.close();
     }
 
     if (this.config.useDatabase) {
-      await ProductsDatabase.updateDb(this.hatchProducts);
+      await ProductsDatabase.updateDb(this.prototypeProducts);
     }
   }
 }
 
 const main = async (): Promise<void> => {
   try {
-    await HatchClient.run();
+    await PrototypeClient.run();
   } catch (error) {
     console.error(error);
   }
