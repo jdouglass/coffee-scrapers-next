@@ -16,9 +16,14 @@ export default class SubtextScraper implements IShopifyScraper {
   };
 
   getCountry = (item: IShopifyProductResponseData): string => {
-    let country = item.title.split(' | ')[1];
-    country = country.split(' - ')[0].trim();
-    return Helper.firstLetterUppercase([country]).join(' ');
+    let title = item.title.split(' | ')[1];
+    title = title.split(' - ')[0].trim();
+    for (const [country, continent] of worldData) {
+      if (title.includes(country)) {
+        return country;
+      }
+    }
+    return 'Unknown';
   };
 
   getDateAdded = (date: string): string => {
