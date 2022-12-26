@@ -83,6 +83,7 @@ export default class Helper {
         case 'Local Landraces':
         case 'Local Varieties':
         case 'Landrace Varieties':
+        case 'Landrace Cultivars':
         case 'Regional Landraces':
         case 'Ethiopian Landrace':
         case 'Ethiopian Landrace - 74110':
