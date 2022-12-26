@@ -62,7 +62,10 @@ export default class LunaScraper implements IWordpressScraper {
     if (descriptionContent.includes('Processing')) {
       let process = descriptionContent.split('Processing:')[1];
       process = process.split('\n')[0].trim();
-      process = process[0].toUpperCase() + process.substring(1).toLowerCase();
+      if (process.includes('Export')) {
+        process = process.split('Export')[0].trim();
+      }
+      process = Helper.firstLetterUppercase([process]).join(' ');
       process = Helper.convertToUniversalProcess(process);
       return process;
     }
