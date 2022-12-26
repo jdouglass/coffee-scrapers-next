@@ -12,6 +12,7 @@ export enum BaseUrl {
   RogueWave = 'https://roguewavecoffee.ca',
   Rosso = 'https://rossocoffeeroasters.com',
   Social = 'https://socialcoffeeroasters.ca',
+  Sorellina = 'https://sorellina.ca',
   Subtext = 'https://subtext.coffee',
   TheAngryRoaster = 'https://theangryroaster.com',
 }
