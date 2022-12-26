@@ -18,7 +18,10 @@ export default class PalletScraper implements IShopifyScraper {
   getCountry = (item: IShopifyProductResponseData): string => {
     if (item.body_html.includes('Origin')) {
       let country = item.body_html.split('Origin')[1];
-      country = country.split(/\s-\s/)[1];
+      country = country.replaceAll('</strong>', '');
+      country = country.replaceAll(/<\/?span>/g, '');
+      country = country.replaceAll(/<span data-mce-fragment=\"1\">/g, '');
+      country = country.split('-')[1];
       return country.split('<')[0].trim();
     }
     if (
