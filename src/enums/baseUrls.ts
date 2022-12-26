@@ -7,6 +7,7 @@ export enum BaseUrl {
   Pallet = 'https://palletcoffeeroasters.com',
   PiratesOfCoffee = 'https://piratesofcoffee.com',
   Prototype = 'https://www.prototypecoffee.ca',
+  Quietly = 'https://www.quietlycoffee.com',
   Revolver = 'https://revolvercoffee.ca',
   RogueWave = 'https://roguewavecoffee.ca',
   Rosso = 'https://rossocoffeeroasters.com',

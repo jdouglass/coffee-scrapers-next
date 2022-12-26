@@ -7,6 +7,7 @@ export enum Vendor {
   Pallet = 'Pallet Coffee Roasters',
   Pirates = 'Pirates of Coffee',
   Prototype = 'Prototype Coffee',
+  Quietly = 'Quietly Coffee',
   Revolver = 'Revolver Coffee',
   RogueWave = 'Rogue Wave Coffee',
   Rosso = 'Rosso Coffee',

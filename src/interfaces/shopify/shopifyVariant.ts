@@ -3,4 +3,5 @@ export interface IShopifyVariant {
   grams: number;
   id: number;
   price: string;
+  title: string;
 }
