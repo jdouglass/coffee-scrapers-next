@@ -83,4 +83,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'social',
+    script: 'dist/src/clients/socialClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
