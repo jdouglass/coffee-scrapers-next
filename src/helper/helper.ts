@@ -105,7 +105,22 @@ export default class Helper {
           varieties[i] = 'IHCafe90';
           break;
         case 'Yellow-bourbon':
+        case 'Yellow bourbon':
           varieties[i] = 'Yellow Bourbon';
+          break;
+        case 'Riuru':
+          varieties[i] = 'Ruiru';
+          break;
+        case 'Yellow Catuaí':
+        case 'Yellow Catuia':
+          varieties[i] = 'Yellow Catuai';
+          break;
+        case 'Red Catuaí':
+          varieties[i] = 'Red Catuai';
+          break;
+        case 'Yellow Catarrh':
+          varieties[i] = 'Yellow Caturra';
+          break;
       }
     }
     return varieties;

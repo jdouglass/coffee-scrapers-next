@@ -177,6 +177,8 @@ export default class EightOunceScraper implements IShopifyScraper {
       variety = variety.split('<')[0].trim();
       if (variety.includes('SL 34 Ruiru 11')) {
         variety = variety.replace('SL 34 ', 'SL 34, ');
+      } else if (variety.includes('SL 28 SL 34')) {
+        variety = variety.replace('SL 28 ', 'SL 28, ');
       }
       if (variety === 'Red and Yellow Catuai') {
         return [variety];

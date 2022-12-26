@@ -56,6 +56,7 @@ export default class LibraryScraper implements IShopifyScraper {
   getProcess = (item: IShopifyProductResponseData): string => {
     if (item.body_html.includes('Processing:')) {
       let process: string = item.body_html.split('Processing:')[1];
+      process = process.replaceAll(/<span data-mce-fragment=\"1\">/g, '');
       process = process.split('<')[0].trim();
       return Helper.convertToUniversalProcess(process);
     }
