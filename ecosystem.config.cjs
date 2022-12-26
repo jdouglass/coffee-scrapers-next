@@ -77,4 +77,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'quietly',
+    script: 'dist/src/clients/quietlyClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
