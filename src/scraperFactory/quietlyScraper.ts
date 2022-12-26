@@ -65,17 +65,14 @@ export default class QuietlyScraper implements IShopifyScraper {
 
       if (item.body_html.includes('PROCESS')) {
         process = item.body_html.split('PROCESS')[1];
-      } else if (item.body_html.includes('Process')) {
-        process = item.body_html.split('Process')[1];
-      } else if (item.body_html.includes('BEANS')) {
-        process = item.body_html.split('BEANS')[1];
-        process = process.split(', ')[0];
       } else {
         return defaultProcess;
       }
       process = process.replace('</strong>', '');
       process = process.replace('</span>', '');
       process = process.replace('<br>', '');
+      process = process.replaceAll(/<(br|span) data-mce-fragment=\"1\">/g, '');
+      process = process.replaceAll(/<(br|span) Data-mce-fragment=\"1\">/g, '');
       process = process.split(':')[1].trim();
       if (process.includes('.')) {
         process = process.split('.')[0].trim();
