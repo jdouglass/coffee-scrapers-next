@@ -148,8 +148,8 @@ export default class QuietlyScraper implements IShopifyScraper {
       variety = variety.replaceAll('</span>', '');
       variety = variety.replaceAll('<span>', '');
       variety = variety.replace('<br>', '');
-      variety = variety.replace('<span data-mce-fragment="1">', '');
-      variety = variety.replace('<br Data-mce-fragment="1">', '');
+      variety = variety.replaceAll(/<(br|span) data-mce-fragment=\"1\">/g, '');
+      variety = variety.replaceAll(/<(br|span) Data-mce-fragment=\"1\">/g, '');
       variety = variety.split(':')[1].trim();
       variety = variety.split('.')[0].trim();
       if (variety.includes('SL 34 Ruiru 11')) {
