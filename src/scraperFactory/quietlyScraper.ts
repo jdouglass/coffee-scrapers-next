@@ -71,8 +71,10 @@ export default class QuietlyScraper implements IShopifyScraper {
       process = process.replace('</strong>', '');
       process = process.replace('</span>', '');
       process = process.replace('<br>', '');
-      process = process.replaceAll(/<(br|span) data-mce-fragment=\"1\">/g, '');
-      process = process.replaceAll(/<(br|span) Data-mce-fragment=\"1\">/g, '');
+      process = process.replaceAll(
+        /<(br|span) (d|D)ata-mce-fragment=\"1\">/g,
+        ''
+      );
       process = process.split(':')[1].trim();
       if (process.includes('.')) {
         process = process.split('.')[0].trim();

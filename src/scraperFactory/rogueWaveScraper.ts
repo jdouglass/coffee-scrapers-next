@@ -16,6 +16,11 @@ export default class RogueWaveScraper implements IShopifyScraper {
   };
 
   getCountry = (item: IShopifyProductResponseData): string => {
+    for (const [country, continent] of worldData) {
+      if (item.title.includes(country)) {
+        return country;
+      }
+    }
     let reportBody = item.body_html;
     if (reportBody.includes('Origin:')) {
       reportBody = reportBody.split('Origin:')[1];
@@ -63,16 +68,23 @@ export default class RogueWaveScraper implements IShopifyScraper {
 
   getProcess = (item: IShopifyProductResponseData): string => {
     let process: string = 'Unknown';
-    if (item.body_html.includes('Process:')) {
-      process = item.body_html.split('Process:')[1];
-      process = process.replace('</strong>', '');
-      process = process.replace('&nbsp;', '');
-    } else if (item.body_html.includes('Process</strong>:')) {
-      process = item.body_html.split('Process</strong>')[1];
+    if (item.body_html.includes('Process')) {
+      process = item.body_html.split('Process')[1];
+      process = process.replaceAll('</strong>', '');
+      process = process.replaceAll('&nbsp;', '');
+      process = process.replaceAll(
+        /<span data-sheets-userformat.*(d|D)ata-mce-fragment=\"1\">/g,
+        ''
+      );
+      process = process.replaceAll(
+        /<(br|span) (d|D)ata-mce-fragment=\"1\">/g,
+        ''
+      );
+      process = process.split('<')[0];
+      process = process.split(':')[1].trim();
     } else {
       return process;
     }
-    process = process.split('<')[0].trim();
     if (process.includes(' + ')) {
       const processOptions: string[] = process.split(' + ');
       process = processOptions.join(', ');
