@@ -85,6 +85,7 @@ export default class Helper {
         case 'Regional Landraces':
         case 'Ethiopian Landrace':
         case 'Ethiopian Landrace - 74110':
+        case 'Jimma Research Varietals 74110':
         case '71158':
         case '74110':
         case '74112':
