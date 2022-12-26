@@ -89,4 +89,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'sorellina',
+    script: 'dist/src/clients/sorellinaClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];

@@ -4,4 +4,5 @@ export interface IShopifyVariant {
   id: number;
   price: string;
   title: string;
+  weight_unit: string;
 }

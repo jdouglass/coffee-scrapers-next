@@ -103,6 +103,8 @@ export default class Helper {
         case 'Ihcafe90':
           varieties[i] = 'IHCafe90';
           break;
+        case 'Yellow-bourbon':
+          varieties[i] = 'Yellow Bourbon';
       }
     }
     return varieties;
