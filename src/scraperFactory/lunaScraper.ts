@@ -98,10 +98,10 @@ export default class LunaScraper implements IWordpressScraper {
     let variety = '';
     if (descriptionContent.includes('Variety')) {
       variety = descriptionContent.split('Variety:')[1];
-      variety = variety.split('\n')[0].trim();
+      variety = variety.split('Process')[0].trim();
     } else if (descriptionContent.includes('Varieties')) {
       variety = descriptionContent.split('Varieties:')[1];
-      variety = variety.split('\n')[0].trim();
+      variety = variety.split('Process')[0].trim();
     } else {
       return ['Unknown'];
     }
