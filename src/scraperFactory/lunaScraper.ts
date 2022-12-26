@@ -56,7 +56,7 @@ export default class LunaScraper implements IWordpressScraper {
   };
 
   getProcess = async (page: Page): Promise<string> => {
-    const descriptionElement = await page.$('.tab');
+    const descriptionElement = await page.$('.product-summary');
     const descriptionContent =
       (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
     if (descriptionContent.includes('Processing')) {
@@ -92,7 +92,7 @@ export default class LunaScraper implements IWordpressScraper {
   };
 
   getVariety = async (page: Page): Promise<string[]> => {
-    const descriptionElement = await page.$('.tab');
+    const descriptionElement = await page.$('.product-summary');
     const descriptionContent =
       (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
     let variety = '';
