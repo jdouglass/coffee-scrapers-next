@@ -102,11 +102,17 @@ export default class PalletScraper implements IShopifyScraper {
     let variety: string = '';
     if (item.body_html.includes('Varietal')) {
       variety = item.body_html.split('Varietal')[1];
-      variety = variety.split(/\s?-\s/)[1];
-      variety = variety.split('<')[0].trim();
     } else {
       return ['Unknown'];
     }
+    variety = variety.replaceAll(
+      /<(br|span) (d|D)ata-mce-fragment=\"1\">/g,
+      ''
+    );
+    variety = variety.replaceAll('</strong>', '');
+    variety = variety.replaceAll('</span>', '');
+    variety = variety.split(/\s?-\s/)[1];
+    variety = variety.split('<')[0].trim();
     let varietyOptions = variety
       .split(/, | & | &amp; /)
       .map((variety: string) => variety.trim());
