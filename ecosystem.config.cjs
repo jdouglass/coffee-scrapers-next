@@ -95,4 +95,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'prodigal',
+    script: 'dist/src/clients/prodigalClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
