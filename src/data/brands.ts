@@ -20,6 +20,7 @@ export const brands: string[] = [
   "Father's Coffee Roastery",
   'Felix',
   'Finca San Martin',
+  'Fieldwork',
   'Fritz',
   'Fruitcake',
   'Gardelli',
