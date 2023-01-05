@@ -101,4 +101,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'nemesis',
+    script: 'dist/src/clients/nemesisClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
