@@ -4,6 +4,7 @@ export enum Vendor {
   Library = 'Library Specialty Coffee',
   Luna = 'Luna Coffee',
   Monogram = 'Monogram Coffee',
+  Nemesis = 'Nemesis Coffee',
   Pallet = 'Pallet Coffee Roasters',
   Pirates = 'Pirates of Coffee',
   Prodigal = 'Prodigal',
