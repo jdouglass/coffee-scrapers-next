@@ -238,8 +238,19 @@ export default class EightOunceScraper implements IShopifyScraper {
       item.title.includes('(') &&
       (item.title.includes('g') || item.title.includes('G'))
     ) {
-      const titleWeight: string =
+      let titleWeight: string =
         item.title.split('(')[item.title.split('(').length - 1];
+      if (titleWeight.toLowerCase().includes('x')) {
+        if (titleWeight.includes('g')) {
+          titleWeight = titleWeight.split('g')[0].trim();
+          const values = titleWeight.toLowerCase().split(/\s?x\s?/);
+          return Number(values[0].trim()) * Number(values[1].trim());
+        } else if (titleWeight.includes('G')) {
+          titleWeight = titleWeight.split('G')[0].trim();
+          const values = titleWeight.toLowerCase().split(/\s?x\s?/);
+          return Number(values[0].trim()) * Number(values[1].trim());
+        }
+      }
       if (titleWeight.includes('g')) {
         return Number(titleWeight.split('g')[0].trim());
       }
@@ -258,7 +269,7 @@ export default class EightOunceScraper implements IShopifyScraper {
         bodyWeight = bodyWeight.split('G')[0];
       }
       weight = Number(bodyWeight.trim());
-      if (weight !== 0) {
+      if (weight !== 0 && !Number.isNaN(weight)) {
         return weight;
       }
     }
