@@ -18,11 +18,32 @@ export class HatchClient {
   private static factory: HatchScraper = new HatchScraper();
   private static config: IConfig = config;
   private static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
-    ? { headless: config.isHeadless, timeout: config.timeout }
+    ? {
+        headless: config.isHeadless,
+        timeout: config.timeout,
+        args: [
+          '--aggressive-cache-discard',
+          '--disable-cache',
+          '--disable-application-cache',
+          '--disable-offline-load-stale-cache',
+          '--disable-gpu-shader-disk-cache',
+          '--media-cache-size=0',
+          '--disk-cache-size=0',
+        ],
+      }
     : {
         headless: config.isHeadless,
         executablePath: config.chromePath,
         timeout: config.timeout,
+        args: [
+          '--aggressive-cache-discard',
+          '--disable-cache',
+          '--disable-application-cache',
+          '--disable-offline-load-stale-cache',
+          '--disable-gpu-shader-disk-cache',
+          '--media-cache-size=0',
+          '--disk-cache-size=0',
+        ],
       };
 
   public static async run(): Promise<void> {
