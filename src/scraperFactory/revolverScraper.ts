@@ -6,6 +6,7 @@ import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
+import { title } from 'process';
 
 export default class RevolverScraper implements IShopifyScraper {
   getBrand = (item: IShopifyProductResponseData): string => {
@@ -26,16 +27,49 @@ export default class RevolverScraper implements IShopifyScraper {
   };
 
   getCountry = (item: IShopifyProductResponseData): string => {
-    let reportBody: string = item.body_html.split('From')[0];
-    reportBody = reportBody.toLowerCase();
-    const country: string = 'Unknown';
-    const countryList = worldData.keys();
-    for (const name of countryList) {
-      if (item.title.includes(name) || reportBody.includes(name)) {
-        return name;
+    const unknownCountry: string = 'Unknown';
+    const countriesFromComponents: Set<string> = new Set();
+    let hasSingleCountry = true;
+    let reportBody = '';
+    for (const country of worldData.keys()) {
+      if (item.title.toLowerCase().includes(country.toLowerCase())) {
+        return country;
       }
     }
-    return country;
+    if (item.body_html.includes('From:')) {
+      reportBody = item.body_html.split('From:')[1];
+    } else if (item.body_html.includes('Components:')) {
+      reportBody = item.body_html.split('Components:')[1];
+      hasSingleCountry = false;
+    }
+    if (reportBody !== '') {
+      reportBody = reportBody.split('<')[0].trim();
+      reportBody = reportBody.toLowerCase();
+      if (hasSingleCountry) {
+        for (const name of worldData.keys()) {
+          if (reportBody.includes(name)) {
+            return name;
+          }
+        }
+      }
+      const componentCountryList = reportBody.split(
+        /, |\s?\/\s?| and | \+ | \&amp; /
+      );
+      for (const countryFromComponent of componentCountryList) {
+        for (const countryFromList of worldData.keys()) {
+          if (countryFromList.toLowerCase().includes(countryFromComponent)) {
+            countriesFromComponents.add(countryFromList);
+          }
+        }
+      }
+      console.log(countriesFromComponents);
+      if (countriesFromComponents.size === 1) {
+        return [...countriesFromComponents][0];
+      } else if (countriesFromComponents.size > 1) {
+        return 'Multiple';
+      }
+    }
+    return unknownCountry;
   };
 
   getDateAdded = (date: string): string => {
