@@ -92,13 +92,15 @@ export default class EightOunceScraper implements IShopifyScraper {
       const defaultProcess = 'Unknown';
       const maxProcessLength = 75;
       let process = '';
-      if (item.title.includes(':') && item.title.includes(',')) {
-        process = item.title.substring(
-          item.title.indexOf(':') + 1,
-          item.title.indexOf(',')
-        );
-        process = process.trim();
+      const foundProcessFromTitle = item.title.match(/:.*,/);
+      if (foundProcessFromTitle) {
+        process = foundProcessFromTitle[0].trim();
       }
+      process = process.substring(
+        process.indexOf(':') + 1,
+        process.indexOf(',')
+      );
+      process = process.trim();
       if (!process || process === '') {
         if (item.body_html.includes('PROCESS')) {
           process = item.body_html.split('PROCESS')[1];
@@ -130,9 +132,6 @@ export default class EightOunceScraper implements IShopifyScraper {
         } else {
           return defaultProcess;
         }
-      }
-      if (process.includes('.')) {
-        process = process.split('.')[0];
       }
       return Helper.firstLetterUppercase(process.split(' ')).join(' ');
     } catch {
