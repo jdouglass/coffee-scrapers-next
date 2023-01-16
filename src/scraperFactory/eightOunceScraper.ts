@@ -9,6 +9,17 @@ import { brands } from '../data/brands';
 
 export default class EightOunceScraper implements IShopifyScraper {
   getBrand = (item: IShopifyProductResponseData): string => {
+    let possibleBrand = '';
+    if (item.title.includes(' - ')) {
+      possibleBrand = item.title.split(' - ')[0];
+    }
+    if (possibleBrand !== '') {
+      for (const brand of brands) {
+        if (possibleBrand.includes(brand)) {
+          return brand;
+        }
+      }
+    }
     for (const brand of brands) {
       if (item.title.includes(brand)) {
         return brand;
