@@ -116,6 +116,9 @@ export default class Helper {
         case 'Yellow Catarrh':
           varieties[i] = 'Yellow Caturra';
           break;
+        case 'Mostly Dega':
+          varieties[i] = 'Dega';
+          break;
       }
     }
     return varieties;

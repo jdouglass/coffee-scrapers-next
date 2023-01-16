@@ -93,15 +93,10 @@ export default class EightOunceScraper implements IShopifyScraper {
       const maxProcessLength = 75;
       let process = '';
       const foundProcessFromTitle = item.title.match(/:.*,/);
-      if (foundProcessFromTitle) {
-        process = foundProcessFromTitle[0].trim();
-      }
-      process = process.substring(
-        process.indexOf(':') + 1,
-        process.indexOf(',')
-      );
-      process = process.trim();
-      if (!process || process === '') {
+      if (item.body_html.includes('\nProcess')) {
+        process = item.body_html.split('Process')[1];
+        process = process.split('\n')[0].trim();
+      } else {
         if (item.body_html.includes('PROCESS')) {
           process = item.body_html.split('PROCESS')[1];
         } else if (item.body_html.includes('Process')) {
@@ -109,6 +104,13 @@ export default class EightOunceScraper implements IShopifyScraper {
         } else if (item.body_html.includes('BEANS')) {
           process = item.body_html.split('BEANS')[1];
           process = process.split(', ')[0];
+        } else if (foundProcessFromTitle) {
+          process = foundProcessFromTitle[0].trim();
+          process = process.substring(
+            process.indexOf(':') + 1,
+            process.indexOf(',')
+          );
+          process = process.trim();
         } else {
           return defaultProcess;
         }
@@ -117,6 +119,9 @@ export default class EightOunceScraper implements IShopifyScraper {
         if (process.includes('<')) {
           process = process.split('<')[0].trim();
         }
+      }
+      if (process[0] === ':') {
+        process = process.split(':')[1].trim();
       }
       if (process.length >= maxProcessLength) {
         if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
@@ -172,19 +177,30 @@ export default class EightOunceScraper implements IShopifyScraper {
     try {
       let variety: string;
       const body: string = item.body_html;
-      if (body.includes('VARIET')) {
-        variety = body.split('VARIET')[1];
-      } else if (body.includes('Variet')) {
-        variety = body.split('Variet')[1];
-      } else if (body.includes('BEANS')) {
-        variety = body.split('BEANS')[1];
-        variety = variety.split(', ')[1];
+      if (body.includes('\nVariety')) {
+        variety = body.split('Variety')[1];
+        variety = variety.split('\n')[0].trim();
+      } else if (body.includes('\nVarieties')) {
+        variety = body.split('Varieties')[1];
+        variety = variety.split('\n')[0].trim();
       } else {
-        return ['Unknown'];
+        if (body.includes('VARIET')) {
+          variety = body.split('VARIET')[1];
+        } else if (body.includes('Variet')) {
+          variety = body.split('Variet')[1];
+        } else if (body.includes('BEANS')) {
+          variety = body.split('BEANS')[1];
+          variety = variety.split(', ')[1];
+        } else {
+          return ['Unknown'];
+        }
+        variety = variety.replace('</strong>', '');
+        variety = variety.split(':')[1].trim();
+        variety = variety.split('<')[0].trim();
       }
-      variety = variety.replace('</strong>', '');
-      variety = variety.split(':')[1].trim();
-      variety = variety.split('<')[0].trim();
+      if (variety[0] === ':') {
+        variety = variety.split(':')[1].trim();
+      }
       if (variety.includes('SL 34 Ruiru 11')) {
         variety = variety.replace('SL 34 ', 'SL 34, ');
       } else if (variety.includes('SL 28 SL 34')) {
