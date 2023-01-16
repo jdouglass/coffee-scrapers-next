@@ -113,7 +113,7 @@ export default class HatchScraper implements ICrateJoyScraper {
     return varietyOptions;
   };
 
-  getWeight = (slug: string): number => {
+  getWeight = (slug: string, description: string): number => {
     const gramsToKg = 1000;
     const weightArray = slug.split('-');
     const weight = slug.split('-')[slug.split('-').length - 1];
@@ -124,6 +124,13 @@ export default class HatchScraper implements ICrateJoyScraper {
     }
     if (weight.includes('g')) {
       return Number(weight.split('g')[0]);
+    }
+    const descriptionWeight: string[] | null = description.match(/\d+(g|kg)/);
+    if (descriptionWeight) {
+      if (descriptionWeight.includes('kg')) {
+        return Number(descriptionWeight[0].split('kg')[0]) * gramsToKg;
+      }
+      return Number(descriptionWeight[0].split('g')[0]);
     }
     return 0;
   };

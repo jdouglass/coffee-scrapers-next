@@ -63,7 +63,10 @@ export class HatchClient {
         const isSoldOut = await this.factory.getSoldOut(page);
         const title = await this.factory.getTitle(page);
         const variety = await this.factory.getVariety(page);
-        const weight = this.factory.getWeight(hatchResponse.data.slug);
+        const weight = this.factory.getWeight(
+          hatchResponse.data.slug,
+          hatchResponse.data.description
+        );
         const product: IProduct = {
           brand,
           country,

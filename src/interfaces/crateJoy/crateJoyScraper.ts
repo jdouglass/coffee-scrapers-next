@@ -15,5 +15,5 @@ export interface ICrateJoyScraper {
   getSoldOut: (page: Page) => Promise<boolean>;
   getTitle: (page: Page) => Promise<string>;
   getVariety: (page: Page) => Promise<string[]>;
-  getWeight: (slug: string) => number;
+  getWeight: (slug: string, description: string) => number;
 }
