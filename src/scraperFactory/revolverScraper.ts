@@ -40,6 +40,7 @@ export default class RevolverScraper implements IShopifyScraper {
       reportBody = item.body_html.split('From:')[1];
     } else if (item.body_html.includes('Origin:')) {
       reportBody = item.body_html.split('Origin:')[1];
+      hasSingleCountry = false;
     } else if (item.body_html.includes('Components:')) {
       reportBody = item.body_html.split('Components:')[1];
       hasSingleCountry = false;
