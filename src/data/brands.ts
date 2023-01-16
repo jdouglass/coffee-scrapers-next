@@ -54,6 +54,7 @@ export const brands: string[] = [
   'Phil & Sebastian',
   'Pista',
   'Process',
+  'Prodigal',
   'Proud Mary',
   'Rabbit Hole',
   'Rabbit Hole Roasters',
