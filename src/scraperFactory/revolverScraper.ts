@@ -128,13 +128,13 @@ export default class RevolverScraper implements IShopifyScraper {
       let varietyOptions: string[] = variety.split('<');
       variety = varietyOptions[0].trim();
       if (
-        variety.includes(', ') ||
+        variety.includes(',') ||
         variety.includes(' &amp; ') ||
-        variety.includes(' + ') ||
+        variety.includes('+') ||
         variety.includes(' and ') ||
-        variety.includes(' / ')
+        variety.includes('/')
       ) {
-        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+        varietyOptions = variety.split(/, |\s?\/\s?| and | \+ | \&amp; /);
       } else {
         varietyOptions = [variety];
       }
