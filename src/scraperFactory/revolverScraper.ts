@@ -38,6 +38,8 @@ export default class RevolverScraper implements IShopifyScraper {
     }
     if (item.body_html.includes('From:')) {
       reportBody = item.body_html.split('From:')[1];
+    } else if (item.body_html.includes('Origin:')) {
+      reportBody = item.body_html.split('Origin:')[1];
     } else if (item.body_html.includes('Components:')) {
       reportBody = item.body_html.split('Components:')[1];
       hasSingleCountry = false;
