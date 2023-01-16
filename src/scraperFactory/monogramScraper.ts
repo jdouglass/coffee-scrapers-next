@@ -233,12 +233,6 @@ export default class MonogramScraper implements IShopifyScraper {
       titleOptions = item.title.split('-');
       return titleOptions[titleOptions.length - 1].trim();
     }
-
-    const titleResult: string = item.title.split('-')[0];
-    titleOptions = titleResult.split('*');
-    if (titleOptions.length > 1) {
-      return titleResult[titleResult.length - 1].trim();
-    }
-    return titleOptions.toString().trim();
+    return item.title.split('-')[0].trim();
   };
 }
