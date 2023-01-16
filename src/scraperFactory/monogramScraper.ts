@@ -229,10 +229,14 @@ export default class MonogramScraper implements IShopifyScraper {
 
   getTitle = (item: IShopifyProductResponseData): string => {
     let titleOptions: string[];
+    const title = item.title.replace('*Pre-Order*', '').trim();
     if (item.handle.includes('atlas')) {
-      titleOptions = item.title.split('-');
+      titleOptions = title.split('-');
       return titleOptions[titleOptions.length - 1].trim();
     }
-    return item.title.split('-')[0].trim();
+    if (title.includes('-')) {
+      return title.split('-')[0].trim();
+    }
+    return title;
   };
 }
