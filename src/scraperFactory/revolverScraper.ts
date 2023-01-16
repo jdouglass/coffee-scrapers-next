@@ -65,7 +65,6 @@ export default class RevolverScraper implements IShopifyScraper {
           }
         }
       }
-      console.log(countriesFromComponents);
       if (countriesFromComponents.size === 1) {
         return [...countriesFromComponents][0];
       } else if (countriesFromComponents.size > 1) {
@@ -180,7 +179,7 @@ export default class RevolverScraper implements IShopifyScraper {
       varietyOptions = Array.from([...new Set(varietyOptions)]);
       return varietyOptions;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return ['Unknown'];
     }
   };
