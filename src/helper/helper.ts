@@ -10,10 +10,10 @@ import axios from 'axios';
 import { IProduct } from '../interfaces/product';
 import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
-import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer';
-import config from '../config.json';
+import puppeteer from 'puppeteer';
 import sharp from 'sharp';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData';
+import { puppeteerConfig } from '../puppeteerConfig';
 
 dotenv.config();
 
@@ -30,12 +30,6 @@ export default class Helper {
       secretAccessKey: this.secretAccessKey,
     },
   });
-  static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
-    ? { headless: config.isHeadless }
-    : {
-        headless: config.isHeadless,
-        executablePath: config.chromePath,
-      };
 
   static firstLetterUppercase = (input: string[]): string[] => {
     return input.map((word: string) => {
@@ -196,7 +190,7 @@ export default class Helper {
     productUrl: string
   ): Promise<(string | null)[]> => {
     let bodyText: (string | null)[] = [''];
-    const browser = await puppeteer.launch(this.puppeteerConfig);
+    const browser = await puppeteer.launch(puppeteerConfig);
     const page = await browser.newPage();
     await page.goto(productUrl);
     await page.waitForSelector('.shg-row');
@@ -210,7 +204,7 @@ export default class Helper {
   };
 
   public static getPageTitle = async (productUrl: string): Promise<string> => {
-    const browser = await puppeteer.launch(this.puppeteerConfig);
+    const browser = await puppeteer.launch(puppeteerConfig);
     const page = await browser.newPage();
     await page.goto(productUrl);
     const title = await page.title();
@@ -223,7 +217,7 @@ export default class Helper {
     partialProductUrl: string,
     initialProductPageUrlSubstring: string
   ): Promise<string[]> => {
-    const browser = await puppeteer.launch(this.puppeteerConfig);
+    const browser = await puppeteer.launch(puppeteerConfig);
     const page = await browser.newPage();
     await page.goto(initialProductPageUrl);
     const initialProductPageUrls = await this.getAllHrefs(page);

@@ -10,6 +10,7 @@ import Helper from '../helper/helper';
 import { ICrateJoyProductResponseData } from '../interfaces/crateJoy/crateJoyProductResponseData';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { puppeteerConfig } from '../puppeteerConfig';
 
 export class HatchClient {
   private static vendor: string = Vendor.Hatch;
@@ -17,34 +18,6 @@ export class HatchClient {
   private static hatchProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: HatchScraper = new HatchScraper();
   private static config: IConfig = config;
-  private static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
-    ? {
-        headless: config.isHeadless,
-        timeout: config.timeout,
-        args: [
-          '--aggressive-cache-discard',
-          '--disable-cache',
-          '--disable-application-cache',
-          '--disable-offline-load-stale-cache',
-          '--disable-gpu-shader-disk-cache',
-          '--media-cache-size=0',
-          '--disk-cache-size=0',
-        ],
-      }
-    : {
-        headless: config.isHeadless,
-        executablePath: config.chromePath,
-        timeout: config.timeout,
-        args: [
-          '--aggressive-cache-discard',
-          '--disable-cache',
-          '--disable-application-cache',
-          '--disable-offline-load-stale-cache',
-          '--disable-gpu-shader-disk-cache',
-          '--media-cache-size=0',
-          '--disk-cache-size=0',
-        ],
-      };
 
   public static async run(): Promise<void> {
     const productUrls = await Helper.getProductUrls(
@@ -55,7 +28,7 @@ export class HatchClient {
 
     for (const url of productUrls) {
       const id = url.split('/')[url.split('/').length - 1];
-      const browser = await puppeteer.launch(this.puppeteerConfig);
+      const browser = await puppeteer.launch(puppeteerConfig);
       const page = await browser.newPage();
       await page.goto(url);
       const productTitleElement = await page.$('.product-title');

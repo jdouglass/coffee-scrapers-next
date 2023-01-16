@@ -9,7 +9,8 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
-import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer';
+import puppeteer from 'puppeteer';
+import { puppeteerConfig } from '../puppeteerConfig';
 
 export class MonogramClient {
   private static vendor: string = Vendor.Monogram;
@@ -17,13 +18,6 @@ export class MonogramClient {
   private static monogramProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: MonogramScraper = new MonogramScraper();
   private static config: IConfig = config;
-  private static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
-    ? { headless: config.isHeadless, timeout: config.timeout }
-    : {
-        headless: config.isHeadless,
-        executablePath: config.chromePath,
-        timeout: config.timeout,
-      };
 
   public static async run(): Promise<void> {
     const monogramResponse: AxiosResponse<IShopifyProductResponse> =
@@ -40,7 +34,7 @@ export class MonogramClient {
             item.handle.toLowerCase().includes(unwantedString)
         )
       ) {
-        const browser = await puppeteer.launch(this.puppeteerConfig);
+        const browser = await puppeteer.launch(puppeteerConfig);
         const page = await browser.newPage();
         await page.goto(this.factory.getProductUrl(item, this.baseUrl));
         const brand = this.factory.getBrand(item);

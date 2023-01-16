@@ -5,11 +5,12 @@ import { IProduct } from '../interfaces/product';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
-import puppeteer, { PuppeteerLaunchOptions } from 'puppeteer';
+import puppeteer from 'puppeteer';
 import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData';
 import { Vendor } from '../enums/vendors';
+import { puppeteerConfig } from '../puppeteerConfig';
 
 export class LunaClient {
   private static vendor: string = Vendor.Luna;
@@ -17,13 +18,6 @@ export class LunaClient {
   private static lunaProducts: Array<IProduct> = new Array<IProduct>();
   private static factory: LunaScraper = new LunaScraper();
   private static config: IConfig = config;
-  private static puppeteerConfig: PuppeteerLaunchOptions = config.devMode
-    ? { headless: config.isHeadless, timeout: config.timeout }
-    : {
-        headless: config.isHeadless,
-        executablePath: config.chromePath,
-        timeout: config.timeout,
-      };
 
   public static async run(): Promise<void> {
     const productUrls = await Helper.getProductUrls(
@@ -43,7 +37,7 @@ export class LunaClient {
       });
 
     for (let i = 0; i < productUrls.length; i++) {
-      const browser = await puppeteer.launch(this.puppeteerConfig);
+      const browser = await puppeteer.launch(puppeteerConfig);
       const page = await browser.newPage();
       await page.goto(productUrls[i]);
       const productTitleElement = await page.$('.product_title entry-title');
