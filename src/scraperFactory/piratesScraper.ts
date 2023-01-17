@@ -112,6 +112,7 @@ export default class PiratesScraper implements IShopifyScraper {
     }
     let varietyOptions: string[] = variety.split('<');
     variety = varietyOptions[0].trim();
+    variety = variety.replaceAll(/\(.*\)/g, '').trim();
     if (variety.includes(', ')) {
       varietyOptions = variety.split(', ');
     } else {
