@@ -119,6 +119,9 @@ export default class Helper {
         case 'Mostly Dega':
           varieties[i] = 'Dega';
           break;
+        case 'Anacafé 14':
+          varieties[i] = 'Anacafe 14';
+          break;
       }
     }
     return varieties;
