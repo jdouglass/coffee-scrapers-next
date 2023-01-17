@@ -17,13 +17,13 @@ export default class EightOunceScraper implements IShopifyScraper {
     if (possibleBrand !== '') {
       for (const brand of brands) {
         if (possibleBrand.includes(brand)) {
-          return brand;
+          return Helper.convertToUniversalBrand(brand);
         }
       }
     }
     for (const brand of brands) {
       if (item.title.includes(brand)) {
-        return brand;
+        return Helper.convertToUniversalBrand(brand);
       }
     }
     return 'Unknown';

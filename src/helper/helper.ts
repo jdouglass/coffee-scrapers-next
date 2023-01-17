@@ -143,6 +143,15 @@ export default class Helper {
     return process;
   };
 
+  static convertToUniversalBrand = (brand: string): string => {
+    switch (brand) {
+      case '3FE':
+        brand = '3fe';
+        break;
+    }
+    return brand;
+  };
+
   static uploadToS3 = async (product: IProduct): Promise<string> => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const key: string = uuidv5(product.productUrl, this.namespace);
