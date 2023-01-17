@@ -259,6 +259,8 @@ export default class EightOunceScraper implements IShopifyScraper {
       variety.includes(' / ')
     ) {
       varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+    } else if (variety === '') {
+      return unknownVariety;
     } else {
       varietyOptions = [variety];
     }
