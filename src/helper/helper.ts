@@ -32,14 +32,14 @@ export default class Helper {
   });
 
   static firstLetterUppercase = (input: string[]): string[] => {
-    return input.map((word: string) => {
-      while (word.includes(' ')) {
-        let subWord: string[] = word.split(' ');
-        subWord = this.firstLetterUppercase(subWord);
-        return subWord.join(' ');
-      }
-      return word[0].toUpperCase() + word.substring(1).toLowerCase();
-    });
+    for (let i = 0; i < input.length; i++) {
+      input[i] = input[i]
+        .toLowerCase()
+        .split(/\s+/)
+        .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+        .join(' ');
+    }
+    return input;
   };
 
   static convertToUniversalVariety = (varieties: string[]): string[] => {
