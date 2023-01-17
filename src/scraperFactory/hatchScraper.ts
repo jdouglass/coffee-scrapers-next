@@ -87,7 +87,10 @@ export default class HatchScraper implements ICrateJoyScraper {
     const stockElement = await page.$('.stockmsg');
     const stockContent =
       (await stockElement?.evaluate((el) => el.textContent)) ?? '';
-    if (stockContent.includes('Available')) {
+    if (
+      stockContent.includes('Available') ||
+      stockContent.includes('Limited Remaining')
+    ) {
       return false;
     }
     return true;
