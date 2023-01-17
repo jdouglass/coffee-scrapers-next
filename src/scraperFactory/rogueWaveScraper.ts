@@ -67,10 +67,12 @@ export default class RogueWaveScraper implements IShopifyScraper {
   };
 
   getProcess = (item: IShopifyProductResponseData): string => {
-    let process: string = 'Unknown';
+    const defaultProcess = 'Unknown';
+    let process = '';
     if (item.body_html.includes('Process')) {
       process = item.body_html.split('Process')[1];
       process = process.replaceAll('</strong>', '');
+      process = process.replaceAll('<strong>', '');
       process = process.replaceAll('&nbsp;', '');
       process = process.replaceAll(
         /<span data-sheets-userformat.*(d|D)ata-mce-fragment=\"1\">/g,
@@ -82,14 +84,18 @@ export default class RogueWaveScraper implements IShopifyScraper {
       );
       process = process.split('<')[0];
       process = process.split(':')[1].trim();
+      // console.log(process);
     } else {
-      return process;
+      return defaultProcess;
     }
     if (process.includes(' + ')) {
       const processOptions: string[] = process.split(' + ');
       process = processOptions.join(', ');
     }
-    return Helper.convertToUniversalProcess(process);
+    if (!process || process !== '') {
+      return Helper.convertToUniversalProcess(process);
+    }
+    return defaultProcess;
   };
 
   getProcessCategory = (process: string): string => {

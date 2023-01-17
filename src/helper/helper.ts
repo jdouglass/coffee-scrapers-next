@@ -135,6 +135,9 @@ export default class Helper {
       case 'Anaerobic Natural Process':
         process = 'Anaerobic Natural';
         break;
+      case 'Fully Washed':
+        process = 'Washed';
+        break;
     }
     return process;
   };
