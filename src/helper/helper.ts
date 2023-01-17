@@ -122,6 +122,9 @@ export default class Helper {
         case 'Anacafé 14':
           varieties[i] = 'Anacafe 14';
           break;
+        case 'Kureme':
+          varieties[i] = 'Kurume';
+          break;
       }
     }
     return varieties;
