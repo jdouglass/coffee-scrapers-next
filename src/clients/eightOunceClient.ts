@@ -31,18 +31,18 @@ export class EightOunceClient {
         )
       ) {
         const brand = this.factory.getBrand(item);
-        const country = this.factory.getCountry(item);
+        const country = await this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
         const dateAdded = this.factory.getDateAdded(item.published_at);
         const handle = this.factory.getHandle(item.handle);
         const imageUrl = this.factory.getImageUrl(item.images);
         const price = this.factory.getPrice(item.variants);
-        const process = this.factory.getProcess(item);
+        const process = await this.factory.getProcess(item);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
         const title = this.factory.getTitle(item, brand);
-        const variety = this.factory.getVariety(item);
+        const variety = await this.factory.getVariety(item);
         const weight = this.factory.getWeight(item);
         const product: IProduct = {
           brand,

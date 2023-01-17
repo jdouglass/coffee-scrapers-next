@@ -6,6 +6,7 @@ import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
+import { BaseUrl } from '../enums/baseUrls';
 
 export default class EightOunceScraper implements IShopifyScraper {
   getBrand = (item: IShopifyProductResponseData): string => {
@@ -36,7 +37,7 @@ export default class EightOunceScraper implements IShopifyScraper {
     return continent;
   };
 
-  getCountry = (item: IShopifyProductResponseData): string => {
+  getCountry = async (item: IShopifyProductResponseData): Promise<string> => {
     const defaultCountry = 'Unknown';
     for (const [country, continent] of worldData) {
       if (item.title.includes(country)) {
@@ -56,6 +57,21 @@ export default class EightOunceScraper implements IShopifyScraper {
     }
     if (country !== '') {
       return country;
+    } else {
+      const bodyText = await Helper.getEightOunceBodyText(
+        this.getProductUrl(item, BaseUrl.EightOunce)
+      );
+      if (bodyText.length !== 0) {
+        for (const detail of bodyText) {
+          if (detail?.includes('Origin:')) {
+            for (const [country, continent] of worldData) {
+              if (detail?.includes(country)) {
+                return country;
+              }
+            }
+          }
+        }
+      }
     }
     return defaultCountry;
   };
@@ -87,61 +103,71 @@ export default class EightOunceScraper implements IShopifyScraper {
     return Number(Number(variants[0].price).toFixed(2));
   };
 
-  getProcess = (item: IShopifyProductResponseData): string => {
-    try {
-      const defaultProcess = 'Unknown';
-      const maxProcessLength = 75;
-      let process = '';
-      const foundProcessFromTitle = item.title.match(/:.*,/);
-      if (item.body_html.includes('\nProcess')) {
+  getProcess = async (item: IShopifyProductResponseData): Promise<string> => {
+    const defaultProcess = 'Unknown';
+    const maxProcessLength = 75;
+    let process = '';
+    const foundProcessFromTitle = item.title.match(/:.*,/);
+    if (item.body_html.includes('\nProcess')) {
+      process = item.body_html.split('Process')[1];
+      process = process.split('\n')[0].trim();
+    } else {
+      if (item.body_html.includes('PROCESS')) {
+        process = item.body_html.split('PROCESS')[1];
+      } else if (item.body_html.includes('Process')) {
         process = item.body_html.split('Process')[1];
-        process = process.split('\n')[0].trim();
-      } else {
-        if (item.body_html.includes('PROCESS')) {
-          process = item.body_html.split('PROCESS')[1];
-        } else if (item.body_html.includes('Process')) {
-          process = item.body_html.split('Process')[1];
-        } else if (item.body_html.includes('BEANS')) {
-          process = item.body_html.split('BEANS')[1];
-          process = process.split(', ')[0];
-        } else if (foundProcessFromTitle) {
-          process = foundProcessFromTitle[0].trim();
-          process = process.substring(
-            process.indexOf(':') + 1,
-            process.indexOf(',')
-          );
-          process = process.trim();
-        } else {
-          return defaultProcess;
+      } else if (item.body_html.includes('BEANS')) {
+        process = item.body_html.split('BEANS')[1];
+        process = process.split(', ')[0];
+      } else if (foundProcessFromTitle) {
+        process = foundProcessFromTitle[0].trim();
+        process = process.substring(
+          process.indexOf(':') + 1,
+          process.indexOf(',')
+        );
+        process = process.trim();
+      }
+      if (process === '') {
+        const bodyText = await Helper.getEightOunceBodyText(
+          this.getProductUrl(item, BaseUrl.EightOunce)
+        );
+        if (bodyText.length !== 0) {
+          for (const detail of bodyText) {
+            if (detail?.includes('Process:')) {
+              process = detail.split('Process:')[1].trim();
+            }
+          }
         }
-        process = process.replace('</strong>', '');
-        process = process.split(':')[1].trim();
+      } else {
+        process = process.replaceAll('</strong>', '');
+        if (process.includes(':')) {
+          process = process.split(':')[1].trim();
+        }
         if (process.includes('<')) {
           process = process.split('<')[0].trim();
         }
       }
-      if (process[0] === ':') {
-        process = process.split(':')[1].trim();
-      }
-      if (process.length >= maxProcessLength) {
-        if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
-          return ProcessCategory[ProcessCategory.Washed];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Natural])
-        ) {
-          return ProcessCategory[ProcessCategory.Natural];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Honey])
-        ) {
-          return ProcessCategory[ProcessCategory.Honey];
-        } else {
-          return defaultProcess;
-        }
-      }
-      return Helper.firstLetterUppercase(process.split(' ')).join(' ');
-    } catch {
-      return 'Unknown';
     }
+    if (process[0] === ':') {
+      process = process.split(':')[1].trim();
+    }
+    if (process.length >= maxProcessLength) {
+      if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
+        return ProcessCategory[ProcessCategory.Washed];
+      } else if (
+        item.title.includes(ProcessCategory[ProcessCategory.Natural])
+      ) {
+        return ProcessCategory[ProcessCategory.Natural];
+      } else if (item.title.includes(ProcessCategory[ProcessCategory.Honey])) {
+        return ProcessCategory[ProcessCategory.Honey];
+      } else {
+        return defaultProcess;
+      }
+    }
+    if (process !== '') {
+      return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+    }
+    return defaultProcess;
   };
 
   getProcessCategory = (process: string): string => {
@@ -173,67 +199,82 @@ export default class EightOunceScraper implements IShopifyScraper {
     return isAvailable;
   };
 
-  getVariety = (item: IShopifyProductResponseData): string[] => {
-    try {
-      let variety: string;
-      const body: string = item.body_html;
-      if (body.includes('\nVariety')) {
-        variety = body.split('Variety')[1];
-        variety = variety.split('\n')[0].trim();
-      } else if (body.includes('\nVarieties')) {
-        variety = body.split('Varieties')[1];
-        variety = variety.split('\n')[0].trim();
-      } else {
-        if (body.includes('VARIET')) {
-          variety = body.split('VARIET')[1];
-        } else if (body.includes('Variet')) {
-          variety = body.split('Variet')[1];
-        } else if (body.includes('BEANS')) {
-          variety = body.split('BEANS')[1];
-          variety = variety.split(', ')[1];
-        } else {
-          return ['Unknown'];
+  getVariety = async (item: IShopifyProductResponseData): Promise<string[]> => {
+    let variety = '';
+    const unknownVariety = ['Unknown'];
+    const body: string = item.body_html;
+    if (body.includes('\nVariety')) {
+      variety = body.split('Variety')[1];
+      variety = variety.split('\n')[0].trim();
+    } else if (body.includes('\nVarieties')) {
+      variety = body.split('Varieties')[1];
+      variety = variety.split('\n')[0].trim();
+    } else {
+      if (body.includes('VARIET')) {
+        variety = body.split('VARIET')[1];
+      } else if (body.includes('Variet')) {
+        variety = body.split('Variet')[1];
+      } else if (body.includes('BEANS')) {
+        variety = body.split('BEANS')[1];
+        variety = variety.split(', ')[1];
+      }
+      if (variety === '') {
+        const bodyText = await Helper.getEightOunceBodyText(
+          this.getProductUrl(item, BaseUrl.EightOunce)
+        );
+        if (bodyText.length !== 0) {
+          for (const detail of bodyText) {
+            if (detail?.includes('Variety:')) {
+              variety = detail.split('Variety:')[1].trim();
+            }
+          }
         }
-        variety = variety.replace('</strong>', '');
-        variety = variety.split(':')[1].trim();
-        variety = variety.split('<')[0].trim();
-      }
-      if (variety[0] === ':') {
-        variety = variety.split(':')[1].trim();
-      }
-      if (variety.includes('SL 34 Ruiru 11')) {
-        variety = variety.replace('SL 34 ', 'SL 34, ');
-      } else if (variety.includes('SL 28 SL 34')) {
-        variety = variety.replace('SL 28 ', 'SL 28, ');
-      }
-      if (variety === 'Red and Yellow Catuai') {
-        return [variety];
-      }
-      let varietyOptions: string[];
-      if (
-        variety.includes(', ') ||
-        variety.includes(' &amp; ') ||
-        variety.includes(' + ') ||
-        variety.includes(' and ') ||
-        variety.includes(' / ')
-      ) {
-        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
       } else {
-        varietyOptions = [variety];
-      }
-
-      for (let i = 0; i < varietyOptions.length; i++) {
-        if (varietyOptions[i].includes('%')) {
-          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+        variety = variety.replaceAll('</strong>', '');
+        if (variety.includes(':')) {
+          variety = variety.split(':')[1].trim();
+        }
+        if (variety.includes('<')) {
+          variety = variety.split('<')[0].trim();
         }
       }
-      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
-    } catch {
-      return ['Unknown'];
     }
+    if (variety[0] === ':') {
+      variety = variety.split(':')[1].trim();
+    }
+    if (variety.includes('SL 34 Ruiru 11')) {
+      variety = variety.replace('SL 34 ', 'SL 34, ');
+    } else if (variety.includes('SL 28 SL 34')) {
+      variety = variety.replace('SL 28 ', 'SL 28, ');
+    }
+    if (variety === 'Red and Yellow Catuai') {
+      return [variety];
+    }
+    let varietyOptions: string[];
+    if (
+      variety.includes(', ') ||
+      variety.includes(' &amp; ') ||
+      variety.includes(' + ') ||
+      variety.includes(' and ') ||
+      variety.includes(' / ')
+    ) {
+      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+    } else {
+      varietyOptions = [variety];
+    }
+
+    for (let i = 0; i < varietyOptions.length; i++) {
+      if (varietyOptions[i].includes('%')) {
+        varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+      }
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    varietyOptions = Array.from([...new Set(varietyOptions)]);
+    if (varietyOptions.length !== 0) {
+      return varietyOptions;
+    }
+    return unknownVariety;
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {

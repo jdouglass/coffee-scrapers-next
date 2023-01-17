@@ -14,6 +14,7 @@ import puppeteer from 'puppeteer';
 import sharp from 'sharp';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData';
 import { puppeteerConfig } from '../puppeteerConfig';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 
 dotenv.config();
 
@@ -268,5 +269,21 @@ export default class Helper {
       }
     }
     return false;
+  }
+
+  public static async getEightOunceBodyText(
+    productUrl: string
+  ): Promise<(string | null)[]> {
+    const browser = await puppeteer.launch(puppeteerConfig);
+    const page = await browser.newPage();
+    await page.goto(productUrl);
+    await page.waitForSelector('.grid__item');
+    const bodyText = await page.$$eval('.grid__item > ul > li', (elements) =>
+      elements.map((element) => {
+        return element.textContent?.trim() as string;
+      })
+    );
+    await browser.close();
+    return bodyText;
   }
 }
