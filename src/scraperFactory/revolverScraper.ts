@@ -163,6 +163,7 @@ export default class RevolverScraper implements IShopifyScraper {
       }
       let varietyOptions: string[] = variety.split('<');
       variety = varietyOptions[0].trim();
+      variety = variety.replaceAll(/\(.*\)/g, '').trim();
       if (
         variety.includes(',') ||
         variety.includes(' &amp; ') ||
