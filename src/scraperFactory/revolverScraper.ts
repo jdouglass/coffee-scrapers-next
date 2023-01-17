@@ -50,7 +50,7 @@ export default class RevolverScraper implements IShopifyScraper {
       reportBody = reportBody.toLowerCase();
       if (hasSingleCountry) {
         for (const name of worldData.keys()) {
-          if (reportBody.includes(name)) {
+          if (reportBody.includes(name.toLowerCase())) {
             return name;
           }
         }
@@ -59,9 +59,11 @@ export default class RevolverScraper implements IShopifyScraper {
         /, |\s?\/\s?| and | \+ | \&amp; /
       );
       for (const countryFromComponent of componentCountryList) {
-        for (const countryFromList of worldData.keys()) {
-          if (countryFromList.toLowerCase().includes(countryFromComponent)) {
-            countriesFromComponents.add(countryFromList);
+        for (const country of worldData.keys()) {
+          if (
+            countryFromComponent.toLowerCase().includes(country.toLowerCase())
+          ) {
+            countriesFromComponents.add(country);
           }
         }
       }
