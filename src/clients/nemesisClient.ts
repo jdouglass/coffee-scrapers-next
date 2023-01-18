@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import configData from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class NemesisClient {
   private static vendor: string = Vendor.Nemesis;
@@ -19,9 +20,7 @@ export class NemesisClient {
 
   public static async run(): Promise<void> {
     const nemesisResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.nemesis.coffee/collections/shop-coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Nemesis);
     const nemesisData: IShopifyProductResponseData[] =
       nemesisResponse.data.products;
     for (const item of nemesisData) {

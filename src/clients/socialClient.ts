@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import configData from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class SocialClient {
   private static vendor: string = Vendor.Social;
@@ -19,9 +20,7 @@ export class SocialClient {
 
   public static async run(): Promise<void> {
     const socialResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.socialcoffeeroasters.ca/collections/coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Social);
     const socialData: IShopifyProductResponseData[] =
       socialResponse.data.products;
     for (const item of socialData) {

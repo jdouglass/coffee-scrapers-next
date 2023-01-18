@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class AngryRoasterClient {
   private static vendor: string = Vendor.TheAngryRoaster;
@@ -19,9 +20,7 @@ export class AngryRoasterClient {
 
   public static async run(): Promise<void> {
     const angryRoasterResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.theangryroaster.com/collections/all/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.AngryRoaster);
     const angryRoasterData: IShopifyProductResponseData[] =
       angryRoasterResponse.data.products;
     for (const item of angryRoasterData) {

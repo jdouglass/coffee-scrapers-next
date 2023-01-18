@@ -11,6 +11,7 @@ import { BaseUrl } from '../enums/baseUrls';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData';
 import { Vendor } from '../enums/vendors';
 import { puppeteerConfig } from '../puppeteerConfig';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class LunaClient {
   private static vendor: string = Vendor.Luna;
@@ -27,9 +28,7 @@ export class LunaClient {
     );
 
     const lunaResponse: AxiosResponse<IWordpressProductResponseData[]> =
-      await axios.get(
-        'https://enjoylunacoffee.com/wp-json/wp/v2/product?product_cat=16&per_page=100'
-      );
+      await axios.get(VendorApiUrl.Luna);
 
     const lunaResponseFiltered: IWordpressProductResponseData[] =
       lunaResponse.data.filter((item) => {

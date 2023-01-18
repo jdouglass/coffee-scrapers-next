@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import configData from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class EightOunceClient {
   private static vendor: string = Vendor.EightOunce;
@@ -19,9 +20,7 @@ export class EightOunceClient {
 
   public static async run(): Promise<void> {
     const eightOunceResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://eightouncecoffee.ca/collections/newest-coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.EightOunce);
     const eightOunceData: IShopifyProductResponseData[] =
       eightOunceResponse.data.products;
     for (const item of eightOunceData) {

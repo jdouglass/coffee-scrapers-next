@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class RogueWaveClient {
   private static vendor: string = Vendor.RogueWave;
@@ -19,9 +20,7 @@ export class RogueWaveClient {
 
   public static async run(): Promise<void> {
     const rogueWaveResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.roguewavecoffee.ca/collections/coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.RogueWave);
     const rogueWaveData: IShopifyProductResponseData[] =
       rogueWaveResponse.data.products;
     for (const item of rogueWaveData) {

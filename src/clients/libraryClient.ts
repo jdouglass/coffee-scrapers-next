@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class LibraryClient {
   private static vendor: string = Vendor.Library;
@@ -19,9 +20,7 @@ export class LibraryClient {
 
   public static async run(): Promise<void> {
     const libraryResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.thelibraryspecialtycoffee.com/collections/frontpage/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Library);
     const libraryData: IShopifyProductResponseData[] =
       libraryResponse.data.products;
     for (const item of libraryData) {

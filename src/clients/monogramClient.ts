@@ -11,6 +11,7 @@ import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import puppeteer from 'puppeteer';
 import { puppeteerConfig } from '../puppeteerConfig';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class MonogramClient {
   private static vendor: string = Vendor.Monogram;
@@ -21,9 +22,7 @@ export class MonogramClient {
 
   public static async run(): Promise<void> {
     const monogramResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://monogramcoffee.com/collections/whole-bean-coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Monogram);
     const monogramData: IShopifyProductResponseData[] =
       monogramResponse.data.products;
     for (const item of monogramData) {

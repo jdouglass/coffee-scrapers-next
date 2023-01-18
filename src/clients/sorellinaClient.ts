@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import configData from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class SorellinaClient {
   private static vendor: string = Vendor.Sorellina;
@@ -19,9 +20,7 @@ export class SorellinaClient {
 
   public static async run(): Promise<void> {
     const sorellinaResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.sorellina.ca/collections/beans/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Sorellina);
     const sorellinaData: IShopifyProductResponseData[] =
       sorellinaResponse.data.products;
     for (const item of sorellinaData) {

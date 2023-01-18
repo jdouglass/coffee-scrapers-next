@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class PiratesClient {
   private static vendor: string = Vendor.Pirates;
@@ -19,9 +20,7 @@ export class PiratesClient {
 
   public static async run(): Promise<void> {
     const piratesResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://piratesofcoffee.com/collections/coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Pirates);
     const piratesData: IShopifyProductResponseData[] =
       piratesResponse.data.products;
     for (const item of piratesData) {

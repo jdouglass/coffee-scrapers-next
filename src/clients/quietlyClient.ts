@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import configData from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class QuietlyClient {
   private static vendor: string = Vendor.Quietly;
@@ -19,9 +20,7 @@ export class QuietlyClient {
 
   public static async run(): Promise<void> {
     const quietlyResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.quietlycoffee.com/collections/our-coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Quietly);
     const quietlyData: IShopifyProductResponseData[] =
       quietlyResponse.data.products;
     for (const item of quietlyData) {

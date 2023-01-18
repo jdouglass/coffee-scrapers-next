@@ -10,6 +10,7 @@ import config from '../config.json';
 import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class SubtextClient {
   private static vendor: string = Vendor.Subtext;
@@ -20,9 +21,7 @@ export class SubtextClient {
 
   public static async run(): Promise<void> {
     const subtextResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.subtext.coffee/collections/filter-coffee-beans/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Subtext);
 
     const subtextData: IShopifyProductResponseData[] =
       subtextResponse.data.products;

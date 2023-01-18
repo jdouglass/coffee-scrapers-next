@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class PalletClient {
   private static vendor: string = Vendor.Pallet;
@@ -19,9 +20,7 @@ export class PalletClient {
 
   public static async run(): Promise<void> {
     const palletResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://palletcoffeeroasters.com/collections/coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Pallet);
     const palletData: IShopifyProductResponseData[] =
       palletResponse.data.products;
     for (const item of palletData) {

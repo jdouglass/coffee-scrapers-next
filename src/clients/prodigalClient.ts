@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import configData from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class ProdigalClient {
   private static vendor: string = Vendor.Prodigal;
@@ -19,9 +20,7 @@ export class ProdigalClient {
 
   public static async run(): Promise<void> {
     const prodigalResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://getprodigal.com/collections/87-pt-coffees/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Prodigal);
     const prodigalData: IShopifyProductResponseData[] =
       prodigalResponse.data.products;
     for (const item of prodigalData) {

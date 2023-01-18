@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class RossoClient {
   private static vendor: string = Vendor.Rosso;
@@ -19,9 +20,7 @@ export class RossoClient {
 
   public static async run(): Promise<void> {
     const rossoResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://www.rossocoffeeroasters.com/collections/coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Rosso);
     const rossoData: IShopifyProductResponseData[] =
       rossoResponse.data.products;
     for (const item of rossoData) {

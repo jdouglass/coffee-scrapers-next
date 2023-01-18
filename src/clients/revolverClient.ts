@@ -9,6 +9,7 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class RevolverClient {
   private static vendor: string = Vendor.Revolver;
@@ -19,9 +20,7 @@ export class RevolverClient {
 
   public static async run(): Promise<void> {
     const revolverResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(
-        'https://revolvercoffee.ca/collections/coffee/products.json?limit=250'
-      );
+      await axios.get(VendorApiUrl.Revolver);
     const revolverData: IShopifyProductResponseData[] =
       revolverResponse.data.products;
     for (const item of revolverData) {
