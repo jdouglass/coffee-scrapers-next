@@ -1,20 +1,14 @@
-import { ProcessCategory } from '../enums/processCategory';
-import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
 
-export default class LibraryScraper implements IShopifyScraper {
-  getContinent = (country: string): string => {
-    const continent: string | undefined = worldData.get(country);
-    if (!continent) {
-      return 'Unknown';
-    }
-    return continent;
-  };
-
+export default class LibraryScraper
+  extends ShopifyBaseScraper
+  implements IShopifyScraper
+{
   getCountry = (item: IShopifyProductResponseData): string => {
     let country = item.title
       .split(' - ')
@@ -24,21 +18,6 @@ export default class LibraryScraper implements IShopifyScraper {
       return country;
     }
     return 'Unknown';
-  };
-
-  getDateAdded = (date: string): string => {
-    return new Date(date).toISOString();
-  };
-
-  getHandle = (handle: string): string => {
-    return handle;
-  };
-
-  getImageUrl = (images: IShopifyImage[]) => {
-    if (images.length !== 0) {
-      return images[0].src;
-    }
-    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
   getPrice = (variants: IShopifyVariant[]): number => {
@@ -61,18 +40,6 @@ export default class LibraryScraper implements IShopifyScraper {
       return Helper.convertToUniversalProcess(process);
     }
     return 'Unknown';
-  };
-
-  getProcessCategory = (process: string): string => {
-    if (
-      process === ProcessCategory[ProcessCategory.Washed] ||
-      process === ProcessCategory[ProcessCategory.Natural] ||
-      process === ProcessCategory[ProcessCategory.Honey] ||
-      process === ProcessCategory[ProcessCategory.Unknown]
-    ) {
-      return process;
-    }
-    return ProcessCategory[ProcessCategory.Experimental];
   };
 
   getProductUrl = (
@@ -99,14 +66,13 @@ export default class LibraryScraper implements IShopifyScraper {
     );
   };
 
-  getSoldOut = (variants: IShopifyVariant[]): boolean => {
-    let isAvailable = true;
-    for (const variant of variants) {
-      if (variant.available) {
-        isAvailable = false;
-      }
+  getTitle = (item: IShopifyProductResponseData): string => {
+    if (item.title.includes(' - ') && this.getCountry(item) !== 'Unknown') {
+      const titleElements: string[] = item.title.split(' - ');
+      titleElements.pop();
+      return titleElements.join(' - ');
     }
-    return isAvailable;
+    return item.title;
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
@@ -128,23 +94,5 @@ export default class LibraryScraper implements IShopifyScraper {
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
-  };
-
-  getWeight = (item: IShopifyProductResponseData): number => {
-    for (const variant of item.variants) {
-      if (variant.available) {
-        return variant.grams;
-      }
-    }
-    return item.variants[0].grams;
-  };
-
-  getTitle = (item: IShopifyProductResponseData): string => {
-    if (item.title.includes(' - ') && this.getCountry(item) !== 'Unknown') {
-      const titleElements: string[] = item.title.split(' - ');
-      titleElements.pop();
-      return titleElements.join(' - ');
-    }
-    return item.title;
   };
 }

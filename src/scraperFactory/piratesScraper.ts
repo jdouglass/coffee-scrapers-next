@@ -3,22 +3,14 @@ import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
-export default class PiratesScraper implements IShopifyScraper {
-  getBrand = (item: IShopifyProductResponseData): string => {
-    return item.vendor;
-  };
-
-  getContinent = (country: string): string => {
-    const continent: string | undefined = worldData.get(country);
-    if (!continent) {
-      return 'Unknown';
-    }
-    return continent;
-  };
-
+export default class PiratesScraper
+  extends ShopifyBaseScraper
+  implements IShopifyScraper
+{
   getCountry = (item: IShopifyProductResponseData): string => {
     let reportBody: string;
     if (item.body_html.includes('Single ')) {
@@ -37,50 +29,11 @@ export default class PiratesScraper implements IShopifyScraper {
     return country;
   };
 
-  getDateAdded = (date: string): string => {
-    return new Date(date).toISOString();
-  };
-
-  getHandle = (handle: string): string => {
-    return handle;
-  };
-
-  getImageUrl = (images: IShopifyImage[]) => {
-    if (images.length !== 0) {
-      return images[0].src;
-    }
-    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
-  };
-
-  getPrice = (variants: IShopifyVariant[]): number => {
-    const price: any = variants.map((variant) => {
-      if (variant.available) {
-        return Number(Number(variant.price).toFixed(2));
-      }
-    });
-    if (!price) {
-      return Number(Number(variants[0].price).toFixed(2));
-    }
-    return Number(Number(variants[0].price).toFixed(2));
-  };
-
   getProcess = (item: IShopifyProductResponseData): string => {
     let process: string = item.body_html.split('Process:')[1];
     const processOptions: string[] = process.split('<');
     process = processOptions[0].trim();
     return Helper.convertToUniversalProcess(process);
-  };
-
-  getProcessCategory = (process: string): string => {
-    if (
-      process === ProcessCategory[ProcessCategory.Washed] ||
-      process === ProcessCategory[ProcessCategory.Natural] ||
-      process === ProcessCategory[ProcessCategory.Honey] ||
-      process === ProcessCategory[ProcessCategory.Unknown]
-    ) {
-      return process;
-    }
-    return ProcessCategory[ProcessCategory.Experimental];
   };
 
   getProductUrl = (
@@ -90,14 +43,11 @@ export default class PiratesScraper implements IShopifyScraper {
     return baseUrl + '/collections/coffee/products/' + item.handle;
   };
 
-  getSoldOut = (variants: IShopifyVariant[]): boolean => {
-    let isAvailable = true;
-    for (const variant of variants) {
-      if (variant.available) {
-        isAvailable = false;
-      }
-    }
-    return isAvailable;
+  getTitle = (item: IShopifyProductResponseData): string => {
+    let title = item.title;
+    title = title.split(':')[0];
+    const titleOptions = title.split(' ');
+    return Helper.firstLetterUppercase(titleOptions).join(' ');
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
@@ -122,21 +72,5 @@ export default class PiratesScraper implements IShopifyScraper {
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
-  };
-
-  getWeight = (item: IShopifyProductResponseData): number => {
-    for (const variant of item.variants) {
-      if (variant.available) {
-        return variant.grams;
-      }
-    }
-    return item.variants[0].grams;
-  };
-
-  getTitle = (item: IShopifyProductResponseData): string => {
-    let title = item.title;
-    title = title.split(':')[0];
-    const titleOptions = title.split(' ');
-    return Helper.firstLetterUppercase(titleOptions).join(' ');
   };
 }

@@ -1,14 +1,16 @@
 import { ProcessCategory } from '../enums/processCategory';
-import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
 import { BaseUrl } from '../enums/baseUrls';
+import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 
-export default class EightOunceScraper implements IShopifyScraper {
+export default class EightOunceScraper
+  extends ShopifyBaseScraper
+  implements IShopifyScraper
+{
   getBrand = (item: IShopifyProductResponseData): string => {
     let possibleBrand = '';
     if (item.title.includes(' - ')) {
@@ -27,14 +29,6 @@ export default class EightOunceScraper implements IShopifyScraper {
       }
     }
     return 'Unknown';
-  };
-
-  getContinent = (country: string): string => {
-    const continent: string | undefined = worldData.get(country);
-    if (!continent) {
-      return 'Unknown';
-    }
-    return continent;
   };
 
   getCountry = async (item: IShopifyProductResponseData): Promise<string> => {
@@ -74,33 +68,6 @@ export default class EightOunceScraper implements IShopifyScraper {
       }
     }
     return defaultCountry;
-  };
-
-  getDateAdded = (date: string): string => {
-    return new Date(date).toISOString();
-  };
-
-  getHandle = (handle: string): string => {
-    return handle;
-  };
-
-  getImageUrl = (images: IShopifyImage[]) => {
-    if (images.length !== 0) {
-      return images[0].src;
-    }
-    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
-  };
-
-  getPrice = (variants: IShopifyVariant[]): number => {
-    const price: any = variants.map((variant) => {
-      if (variant.available) {
-        return Number(Number(variant.price).toFixed(2));
-      }
-    });
-    if (!price) {
-      return Number(Number(variants[0].price).toFixed(2));
-    }
-    return Number(Number(variants[0].price).toFixed(2));
   };
 
   getProcess = async (item: IShopifyProductResponseData): Promise<string> => {
@@ -170,18 +137,6 @@ export default class EightOunceScraper implements IShopifyScraper {
     return defaultProcess;
   };
 
-  getProcessCategory = (process: string): string => {
-    if (
-      process === ProcessCategory[ProcessCategory.Washed] ||
-      process === ProcessCategory[ProcessCategory.Natural] ||
-      process === ProcessCategory[ProcessCategory.Honey] ||
-      process === ProcessCategory[ProcessCategory.Unknown]
-    ) {
-      return process;
-    }
-    return ProcessCategory[ProcessCategory.Experimental];
-  };
-
   getProductUrl = (
     item: IShopifyProductResponseData,
     baseUrl: string
@@ -189,14 +144,21 @@ export default class EightOunceScraper implements IShopifyScraper {
     return baseUrl + '/products/' + item.handle;
   };
 
-  getSoldOut = (variants: IShopifyVariant[]): boolean => {
-    let isAvailable = true;
-    for (const variant of variants) {
-      if (variant.available) {
-        isAvailable = false;
-      }
+  getTitle = (item: IShopifyProductResponseData, brand?: string): string => {
+    let title = item.title;
+    if (title.includes('-')) {
+      title = title.split('-')[1];
+    } else {
+      title = title.split(brand as string)[1].trim();
     }
-    return isAvailable;
+    if (title.includes(':')) {
+      return title.split(':')[0].trim();
+    } else if (title.includes(',')) {
+      return title.split(',')[0].trim();
+    } else if (title.includes('(')) {
+      return title.split('(')[0].trim();
+    }
+    return title.trim();
   };
 
   getVariety = async (item: IShopifyProductResponseData): Promise<string[]> => {
@@ -351,22 +313,5 @@ export default class EightOunceScraper implements IShopifyScraper {
       return item.variants[0].grams;
     }
     return 0;
-  };
-
-  getTitle = (item: IShopifyProductResponseData, brand?: string): string => {
-    let title = item.title;
-    if (title.includes('-')) {
-      title = title.split('-')[1];
-    } else {
-      title = title.split(brand as string)[1].trim();
-    }
-    if (title.includes(':')) {
-      return title.split(':')[0].trim();
-    } else if (title.includes(',')) {
-      return title.split(',')[0].trim();
-    } else if (title.includes('(')) {
-      return title.split('(')[0].trim();
-    }
-    return title.trim();
   };
 }

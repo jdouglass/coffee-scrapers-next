@@ -3,18 +3,14 @@ import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 
-export default class SocialScraper implements IShopifyScraper {
-  getContinent = (country: string): string => {
-    const continent: string | undefined = worldData.get(country);
-    if (!continent) {
-      return 'Unknown';
-    }
-    return continent;
-  };
-
+export default class SocialScraper
+  extends ShopifyBaseScraper
+  implements IShopifyScraper
+{
   getCountry = (item: IShopifyProductResponseData): string => {
     const defaultCountry = 'Unknown';
     const countryList: Array<string> = [];
@@ -40,33 +36,6 @@ export default class SocialScraper implements IShopifyScraper {
       return countryList[0];
     }
     return 'Multiple';
-  };
-
-  getDateAdded = (date: string): string => {
-    return new Date(date).toISOString();
-  };
-
-  getHandle = (handle: string): string => {
-    return handle;
-  };
-
-  getImageUrl = (images: IShopifyImage[]) => {
-    if (images.length !== 0) {
-      return images[0].src;
-    }
-    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
-  };
-
-  getPrice = (variants: IShopifyVariant[]): number => {
-    const price: any = variants.map((variant) => {
-      if (variant.available) {
-        return Number(Number(variant.price).toFixed(2));
-      }
-    });
-    if (!price) {
-      return Number(Number(variants[0].price).toFixed(2));
-    }
-    return Number(Number(variants[0].price).toFixed(2));
   };
 
   getProcess = (item: IShopifyProductResponseData): string => {
@@ -105,18 +74,6 @@ export default class SocialScraper implements IShopifyScraper {
     }
   };
 
-  getProcessCategory = (process: string): string => {
-    if (
-      process === ProcessCategory[ProcessCategory.Washed] ||
-      process === ProcessCategory[ProcessCategory.Natural] ||
-      process === ProcessCategory[ProcessCategory.Honey] ||
-      process === ProcessCategory[ProcessCategory.Unknown]
-    ) {
-      return process;
-    }
-    return ProcessCategory[ProcessCategory.Experimental];
-  };
-
   getProductUrl = (
     item: IShopifyProductResponseData,
     baseUrl: string
@@ -124,14 +81,8 @@ export default class SocialScraper implements IShopifyScraper {
     return baseUrl + '/collections/coffee/products/' + item.handle;
   };
 
-  getSoldOut = (variants: IShopifyVariant[]): boolean => {
-    let isAvailable = true;
-    for (const variant of variants) {
-      if (variant.available) {
-        isAvailable = false;
-      }
-    }
-    return isAvailable;
+  getTitle = (item: IShopifyProductResponseData): string => {
+    return item.title.split('-')[0].trim();
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
@@ -195,9 +146,5 @@ export default class SocialScraper implements IShopifyScraper {
       return Number(item.variants[0].title.split(' ')[0]) * poundToGrams;
     }
     return item.variants[0].grams;
-  };
-
-  getTitle = (item: IShopifyProductResponseData): string => {
-    return item.title.split('-')[0].trim();
   };
 }

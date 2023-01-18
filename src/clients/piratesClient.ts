@@ -30,7 +30,6 @@ export class PiratesClient {
           item.title.includes(unwantedString)
         )
       ) {
-        const brand = this.factory.getBrand(item);
         const country = this.factory.getCountry(item);
         const continent = this.factory.getContinent(country);
         const dateAdded = this.factory.getDateAdded(item.published_at);
@@ -45,7 +44,7 @@ export class PiratesClient {
         const variety = this.factory.getVariety(item);
         const weight = this.factory.getWeight(item);
         const product: IProduct = {
-          brand,
+          brand: this.vendor,
           country,
           continent,
           dateAdded,

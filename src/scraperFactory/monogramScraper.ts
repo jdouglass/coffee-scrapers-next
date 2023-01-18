@@ -1,27 +1,19 @@
-import { ProcessCategory } from '../enums/processCategory';
-import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
-import { worldData } from '../data/worldData';
+import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import Helper from '../helper/helper';
 import { Page } from 'puppeteer';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
 
-export default class MonogramScraper implements IShopifyScraper {
+export default class MonogramScraper
+  extends ShopifyBaseScraper
+  implements IShopifyScraper
+{
   getBrand = (item: IShopifyProductResponseData): string => {
     if (item.handle.includes('atlas')) {
       const titleOptions: string[] = item.title.split('-');
       return titleOptions[0].trim();
     }
     return 'Monogram';
-  };
-
-  getContinent = (country: string): string => {
-    const continent: string | undefined = worldData.get(country);
-    if (!continent) {
-      return 'Unknown';
-    }
-    return continent;
   };
 
   getCountry = async (
@@ -66,33 +58,6 @@ export default class MonogramScraper implements IShopifyScraper {
     return Helper.firstLetterUppercase([country]).join(' ');
   };
 
-  getDateAdded = (date: string): string => {
-    return new Date(date).toISOString();
-  };
-
-  getHandle = (handle: string): string => {
-    return handle;
-  };
-
-  getImageUrl = (images: IShopifyImage[]) => {
-    if (images.length !== 0) {
-      return images[0].src;
-    }
-    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
-  };
-
-  getPrice = (variants: IShopifyVariant[]): number => {
-    const price: any = variants.map((variant) => {
-      if (variant.available) {
-        return Number(Number(variant.price).toFixed(2));
-      }
-    });
-    if (!price) {
-      return Number(Number(variants[0].price).toFixed(2));
-    }
-    return Number(Number(variants[0].price).toFixed(2));
-  };
-
   getProcess = async (
     item: IShopifyProductResponseData,
     page?: Page
@@ -132,18 +97,6 @@ export default class MonogramScraper implements IShopifyScraper {
     return 'Unknown';
   };
 
-  getProcessCategory = (process: string): string => {
-    if (
-      process === ProcessCategory[ProcessCategory.Washed] ||
-      process === ProcessCategory[ProcessCategory.Natural] ||
-      process === ProcessCategory[ProcessCategory.Honey] ||
-      process === ProcessCategory[ProcessCategory.Unknown]
-    ) {
-      return process;
-    }
-    return ProcessCategory[ProcessCategory.Experimental];
-  };
-
   getProductUrl = (
     item: IShopifyProductResponseData,
     baseUrl: string
@@ -155,16 +108,6 @@ export default class MonogramScraper implements IShopifyScraper {
       '?variant=' +
       item.variants[0].id.toString()
     );
-  };
-
-  getSoldOut = (variants: IShopifyVariant[]): boolean => {
-    let isAvailable = true;
-    for (const variant of variants) {
-      if (variant.available) {
-        isAvailable = false;
-      }
-    }
-    return isAvailable;
   };
 
   getVariety = async (
@@ -216,15 +159,6 @@ export default class MonogramScraper implements IShopifyScraper {
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
-  };
-
-  getWeight = (item: IShopifyProductResponseData): number => {
-    for (const variant of item.variants) {
-      if (variant.available) {
-        return variant.grams;
-      }
-    }
-    return item.variants[0].grams;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {

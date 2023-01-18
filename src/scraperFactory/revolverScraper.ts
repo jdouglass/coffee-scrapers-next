@@ -3,12 +3,15 @@ import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
-import { title } from 'process';
 
-export default class RevolverScraper implements IShopifyScraper {
+export default class RevolverScraper
+  extends ShopifyBaseScraper
+  implements IShopifyScraper
+{
   getBrand = (item: IShopifyProductResponseData): string => {
     for (const brand of brands) {
       if (item.title.includes(brand)) {
@@ -16,14 +19,6 @@ export default class RevolverScraper implements IShopifyScraper {
       }
     }
     return 'Unknown';
-  };
-
-  getContinent = (country: string): string => {
-    const continent: string | undefined = worldData.get(country);
-    if (!continent) {
-      return 'Unknown';
-    }
-    return continent;
   };
 
   getCountry = (item: IShopifyProductResponseData): string => {
@@ -76,33 +71,6 @@ export default class RevolverScraper implements IShopifyScraper {
     return unknownCountry;
   };
 
-  getDateAdded = (date: string): string => {
-    return new Date(date).toISOString();
-  };
-
-  getHandle = (handle: string): string => {
-    return handle;
-  };
-
-  getImageUrl = (images: IShopifyImage[]) => {
-    if (images.length !== 0) {
-      return images[0].src;
-    }
-    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
-  };
-
-  getPrice = (variants: IShopifyVariant[]): number => {
-    const price: any = variants.map((variant) => {
-      if (variant.available) {
-        return Number(Number(variant.price).toFixed(2));
-      }
-    });
-    if (!price) {
-      return Number(Number(variants[0].price).toFixed(2));
-    }
-    return Number(Number(variants[0].price).toFixed(2));
-  };
-
   getProcess = (item: IShopifyProductResponseData): string => {
     let process = 'Unknown';
     if (item.body_html.includes('Process:')) {
@@ -133,14 +101,46 @@ export default class RevolverScraper implements IShopifyScraper {
     return baseUrl + '/collections/coffee/products/' + item.handle;
   };
 
-  getSoldOut = (variants: IShopifyVariant[]): boolean => {
-    let isAvailable = true;
-    for (const variant of variants) {
-      if (variant.available) {
-        isAvailable = false;
+  getTitle = (
+    item: IShopifyProductResponseData,
+    brand?: string,
+    country?: string
+  ): string => {
+    const title = item.title;
+    try {
+      let newTitle = title;
+      if (title.includes(brand as string)) {
+        newTitle = title.split(brand as string)[1];
       }
+      if (newTitle.includes('*')) {
+        const titleOptions = newTitle.split('*');
+        if (titleOptions.length > 3) {
+          newTitle = titleOptions[titleOptions.length - 4];
+        } else {
+          newTitle = newTitle.split('*')[0];
+        }
+      }
+      if (newTitle.includes(country as string)) {
+        newTitle = newTitle.replace(country as string, '');
+      }
+      if (newTitle.includes('"')) {
+        newTitle = newTitle.replaceAll('"', '');
+      }
+      if (newTitle.includes("'")) {
+        newTitle = newTitle.replaceAll("'", '');
+      }
+      if (newTitle.includes('(')) {
+        newTitle = newTitle.replaceAll('(', '');
+      }
+      if (newTitle.includes(')')) {
+        newTitle = newTitle.replaceAll(')', '');
+      }
+      newTitle = newTitle.replaceAll(/\s+/g, ' ').trim();
+      return newTitle;
+    } catch (err) {
+      console.error(err);
+      return title;
     }
-    return isAvailable;
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
@@ -201,47 +201,5 @@ export default class RevolverScraper implements IShopifyScraper {
       return parseInt(weight);
     }
     return 0;
-  };
-
-  getTitle = (
-    item: IShopifyProductResponseData,
-    brand?: string,
-    country?: string
-  ): string => {
-    const title = item.title;
-    try {
-      let newTitle = title;
-      if (title.includes(brand as string)) {
-        newTitle = title.split(brand as string)[1];
-      }
-      if (newTitle.includes('*')) {
-        const titleOptions = newTitle.split('*');
-        if (titleOptions.length > 3) {
-          newTitle = titleOptions[titleOptions.length - 4];
-        } else {
-          newTitle = newTitle.split('*')[0];
-        }
-      }
-      if (newTitle.includes(country as string)) {
-        newTitle = newTitle.replace(country as string, '');
-      }
-      if (newTitle.includes('"')) {
-        newTitle = newTitle.replaceAll('"', '');
-      }
-      if (newTitle.includes("'")) {
-        newTitle = newTitle.replaceAll("'", '');
-      }
-      if (newTitle.includes('(')) {
-        newTitle = newTitle.replaceAll('(', '');
-      }
-      if (newTitle.includes(')')) {
-        newTitle = newTitle.replaceAll(')', '');
-      }
-      newTitle = newTitle.replaceAll(/\s+/g, ' ').trim();
-      return newTitle;
-    } catch (err) {
-      console.error(err);
-      return title;
-    }
   };
 }
