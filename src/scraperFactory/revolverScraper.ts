@@ -15,7 +15,7 @@ export default class RevolverScraper
   getBrand = (item: IShopifyProductResponseData): string => {
     for (const brand of brands) {
       if (item.title.includes(brand)) {
-        return brand;
+        return Helper.convertToUniversalBrand(brand);
       }
     }
     return 'Unknown';

@@ -92,6 +92,7 @@ export default class Helper {
           break;
         case 'Blend':
         case 'Field Blend':
+        case 'Mixed':
           varieties[i] = 'Various';
           break;
         case 'Geisha':
@@ -147,6 +148,9 @@ export default class Helper {
     switch (brand) {
       case '3FE':
         brand = '3fe';
+        break;
+      case 'Abracadbra':
+        brand = 'Abracadabra';
         break;
     }
     return brand;
