@@ -46,6 +46,8 @@ export default class PrototypeScraper implements ISquareSpaceScraper {
       handle = handle.split(',')[0];
     }
     handle = handle.replaceAll(' ', '-');
+    handle = handle.replaceAll('(', '');
+    handle = handle.replaceAll(')', '');
     return handle;
   };
 
@@ -92,13 +94,13 @@ export default class PrototypeScraper implements ISquareSpaceScraper {
   };
 
   getSoldOut = async (page: Page): Promise<boolean> => {
-    const addToCartButton = await page.$('.sqs-add-to-cart-button-inner');
-    const addToCartButtonContent =
-      (await addToCartButton?.evaluate((el) => el.textContent)) ?? '';
-    if (addToCartButtonContent.includes('Add To Cart')) {
+    const qauntitySelector = '.quantity-label';
+    try {
+      await page.waitForSelector(qauntitySelector);
       return false;
+    } catch (e) {
+      return true;
     }
-    return true;
   };
 
   getVariety = (item: ISquareSpaceProductResponseData): string[] => {
