@@ -12,21 +12,22 @@ export default class PiratesScraper
   implements IShopifyScraper
 {
   getCountry = (item: IShopifyProductResponseData): string => {
-    let reportBody: string;
+    let reportBody = '';
+    const unknownCountry = 'Unknown';
     if (item.body_html.includes('Single ')) {
       reportBody = item.body_html.split('Single ')[1];
-    } else {
+    } else if (item.body_html.includes('Origin')) {
       reportBody = item.body_html.split('Origin:')[1];
     }
-    reportBody = reportBody.split('<')[0];
-    const country: string = 'Unknown';
-    const countryList = worldData.keys();
-    for (const name of countryList) {
+    if (reportBody !== '') {
+      reportBody = reportBody.split('<')[0];
+    }
+    for (const name of worldData.keys()) {
       if (item.title.includes(name) || reportBody.includes(name)) {
         return name;
       }
     }
-    return country;
+    return unknownCountry;
   };
 
   getProcess = (item: IShopifyProductResponseData): string => {
@@ -51,26 +52,39 @@ export default class PiratesScraper
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
-    let variety: string;
+    let variety = '';
+    const unknownVariety = ['Unknown'];
     const body: string = item.body_html;
     if (body.includes('Varietal:')) {
       variety = body.split('Varietal:')[1];
     } else if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
     } else {
-      return ['Unknown'];
+      return unknownVariety;
     }
-    let varietyOptions: string[] = variety.split('<');
-    variety = varietyOptions[0].trim();
-    variety = variety.replaceAll(/\(.*\)/g, '').trim();
-    if (variety.includes(', ')) {
-      varietyOptions = variety.split(', ');
-    } else {
-      varietyOptions = [variety];
+    if (variety !== '') {
+      variety = variety.replaceAll('</strong>', '').trim();
+      variety = variety.replaceAll('<span>', '').trim();
+      variety = variety.replaceAll('</span>', '').trim();
+      variety = variety.replaceAll(/\(.*\)/g, '').trim();
+      let varietyOptions: string[] = variety.split('<');
+      variety = varietyOptions[0].trim();
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      varietyOptions = Array.from([...new Set(varietyOptions)]);
+      return varietyOptions;
     }
-    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return unknownVariety;
   };
 }

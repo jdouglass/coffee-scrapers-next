@@ -26,7 +26,7 @@ export class PiratesClient {
     for (const item of piratesData) {
       if (
         !unwantedTitles.some((unwantedString) =>
-          item.title.includes(unwantedString)
+          item.title.toLowerCase().includes(unwantedString.toLowerCase())
         )
       ) {
         const country = this.factory.getCountry(item);

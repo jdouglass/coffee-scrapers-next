@@ -71,6 +71,7 @@ export default class Helper {
         case 'Jarc':
         case 'Jarc 74110':
         case 'Jarc Varietals':
+        case 'Landrace':
         case 'Landrace Cultivar':
         case 'Landrace Varietals':
         case 'local landrace':
