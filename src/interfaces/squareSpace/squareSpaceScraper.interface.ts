@@ -11,5 +11,4 @@ export interface ISquareSpaceBaseScraper {
     item: ISquareSpaceProductResponseData
   ) => string;
   getSoldOut: (page: Page, selector: string) => Promise<boolean>;
-  getVariety: (item: ISquareSpaceProductResponseData) => string[];
 }
