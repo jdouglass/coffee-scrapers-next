@@ -1,7 +1,6 @@
 import { IShopifyProductResponseData } from './shopifyResponseData.interface';
 
 export interface IShopifyScraper {
-  getBrand?: (item: IShopifyProductResponseData) => string;
   getCountry: (item: IShopifyProductResponseData) => Promise<string> | string;
   getProcess: (item: IShopifyProductResponseData) => Promise<string> | string;
   getProductUrl: (item: IShopifyProductResponseData, baseUrl: string) => string;
