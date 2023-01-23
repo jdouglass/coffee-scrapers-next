@@ -8,7 +8,7 @@ import config from '../config.json';
 import puppeteer from 'puppeteer';
 import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
-import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData';
+import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
 import { Vendor } from '../enums/vendors';
 import { puppeteerConfig } from '../puppeteerConfig';
 import { VendorApiUrl } from '../enums/vendorApiUrls';

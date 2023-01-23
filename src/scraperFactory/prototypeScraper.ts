@@ -1,29 +1,26 @@
-import { ProcessCategory } from '../enums/processCategory';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
-import { Page } from 'puppeteer';
-import { ISquareSpaceScraper } from '../interfaces/squareSpace/squareSpaceScraper';
-import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squareSpaceResponseData';
-import { totalmem } from 'os';
+import { ISquareSpaceBaseScraper } from '../interfaces/squareSpace/squareSpaceScraper.interface';
+import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squareSpaceResponseData.interface';
+import { SquareSpaceBaseScraper } from '../baseScrapers/squareSpaceBaseScraper';
 
-export default class PrototypeScraper implements ISquareSpaceScraper {
-  getContinent = (country: string): string => {
-    return worldData.get(country) ?? 'Unknown';
-  };
-
+export default class PrototypeScraper
+  extends SquareSpaceBaseScraper
+  implements ISquareSpaceBaseScraper
+{
   getCountry = (item: ISquareSpaceProductResponseData): string => {
     const title = item.title;
     const excerpt = item.excerpt;
     const countryList: Array<string> = [];
-    for (const [key, value] of worldData) {
-      if (title.includes(key)) {
-        countryList.push(key);
+    for (const country of worldData.keys()) {
+      if (title.includes(country)) {
+        countryList.push(country);
       }
     }
     if (countryList.length === 0) {
-      for (const [key, value] of worldData) {
-        if (excerpt.includes(key)) {
-          countryList.push(key);
+      for (const country of worldData.keys()) {
+        if (excerpt.includes(country)) {
+          countryList.push(country);
         }
       }
     }
@@ -34,29 +31,6 @@ export default class PrototypeScraper implements ISquareSpaceScraper {
       return countryList[0];
     }
     return 'Multiple';
-  };
-
-  getDateAdded = (item: ISquareSpaceProductResponseData): string => {
-    return new Date(item.updatedOn).toISOString();
-  };
-
-  getHandle = (item: ISquareSpaceProductResponseData): string => {
-    let handle = item.title.toLowerCase();
-    if (handle.includes(',')) {
-      handle = handle.split(',')[0];
-    }
-    handle = handle.replaceAll(' ', '-');
-    handle = handle.replaceAll('(', '');
-    handle = handle.replaceAll(')', '');
-    return handle;
-  };
-
-  getImageUrl = (image: string): string => {
-    return image;
-  };
-
-  getPrice = (item: ISquareSpaceProductResponseData): number => {
-    return Number(item.variants[0].priceMoney.value);
   };
 
   getProcess = (item: ISquareSpaceProductResponseData): string => {
@@ -72,35 +46,6 @@ export default class PrototypeScraper implements ISquareSpaceScraper {
       return process.trim();
     }
     return 'Unknown';
-  };
-
-  getProcessCategory = (process: string): string => {
-    if (
-      process === ProcessCategory[ProcessCategory.Washed] ||
-      process === ProcessCategory[ProcessCategory.Natural] ||
-      process === ProcessCategory[ProcessCategory.Honey] ||
-      process === ProcessCategory[ProcessCategory.Unknown]
-    ) {
-      return process;
-    }
-    return ProcessCategory[ProcessCategory.Experimental];
-  };
-
-  getProductUrl = (
-    baseUrl: string,
-    item: ISquareSpaceProductResponseData
-  ): string => {
-    return baseUrl + item.fullUrl;
-  };
-
-  getSoldOut = async (page: Page): Promise<boolean> => {
-    const qauntitySelector = '.quantity-label';
-    try {
-      await page.waitForSelector(qauntitySelector);
-      return false;
-    } catch (e) {
-      return true;
-    }
   };
 
   getVariety = (item: ISquareSpaceProductResponseData): string[] => {

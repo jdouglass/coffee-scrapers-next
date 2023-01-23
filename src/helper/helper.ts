@@ -2,7 +2,6 @@ import {
   S3Client,
   PutObjectCommandInput,
   PutObjectCommand,
-  PutObjectCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandInput,
 } from '@aws-sdk/client-s3';
@@ -12,9 +11,8 @@ import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
 import puppeteer from 'puppeteer';
 import sharp from 'sharp';
-import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData';
+import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
 import { puppeteerConfig } from '../puppeteerConfig';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
 
 dotenv.config();
 
@@ -169,9 +167,7 @@ export default class Helper {
     };
     let collectionImageUrl: string = product.imageUrl;
     try {
-      const data: PutObjectCommandOutput = await this.s3Client.send(
-        new PutObjectCommand(params)
-      );
+      await this.s3Client.send(new PutObjectCommand(params));
       collectionImageUrl =
         'https://' +
         this.bucket +
@@ -193,7 +189,7 @@ export default class Helper {
       Key: key,
     };
     try {
-      const data = await this.s3Client.send(new DeleteObjectCommand(params));
+      await this.s3Client.send(new DeleteObjectCommand(params));
     } catch (err) {
       console.log('Error', err);
     }

@@ -1,4 +1,4 @@
-import { ICrateJoyImage } from './crateJoyImage';
+import { ICrateJoyImage } from './crateJoyImage.interface';
 
 export interface ICrateJoyProductResponseData {
   description: string;

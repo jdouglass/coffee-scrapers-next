@@ -1,4 +1,4 @@
-import { IWordpressRendered } from './wordpressRendered';
+import { IWordpressRendered } from './wordpressRendered.interface';
 
 export interface IWordpressProductResponseData {
   exerpt: IWordpressRendered;

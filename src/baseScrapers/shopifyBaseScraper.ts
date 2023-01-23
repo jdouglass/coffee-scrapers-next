@@ -1,18 +1,23 @@
-import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
+import { IShopifyImage } from '../interfaces/shopify/shopifyImage.interface';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant.interface';
 import { Scraper } from './scraper';
-import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 
 export class ShopifyBaseScraper extends Scraper implements IShopifyBaseScraper {
-  readonly noImageAvailableUrl =
-    'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
+  getDateAdded = (date: string): string => {
+    return new Date(date).toISOString();
+  };
 
   getImageUrl = (images: IShopifyImage[]): string => {
     if (images.length !== 0) {
       return images[0].src;
     }
     return this.noImageAvailableUrl;
+  };
+
+  getHandle = (handle: string): string => {
+    return handle;
   };
 
   getPrice = (variants: IShopifyVariant[]): number => {

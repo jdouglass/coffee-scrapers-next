@@ -2,7 +2,7 @@ import { ProcessCategory } from '../enums/processCategory';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { Page } from 'puppeteer';
-import { IWordpressScraper } from '../interfaces/wordpress/wordpressScraper';
+import { IWordpressScraper } from '../interfaces/wordpress/wordpressScraper.interface';
 
 export default class LunaScraper implements IWordpressScraper {
   getContinent = (country: string): string => {
@@ -14,9 +14,9 @@ export default class LunaScraper implements IWordpressScraper {
     const descriptionContent =
       (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
     const countryList: Array<string> = [];
-    for (const [key, value] of worldData) {
-      if (descriptionContent.includes(key)) {
-        countryList.push(key);
+    for (const country of worldData.keys()) {
+      if (descriptionContent.includes(country)) {
+        countryList.push(country);
       }
     }
     if (countryList.length === 0) {

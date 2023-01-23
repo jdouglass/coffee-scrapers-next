@@ -1,8 +1,5 @@
-import { ProcessCategory } from '../enums/processCategory';
-import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
@@ -12,7 +9,7 @@ export default class RogueWaveScraper
   implements IShopifyScraper
 {
   getCountry = (item: IShopifyProductResponseData): string => {
-    for (const [country, continent] of worldData) {
+    for (const country of worldData.keys()) {
       if (item.title.includes(country)) {
         return country;
       }

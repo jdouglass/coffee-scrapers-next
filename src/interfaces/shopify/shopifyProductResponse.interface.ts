@@ -1,4 +1,4 @@
-import { IShopifyProductResponseData } from './shopifyResponseData';
+import { IShopifyProductResponseData } from './shopifyResponseData.interface';
 
 export interface IShopifyProductResponse {
   products: IShopifyProductResponseData[];

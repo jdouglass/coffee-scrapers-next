@@ -1,8 +1,8 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 
 export default class SubtextScraper
   extends ShopifyBaseScraper
@@ -11,7 +11,7 @@ export default class SubtextScraper
   getCountry = (item: IShopifyProductResponseData): string => {
     let title = item.title.split(' | ')[1];
     title = title.split(' - ')[0].trim();
-    for (const [country, continent] of worldData) {
+    for (const country of worldData.keys()) {
       if (title.includes(country)) {
         return country;
       }

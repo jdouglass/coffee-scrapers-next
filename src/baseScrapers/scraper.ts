@@ -1,22 +1,13 @@
 import { worldData } from '../data/worldData';
 import { ProcessCategory } from '../enums/processCategory';
-import { IScraper } from '../interfaces/scrapers/scraper';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
 
 export class Scraper implements IScraper {
+  readonly noImageAvailableUrl =
+    'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
+
   getContinent = (country: string): string => {
-    const continent: string | undefined = worldData.get(country);
-    if (!continent) {
-      return 'Unknown';
-    }
-    return continent;
-  };
-
-  getDateAdded = (date: string): string => {
-    return new Date(date).toISOString();
-  };
-
-  getHandle = (handle: string): string => {
-    return handle;
+    return worldData.get(country) ?? 'Unknown';
   };
 
   getProcessCategory = (process: string): string => {

@@ -2,8 +2,8 @@ import { ProcessCategory } from '../enums/processCategory';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { Page } from 'puppeteer';
-import { ICrateJoyScraper } from '../interfaces/crateJoy/crateJoyScraper';
-import { ICrateJoyImage } from '../interfaces/crateJoy/crateJoyImage';
+import { ICrateJoyScraper } from '../interfaces/crateJoy/crateJoyScraper.interface';
+import { ICrateJoyImage } from '../interfaces/crateJoy/crateJoyImage.interface';
 
 export default class HatchScraper implements ICrateJoyScraper {
   getContinent = (country: string): string => {
@@ -15,9 +15,9 @@ export default class HatchScraper implements ICrateJoyScraper {
     const descriptionContent =
       (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
     const countryList: Array<string> = [];
-    for (const [key, value] of worldData) {
-      if (descriptionContent.includes(key)) {
-        countryList.push(key);
+    for (const country of worldData.keys()) {
+      if (descriptionContent.includes(country)) {
+        countryList.push(country);
       }
     }
     if (countryList.length === 0) {

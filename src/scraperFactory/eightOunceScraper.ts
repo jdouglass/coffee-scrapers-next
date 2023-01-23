@@ -1,6 +1,6 @@
 import { ProcessCategory } from '../enums/processCategory';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
@@ -33,7 +33,7 @@ export default class EightOunceScraper
 
   getCountry = async (item: IShopifyProductResponseData): Promise<string> => {
     const defaultCountry = 'Unknown';
-    for (const [country, continent] of worldData) {
+    for (const country of worldData.keys()) {
       if (item.title.includes(country)) {
         return country;
       }
@@ -58,7 +58,7 @@ export default class EightOunceScraper
       if (bodyText.length !== 0) {
         for (const detail of bodyText) {
           if (detail?.includes('Origin:')) {
-            for (const [country, continent] of worldData) {
+            for (const country of worldData.keys()) {
               if (detail?.includes(country)) {
                 return country;
               }

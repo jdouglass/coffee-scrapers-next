@@ -1,5 +1,5 @@
-import { ISquareSpaceItems } from './squareSpaceItems';
-import { ISquareSpaceVariant } from './squareSpaceVariant';
+import { ISquareSpaceItems } from './squareSpaceItems.interface';
+import { ISquareSpaceVariant } from './squareSpaceVariant.interface';
 
 export interface ISquareSpaceProductResponseData {
   addedOn: number;

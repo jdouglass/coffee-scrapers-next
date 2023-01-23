@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import { ICrateJoyImage } from './crateJoyImage';
+import { ICrateJoyImage } from './crateJoyImage.interface';
 
 export interface ICrateJoyScraper {
   getBrand?: (page: Page) => string;

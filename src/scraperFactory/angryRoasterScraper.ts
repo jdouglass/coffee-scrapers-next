@@ -1,9 +1,9 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
+import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant.interface';
 
 export default class AngryRoasterScraper
   extends ShopifyBaseScraper

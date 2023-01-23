@@ -1,8 +1,5 @@
-import { ProcessCategory } from '../enums/processCategory';
-import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
@@ -18,7 +15,7 @@ export default class QuietlyScraper
     if (title.includes('Juan Martin')) {
       return 'Colombia';
     }
-    for (const [country, continent] of worldData) {
+    for (const country of worldData.keys()) {
       if (title.includes(country)) {
         return country;
       }
@@ -29,7 +26,6 @@ export default class QuietlyScraper
   getProcess = (item: IShopifyProductResponseData): string => {
     try {
       const defaultProcess = 'Unknown';
-      const maxProcessLength = 75;
       let process = '';
 
       if (item.body_html.includes('PROCESS')) {
@@ -52,21 +48,6 @@ export default class QuietlyScraper
       }
       if (process === 'Fully Washed') {
         process = 'Washed';
-      }
-      if (process.length >= maxProcessLength) {
-        if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
-          return ProcessCategory[ProcessCategory.Washed];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Natural])
-        ) {
-          return ProcessCategory[ProcessCategory.Natural];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Honey])
-        ) {
-          return ProcessCategory[ProcessCategory.Honey];
-        } else {
-          return defaultProcess;
-        }
       }
       return Helper.firstLetterUppercase(process.split(' ')).join(' ');
     } catch {

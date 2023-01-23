@@ -9,7 +9,7 @@ import puppeteer from 'puppeteer';
 import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
-import { ISquareSpaceProductResponse } from '../interfaces/squareSpace/squareSpaceProductResponse';
+import { ISquareSpaceProductResponse } from '../interfaces/squareSpace/squareSpaceProductResponse.interface';
 import { puppeteerConfig } from '../puppeteerConfig';
 
 export class PrototypeClient {
@@ -25,13 +25,15 @@ export class PrototypeClient {
       '/shop/',
       '/shop/'
     );
+    const quantitySelector = '.quantity-label';
+    const productTitleSelector = '.ProductItem-details-title';
 
     for (const url of productUrls) {
       const id = url.split('/')[url.split('/').length - 1];
       const browser = await puppeteer.launch(puppeteerConfig);
       const page = await browser.newPage();
       await page.goto(url);
-      const productTitleElement = await page.$('.ProductItem-details-title');
+      const productTitleElement = await page.$(productTitleSelector);
       const productTitle =
         (await productTitleElement?.evaluate((el) => el.textContent)) ?? '';
       if (
@@ -61,7 +63,7 @@ export class PrototypeClient {
           this.baseUrl,
           prototypeResponse.data.item
         );
-        const isSoldOut = await this.factory.getSoldOut(page);
+        const isSoldOut = await this.factory.getSoldOut(page, quantitySelector);
         const title = this.factory.getTitle(prototypeResponse.data.item);
         const variety = this.factory.getVariety(prototypeResponse.data.item);
         const weight = this.factory.getWeight(prototypeResponse.data.item);

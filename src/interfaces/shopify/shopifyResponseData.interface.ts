@@ -1,5 +1,5 @@
-import { IShopifyImage } from './shopifyImage';
-import { IShopifyVariant } from './shopifyVariant';
+import { IShopifyImage } from './shopifyImage.interface';
+import { IShopifyVariant } from './shopifyVariant.interface';
 
 export interface IShopifyProductResponseData {
   body_html: string;

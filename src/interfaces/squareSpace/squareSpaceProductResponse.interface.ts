@@ -1,4 +1,4 @@
-import { ISquareSpaceProductResponseData } from './squareSpaceResponseData';
+import { ISquareSpaceProductResponseData } from './squareSpaceResponseData.interface';
 
 export interface ISquareSpaceProductResponse {
   item: ISquareSpaceProductResponseData;

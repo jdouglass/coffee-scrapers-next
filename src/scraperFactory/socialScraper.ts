@@ -1,8 +1,5 @@
-import { ProcessCategory } from '../enums/processCategory';
-import { IShopifyImage } from '../interfaces/shopify/shopifyImage';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
@@ -14,18 +11,18 @@ export default class SocialScraper
   getCountry = (item: IShopifyProductResponseData): string => {
     const defaultCountry = 'Unknown';
     const countryList: Array<string> = [];
-    for (const [key, value] of worldData) {
-      if (item.title.includes(key)) {
-        countryList.push(key);
+    for (const country of worldData.keys()) {
+      if (item.title.includes(country)) {
+        countryList.push(country);
       }
     }
     if (countryList.length === 0 && item.body_html.includes('Origin')) {
       let country = item.body_html.split('Origin')[1];
       country = country.split('<')[0];
       country = country.split(':')[1].trim();
-      for (const [key, value] of worldData) {
-        if (country.includes(key)) {
-          countryList.push(key);
+      for (const country of worldData.keys()) {
+        if (country.includes(country)) {
+          countryList.push(country);
         }
       }
     }
@@ -41,7 +38,6 @@ export default class SocialScraper
   getProcess = (item: IShopifyProductResponseData): string => {
     try {
       const defaultProcess = 'Unknown';
-      const maxProcessLength = 75;
       let process = '';
 
       if (item.body_html.includes('Process')) {
@@ -52,21 +48,6 @@ export default class SocialScraper
       process = process.split(':')[1].trim();
       if (process.includes('<')) {
         process = process.split('<')[0].trim();
-      }
-      if (process.length >= maxProcessLength) {
-        if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
-          return ProcessCategory[ProcessCategory.Washed];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Natural])
-        ) {
-          return ProcessCategory[ProcessCategory.Natural];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Honey])
-        ) {
-          return ProcessCategory[ProcessCategory.Honey];
-        } else {
-          return defaultProcess;
-        }
       }
       return Helper.firstLetterUppercase(process.split(' ')).join(' ');
     } catch {

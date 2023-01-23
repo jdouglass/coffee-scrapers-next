@@ -1,8 +1,8 @@
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import Helper from '../helper/helper';
 import { Page } from 'puppeteer';
-import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper';
+import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 
 export default class MonogramScraper
   extends ShopifyBaseScraper
