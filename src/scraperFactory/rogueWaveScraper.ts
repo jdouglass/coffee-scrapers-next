@@ -72,10 +72,18 @@ export default class RogueWaveScraper
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
-    let title = item.title;
-    title = title.split('-')[1];
-    title = title.split('|')[0];
-    return title.trim();
+    for (const country of worldData.keys()) {
+      if (item.title.includes(country)) {
+        item.title = item.title.replace(country, '').trim();
+      }
+    }
+    if (item.title.charAt(0) === '-') {
+      item.title = item.title.substring(1).trim();
+    }
+    if (item.title.includes('|')) {
+      item.title = item.title.split('|')[0];
+    }
+    return item.title.trim();
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
