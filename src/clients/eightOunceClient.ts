@@ -22,7 +22,7 @@ export class EightOunceClient {
       const country = await this.factory.getCountry(item);
       const process = await this.factory.getProcess(item);
       const product: IProduct = {
-        brand: this.vendor,
+        brand: this.factory.getBrand(item),
         country,
         continent: this.factory.getContinent(country),
         dateAdded: this.factory.getDateAdded(item.published_at),
