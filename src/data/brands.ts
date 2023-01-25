@@ -82,4 +82,5 @@ export const brands: string[] = [
   'Transcend',
   'Valor',
   'Verve',
+  'Za & Klo',
 ];

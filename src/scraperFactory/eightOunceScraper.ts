@@ -58,6 +58,9 @@ export default class EightOunceScraper
       if (bodyText.length !== 0) {
         for (const detail of bodyText) {
           if (detail?.includes('Origin:')) {
+            if (detail?.includes('Blend')) {
+              return 'Multiple';
+            }
             for (const country of worldData.keys()) {
               if (detail?.includes(country)) {
                 return country;
