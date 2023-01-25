@@ -19,10 +19,11 @@ export class RevolverClient {
     const shopifyApi = new ApiService(VendorApiUrl.Revolver);
     const shopifyProducts = await shopifyApi.fetchShopifyProducts();
     for (const item of shopifyProducts) {
+      const brand = this.factory.getBrand(item);
       const country = this.factory.getCountry(item);
       const process = this.factory.getProcess(item);
       const product: IProduct = {
-        brand: this.factory.getBrand(item),
+        brand,
         country,
         continent: this.factory.getContinent(country),
         dateAdded: this.factory.getDateAdded(item.published_at),
@@ -33,7 +34,7 @@ export class RevolverClient {
         processCategory: this.factory.getProcessCategory(process),
         productUrl: this.factory.getProductUrl(item, this.baseUrl),
         isSoldOut: this.factory.getSoldOut(item.variants),
-        title: this.factory.getTitle(item),
+        title: this.factory.getTitle(item, brand, country),
         variety: this.factory.getVariety(item),
         weight: this.factory.getWeight(item),
         vendor: this.vendor,
