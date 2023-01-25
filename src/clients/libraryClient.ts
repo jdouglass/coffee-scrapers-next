@@ -16,7 +16,7 @@ export class LibraryClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const shopifyApi = new ApiService(VendorApiUrl.AngryRoaster);
+    const shopifyApi = new ApiService(VendorApiUrl.Library);
     const shopifyProducts = await shopifyApi.fetchShopifyProducts();
     for (const item of shopifyProducts) {
       const country = this.factory.getCountry(item);

@@ -287,13 +287,18 @@ export default class Helper {
     const browser = await puppeteer.launch(puppeteerConfig);
     const page = await browser.newPage();
     await page.goto(productUrl);
-    await page.waitForSelector('.grid__item');
-    const bodyText = await page.$$eval('.grid__item > ul > li', (elements) =>
-      elements.map((element) => {
-        return element.textContent?.trim() as string;
-      })
-    );
-    await browser.close();
-    return bodyText;
+    try {
+      await page.waitForSelector('.grid__item');
+      const bodyText = await page.$$eval('.grid__item > ul > li', (elements) =>
+        elements.map((element) => {
+          return element.textContent?.trim() as string;
+        })
+      );
+      await browser.close();
+      return bodyText;
+    } catch (err) {
+      console.error(err);
+      return ['Unknown'];
+    }
   }
 }

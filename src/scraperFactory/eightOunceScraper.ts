@@ -147,21 +147,24 @@ export default class EightOunceScraper
     return baseUrl + '/products/' + item.handle;
   };
 
-  getTitle = (item: IShopifyProductResponseData, brand?: string): string => {
-    let title = item.title;
-    if (title.includes('-')) {
-      title = title.split('-')[1];
-    } else {
-      title = title.split(brand as string)[1].trim();
+  getTitle = (item: IShopifyProductResponseData): string => {
+    if (item.title.includes('-')) {
+      item.title = item.title.split('-')[1];
+    } else if (brands.some((brand) => item.title.includes(brand))) {
+      for (const brand of brands) {
+        if (item.title.includes(brand)) {
+          item.title = item.title.replace(brand, '').trim();
+        }
+      }
     }
-    if (title.includes(':')) {
-      return title.split(':')[0].trim();
-    } else if (title.includes(',')) {
-      return title.split(',')[0].trim();
-    } else if (title.includes('(')) {
-      return title.split('(')[0].trim();
+    if (item.title.includes(':')) {
+      return item.title.split(':')[0].trim();
+    } else if (item.title.includes(',')) {
+      return item.title.split(',')[0].trim();
+    } else if (item.title.includes('(')) {
+      return item.title.split('(')[0].trim();
     }
-    return title.trim();
+    return item.title.trim();
   };
 
   getVariety = async (item: IShopifyProductResponseData): Promise<string[]> => {
@@ -221,9 +224,10 @@ export default class EightOunceScraper
       variety.includes(' &amp; ') ||
       variety.includes(' + ') ||
       variety.includes(' and ') ||
-      variety.includes(' / ')
+      variety.includes(' / ') ||
+      variety.includes(' & ')
     ) {
-      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; | \& /);
     } else if (variety === '') {
       return unknownVariety;
     } else {

@@ -16,7 +16,7 @@ export class SorellinaClient {
   private static config: IConfig = configData;
 
   public static async run(): Promise<void> {
-    const shopifyApi = new ApiService(VendorApiUrl.Social);
+    const shopifyApi = new ApiService(VendorApiUrl.Sorellina);
     const shopifyProducts = await shopifyApi.fetchShopifyProducts();
     for (const item of shopifyProducts) {
       const country = this.factory.getCountry(item);
