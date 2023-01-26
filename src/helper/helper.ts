@@ -213,16 +213,23 @@ export default class Helper {
     productUrl: string
   ): Promise<(string | null)[]> => {
     let bodyText: (string | null)[] = [''];
-    const browser = await puppeteer.launch(puppeteerConfig);
-    const page = await browser.newPage();
-    await page.goto(productUrl);
-    await page.waitForSelector('.shg-row');
-    bodyText = await page.$$eval('.shg-row > div > div > div > p', (elements) =>
-      elements.map((element) => {
-        return element.textContent;
-      })
-    );
-    await browser.close();
+    try {
+      const browser = await puppeteer.launch(puppeteerConfig);
+      const page = await browser.newPage();
+      await page.goto(productUrl);
+      await page.waitForSelector('.shg-row');
+      bodyText = await page.$$eval(
+        '.shg-row > div > div > div > p',
+        (elements) =>
+          elements.map((element) => {
+            return element.textContent;
+          })
+      );
+      await browser.close();
+    } catch (err) {
+      console.error('Failed to find selector at: ', productUrl);
+      console.error(err);
+    }
     return bodyText;
   };
 

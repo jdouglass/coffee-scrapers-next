@@ -1,9 +1,6 @@
-import axios, { AxiosResponse } from 'axios';
 import SubtextScraper from '../scrapers/subtextScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
-import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse.interface';
-import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
@@ -11,6 +8,7 @@ import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { ApiService } from '../service/apiService';
 
 export class SubtextClient {
   private static vendor: string = Vendor.Subtext;
@@ -20,13 +18,10 @@ export class SubtextClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const subtextResponse: AxiosResponse<IShopifyProductResponse> =
-      await axios.get(VendorApiUrl.Subtext);
-
-    const subtextData: IShopifyProductResponseData[] =
-      subtextResponse.data.products;
-    for (let i = 0; i < subtextData.length; i++) {
-      const item = subtextData[i];
+    const shopifyApi = new ApiService(VendorApiUrl.Subtext);
+    const shopifyProducts = await shopifyApi.fetchShopifyProducts();
+    for (let i = 0; i < shopifyProducts.length; i++) {
+      const item = shopifyProducts[i];
       const productUrl =
         this.baseUrl +
         '/collections/filter-coffee-beans/products/' +
