@@ -1,4 +1,4 @@
-import NemesisScraper from '../scraperFactory/nemesisScraper';
+import NemesisScraper from '../scrapers/nemesisScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

@@ -1,4 +1,4 @@
-import RevolverScraper from '../scraperFactory/revolverScraper';
+import RevolverScraper from '../scrapers/revolverScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

@@ -1,4 +1,4 @@
-import ProdigalScraper from '../scraperFactory/prodigalScraper';
+import ProdigalScraper from '../scrapers/prodigalScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

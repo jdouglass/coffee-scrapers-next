@@ -1,4 +1,4 @@
-import AngryRoasterScraper from '../scraperFactory/angryRoasterScraper';
+import AngryRoasterScraper from '../scrapers/angryRoasterScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

@@ -1,4 +1,4 @@
-import EightOunceScraper from '../scraperFactory/eightOunceScraper';
+import EightOunceScraper from '../scrapers/eightOunceScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

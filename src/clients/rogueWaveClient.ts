@@ -1,4 +1,4 @@
-import RogueWaveScraper from '../scraperFactory/rogueWaveScraper';
+import RogueWaveScraper from '../scrapers/rogueWaveScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

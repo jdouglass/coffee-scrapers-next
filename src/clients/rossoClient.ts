@@ -1,4 +1,4 @@
-import RossoScraper from '../scraperFactory/rossoScraper';
+import RossoScraper from '../scrapers/rossoScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

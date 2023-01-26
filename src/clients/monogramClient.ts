@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import MonogramScraper from '../scraperFactory/monogramScraper';
+import MonogramScraper from '../scrapers/monogramScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse.interface';

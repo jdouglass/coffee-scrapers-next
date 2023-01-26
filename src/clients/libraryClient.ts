@@ -1,4 +1,4 @@
-import LibraryScraper from '../scraperFactory/libraryScraper';
+import LibraryScraper from '../scrapers/libraryScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

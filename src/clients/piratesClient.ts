@@ -1,4 +1,4 @@
-import PiratesScraper from '../scraperFactory/piratesScraper';
+import PiratesScraper from '../scrapers/piratesScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

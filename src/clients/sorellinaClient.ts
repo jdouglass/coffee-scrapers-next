@@ -1,4 +1,4 @@
-import SorellinaScraper from '../scraperFactory/sorellinaScraper';
+import SorellinaScraper from '../scrapers/sorellinaScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

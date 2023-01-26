@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import SubtextScraper from '../scraperFactory/subtextScraper';
+import SubtextScraper from '../scrapers/subtextScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IShopifyProductResponse } from '../interfaces/shopify/shopifyProductResponse.interface';

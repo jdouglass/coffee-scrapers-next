@@ -1,4 +1,4 @@
-import PalletScraper from '../scraperFactory/palletScraper';
+import PalletScraper from '../scrapers/palletScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

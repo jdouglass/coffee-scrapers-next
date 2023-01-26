@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import PrototypeScraper from '../scraperFactory/prototypeScraper';
+import PrototypeScraper from '../scrapers/prototypeScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { unwantedTitles } from '../data/unwantedTitles';

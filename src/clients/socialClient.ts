@@ -1,4 +1,4 @@
-import SocialScraper from '../scraperFactory/socialScraper';
+import SocialScraper from '../scrapers/socialScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';

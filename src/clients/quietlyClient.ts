@@ -1,4 +1,4 @@
-import QuietlyScraper from '../scraperFactory/quietlyScraper';
+import QuietlyScraper from '../scrapers/quietlyScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { IConfig } from '../interfaces/config';
