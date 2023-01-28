@@ -1,19 +1,19 @@
-import { Page } from 'puppeteer';
+import { CheerioAPI } from 'cheerio';
 import { ICrateJoyImage } from './crateJoyImage.interface';
 
 export interface ICrateJoyScraper {
-  getBrand?: (page: Page) => string;
+  getBrand?: ($: CheerioAPI) => string;
   getContinent: (country: string) => string;
-  getCountry: (page: Page) => Promise<string>;
+  getCountry: ($: CheerioAPI) => string;
   getDateAdded: () => string;
   getHandle: (productUrl: string) => string;
   getImageUrl: (images: ICrateJoyImage[]) => string;
-  getPrice: (page: Page) => Promise<number>;
-  getProcess: (page: Page) => Promise<string>;
+  getPrice: ($: CheerioAPI) => number;
+  getProcess: ($: CheerioAPI) => string;
   getProcessCategory: (process: string) => string;
   getProductUrl: (id: number, baseUrl: string) => string;
-  getSoldOut: (page: Page) => Promise<boolean>;
-  getTitle: (page: Page) => Promise<string>;
-  getVariety: (page: Page) => Promise<string[]>;
+  getSoldOut: ($: CheerioAPI) => boolean;
+  getTitle: ($: CheerioAPI) => string;
+  getVariety: ($: CheerioAPI) => string[];
   getWeight: (slug: string, description: string) => number;
 }

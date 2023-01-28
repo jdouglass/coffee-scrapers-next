@@ -1,10 +1,10 @@
-import { Page } from 'puppeteer';
+import { CheerioAPI } from 'cheerio';
 import { ISquareSpaceProductResponseData } from './squareSpaceResponseData.interface';
 
 export interface ISquareSpaceBaseScraper {
   getBrand?: (item: ISquareSpaceProductResponseData) => string;
   getImageUrl: (item: ISquareSpaceProductResponseData) => string;
   getPrice: (item: ISquareSpaceProductResponseData) => number;
-  getSoldOut: (page: Page) => boolean;
+  getSoldOut: ($: CheerioAPI) => boolean;
   getWeight: (item: ISquareSpaceProductResponseData) => number;
 }

@@ -9,10 +9,9 @@ import axios from 'axios';
 import { IProduct } from '../interfaces/product';
 import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
-import puppeteer from 'puppeteer';
 import sharp from 'sharp';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
-import { puppeteerConfig } from '../puppeteerConfig';
+import { load } from 'cheerio';
 
 dotenv.config();
 
@@ -156,7 +155,6 @@ export default class Helper {
   };
 
   static uploadToS3 = async (product: IProduct): Promise<string> => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const key: string = uuidv5(product.productUrl, this.namespace);
     const params: PutObjectCommandInput = {
       Bucket: this.bucket,
@@ -182,7 +180,6 @@ export default class Helper {
   };
 
   static deleteFromS3 = async (productUrl: string): Promise<void> => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const key: string = uuidv5(productUrl, this.namespace);
     const params: DeleteObjectCommandInput = {
       Bucket: this.bucket,
@@ -209,72 +206,38 @@ export default class Helper {
       });
   };
 
-  public static getSubtextBodyText = async (
-    productUrl: string
-  ): Promise<(string | null)[]> => {
-    let bodyText: (string | null)[] = [''];
-    try {
-      const browser = await puppeteer.launch(puppeteerConfig);
-      const page = await browser.newPage();
-      await page.goto(productUrl);
-      await page.waitForSelector('.shg-row');
-      bodyText = await page.$$eval(
-        '.shg-row > div > div > div > p',
-        (elements) =>
-          elements.map((element) => {
-            return element.textContent;
-          })
-      );
-      await browser.close();
-    } catch (err) {
-      console.error('Failed to find selector at: ', productUrl);
-      console.error(err);
-    }
-    return bodyText;
-  };
-
   public static getPageTitle = async (productUrl: string): Promise<string> => {
-    const browser = await puppeteer.launch(puppeteerConfig);
-    const page = await browser.newPage();
-    await page.goto(productUrl);
-    const title = await page.title();
-    await browser.close();
-    return title;
+    return (await axios(productUrl).then((res) => {
+      if (res.data) {
+        const $ = load(res.data as string);
+        return $('head > title').text();
+      }
+    })) as string;
   };
 
   public static getProductUrls = async (
-    initialProductPageUrl: string,
-    partialProductUrl: string,
-    initialProductPageUrlSubstring: string
+    productPageUrl: string,
+    partialProductUrl: string
   ): Promise<string[]> => {
-    const browser = await puppeteer.launch(puppeteerConfig);
-    const page = await browser.newPage();
-    await page.goto(initialProductPageUrl);
-    const initialProductPageUrls = await this.getAllHrefs(page);
-    const firstPageProductUrls = initialProductPageUrls.filter((url) =>
-      url.includes(partialProductUrl)
-    );
-    const productUrls = new Set(firstPageProductUrls);
-    const productPageUrls = initialProductPageUrls.filter((url) => {
-      return url.includes(initialProductPageUrlSubstring);
-    });
-    for (const url of productPageUrls) {
-      await page.goto(url);
-      const pageUrls = await this.getAllHrefs(page);
-      const productPageUrls = pageUrls.filter((url) =>
-        url.includes(partialProductUrl)
-      );
-      for (const productUrl of productPageUrls) {
-        productUrls.add(productUrl);
+    return (await axios({
+      url: productPageUrl,
+      headers: {
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+        Host: 'www.squarespace.com',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
+      },
+    }).then((res) => {
+      if (res.data) {
+        const $ = load(res.data as string);
+        return $('a')
+          .toArray()
+          .map((el) => $(el).attr('href'))
+          .filter((href) => href?.includes(partialProductUrl)) as string[];
       }
-    }
-    await browser.close();
-    return Array.from(productUrls);
+    })) as string[];
   };
-
-  private static async getAllHrefs(page: puppeteer.Page): Promise<string[]> {
-    return await page.$$eval('a', (as) => as.map((a) => a.href));
-  }
 
   public static isActiveProduct(
     item: IWordpressProductResponseData,
@@ -286,26 +249,5 @@ export default class Helper {
       }
     }
     return false;
-  }
-
-  public static async getEightOunceBodyText(
-    productUrl: string
-  ): Promise<(string | null)[]> {
-    const browser = await puppeteer.launch(puppeteerConfig);
-    const page = await browser.newPage();
-    await page.goto(productUrl);
-    try {
-      await page.waitForSelector('.grid__item');
-      const bodyText = await page.$$eval('.grid__item > ul > li', (elements) =>
-        elements.map((element) => {
-          return element.textContent?.trim() as string;
-        })
-      );
-      await browser.close();
-      return bodyText;
-    } catch (err) {
-      console.error(err);
-      return ['Unknown'];
-    }
   }
 }

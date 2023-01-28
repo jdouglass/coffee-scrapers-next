@@ -1,18 +1,18 @@
-import { Page } from 'puppeteer';
+import { CheerioAPI } from 'cheerio';
 
 export interface IWordpressScraper {
   getBrand?: () => string;
   getContinent: (country: string) => string;
-  getCountry: (page: Page) => Promise<string>;
+  getCountry: ($: CheerioAPI) => string;
   getDateAdded: () => string;
   getHandle: (slug: string) => string;
-  getImageUrl: (page: Page) => Promise<string>;
-  getPrice: (page: Page) => Promise<number>;
-  getProcess: (page: Page) => Promise<string>;
+  getImageUrl: ($: CheerioAPI) => string;
+  getPrice: ($: CheerioAPI) => number;
+  getProcess: ($: CheerioAPI) => string;
   getProcessCategory: (process: string) => string;
   getProductUrl?: (link: string) => string;
-  getSoldOut: (page: Page) => Promise<boolean>;
-  getTitle: (page: Page) => Promise<string>;
-  getVariety: (page: Page) => Promise<string[]>;
-  getWeight: (page: Page) => Promise<number>;
+  getSoldOut: ($: CheerioAPI) => boolean;
+  getTitle: ($: CheerioAPI) => string;
+  getVariety: ($: CheerioAPI) => string[];
+  getWeight: ($: CheerioAPI) => number;
 }

@@ -1,30 +1,29 @@
 import { ProcessCategory } from '../enums/processCategory';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
-import { Page } from 'puppeteer';
 import { ICrateJoyScraper } from '../interfaces/crateJoy/crateJoyScraper.interface';
 import { ICrateJoyImage } from '../interfaces/crateJoy/crateJoyImage.interface';
+import { CheerioAPI } from 'cheerio';
+import { HatchHelper } from '../helper/hatchHelper';
 
 export default class HatchScraper implements ICrateJoyScraper {
   getContinent = (country: string): string => {
     return worldData.get(country) ?? 'Unknown';
   };
 
-  getCountry = async (page: Page): Promise<string> => {
-    const descriptionElement = await page.$('.product-detail-description');
-    const descriptionContent =
-      (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
-    const countryList: Array<string> = [];
+  getCountry = ($: CheerioAPI): string => {
+    const descriptionContent = HatchHelper.getProductDetails($);
+    const countryList = new Set<string>();
     for (const country of worldData.keys()) {
-      if (descriptionContent.includes(country)) {
-        countryList.push(country);
+      if (descriptionContent[0].includes(country)) {
+        countryList.add(country);
       }
     }
-    if (countryList.length === 0) {
+    if (countryList.size === 0) {
       return 'Unknown';
     }
-    if (countryList.length === 1) {
-      return countryList[0];
+    if (countryList.size === 1) {
+      return countryList.values().next().value as string;
     }
     return 'Multiple';
   };
@@ -44,25 +43,22 @@ export default class HatchScraper implements ICrateJoyScraper {
     return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
-  getPrice = async (page: Page): Promise<number> => {
-    const priceElement = await page.$('.product-price');
-    const priceContent =
-      (await priceElement?.evaluate((el) => el.textContent)) ?? '';
-    if (priceContent !== '') {
-      let price = priceContent.split('$')[1];
+  getPrice = ($: CheerioAPI): number => {
+    let price = $('p[class="product-price"]').first().text();
+    if (price !== '') {
+      price = price.split('$')[1];
       price = price.split(' ')[0].trim();
       return Number(Number(price).toFixed(2));
     }
     return 0;
   };
 
-  getProcess = async (page: Page): Promise<string> => {
-    const descriptionElement = await page.$('.product-detail-description');
-    const descriptionContent =
-      (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
-    if (descriptionContent.includes('Process')) {
-      const process = descriptionContent.split('Process:')[1];
-      return process.split('\n')[0].trim();
+  getProcess = ($: CheerioAPI): string => {
+    const descriptionContent = HatchHelper.getProductDetails($);
+    for (const detail of descriptionContent) {
+      if (detail.includes('Process:')) {
+        return detail.split('Process:')[1].trim();
+      }
     }
     return 'Unknown';
   };
@@ -83,10 +79,8 @@ export default class HatchScraper implements ICrateJoyScraper {
     return baseUrl + '/shop/product/' + id.toString();
   };
 
-  getSoldOut = async (page: Page): Promise<boolean> => {
-    const stockElement = await page.$('.stockmsg');
-    const stockContent =
-      (await stockElement?.evaluate((el) => el.textContent)) ?? '';
+  getSoldOut = ($: CheerioAPI): boolean => {
+    const stockContent = $('div[class="stockmsg"]').find('span').text().trim();
     if (
       stockContent.includes('Available') ||
       stockContent.includes('Limited Remaining')
@@ -96,15 +90,17 @@ export default class HatchScraper implements ICrateJoyScraper {
     return true;
   };
 
-  getVariety = async (page: Page): Promise<string[]> => {
-    const descriptionElement = await page.$('.product-detail-description');
-    const descriptionContent =
-      (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
+  getVariety = ($: CheerioAPI): string[] => {
+    const descriptionContent = HatchHelper.getProductDetails($);
     let variety = '';
-    if (descriptionContent.includes('Variety')) {
-      variety = descriptionContent.split('Variety:')[1];
-      variety = variety.split('\n')[0].trim();
-    } else {
+    for (const detail of descriptionContent) {
+      if (detail.includes('Variety:')) {
+        variety = detail.split('Variety:')[1].trim();
+      } else if (detail.includes('Varieties:')) {
+        variety = detail.split('Varieties:')[1].trim();
+      }
+    }
+    if (variety === '') {
       return ['Unknown'];
     }
     let varietyOptions = variety
@@ -138,8 +134,7 @@ export default class HatchScraper implements ICrateJoyScraper {
     return 0;
   };
 
-  getTitle = async (page: Page): Promise<string> => {
-    const titleElement = await page.$('.product-title');
-    return (await titleElement?.evaluate((el) => el.textContent)) ?? '';
+  getTitle = ($: CheerioAPI): string => {
+    return $('.product-title').first().text();
   };
 }

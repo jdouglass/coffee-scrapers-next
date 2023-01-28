@@ -5,12 +5,11 @@ import { IProduct } from '../interfaces/product';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
-import puppeteer from 'puppeteer';
-import Helper from '../helper/helper';
-import { ICrateJoyProductResponseData } from '../interfaces/crateJoy/crateJoyProductResponseData.interface';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
-import { puppeteerConfig } from '../puppeteerConfig';
+import { HatchHelper } from '../helper/hatchHelper';
+import { load } from 'cheerio';
+import { ICrateJoyProductResponseData } from '../interfaces/crateJoy/crateJoyProductResponseData.interface';
 
 export class HatchClient {
   private static vendor: string = Vendor.Hatch;
@@ -20,49 +19,45 @@ export class HatchClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const productUrls = await Helper.getProductUrls(
-      this.baseUrl + '/shop/all',
-      '/shop/product/',
-      '/shop/all'
+    const productUrls = await HatchHelper.getProductUrls(
+      this.baseUrl + '/shop/all/',
+      '/shop/product/'
     );
 
-    for (const url of productUrls) {
+    for (let url of productUrls) {
+      if (!url.includes('https')) {
+        url = this.baseUrl + url;
+      }
       const id = url.split('/')[url.split('/').length - 1];
-      const browser = await puppeteer.launch(puppeteerConfig);
-      const page = await browser.newPage();
-      await page.goto(url);
-      const productTitleElement = await page.$('.product-title');
-      const productTitle =
-        (await productTitleElement?.evaluate((el) => el.textContent)) ?? '';
-      const productCategoryElement = await page.$('.product-category');
-      const productCategory =
-        (await productCategoryElement?.evaluate((el) => el.textContent)) ?? '';
+      const productCategory = await HatchHelper.getProductCategory(url);
       if (
-        !unwantedTitles.some(
-          (unwantedString) =>
-            productTitle.includes(unwantedString) ||
-            productCategory.includes(unwantedString)
+        !unwantedTitles.some((unwantedString) =>
+          productCategory.toLowerCase().includes(unwantedString.toLowerCase())
         )
       ) {
         const hatchResponse: AxiosResponse<ICrateJoyProductResponseData> =
           await axios.get(HatchClient.baseUrl + '/v1/store/api/products/' + id);
+        const hatchDOM = await fetch(
+          HatchClient.baseUrl + '/shop/product/' + id
+        );
+        const $ = load(await hatchDOM.text());
 
         const brand = this.vendor;
-        const country = await this.factory.getCountry(page);
+        const country = this.factory.getCountry($);
         const continent = this.factory.getContinent(country);
         const dateAdded = this.factory.getDateAdded();
         const handle = this.factory.getHandle(hatchResponse.data.slug);
         const imageUrl = this.factory.getImageUrl(hatchResponse.data.images);
-        const price = await this.factory.getPrice(page);
-        const process = await this.factory.getProcess(page);
+        const price = this.factory.getPrice($);
+        const process = this.factory.getProcess($);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(
           hatchResponse.data.id,
           this.baseUrl
         );
-        const isSoldOut = await this.factory.getSoldOut(page);
-        const title = await this.factory.getTitle(page);
-        const variety = await this.factory.getVariety(page);
+        const isSoldOut = this.factory.getSoldOut($);
+        const title = this.factory.getTitle($);
+        const variety = this.factory.getVariety($);
         const weight = this.factory.getWeight(
           hatchResponse.data.slug,
           hatchResponse.data.description
@@ -89,7 +84,6 @@ export class HatchClient {
         }
         this.hatchProducts.push(product);
       }
-      await browser.close();
     }
 
     if (this.config.useDatabase) {

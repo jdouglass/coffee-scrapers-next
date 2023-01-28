@@ -1,4 +1,5 @@
-import { Page } from 'puppeteer';
+import axios from 'axios';
+import { load } from 'cheerio';
 import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squareSpaceResponseData.interface';
 import { ISquareSpaceBaseScraper } from '../interfaces/squareSpace/squareSpaceScraper.interface';
 import { Scraper } from './scraper';
@@ -37,12 +38,15 @@ export class SquareSpaceBaseScraper
     return baseUrl + item.fullUrl;
   };
 
-  getSoldOut = async (page: Page, selector: string): Promise<boolean> => {
-    try {
-      await page.waitForSelector(selector);
-      return false;
-    } catch (e) {
-      return true;
-    }
+  getSoldOut = async (productUrl: string): Promise<boolean> => {
+    await axios(productUrl).then((res) => {
+      if (res.data) {
+        const $ = load(res.data as string);
+        if ($('div[class="quantity-label"]').length === 1) {
+          return false;
+        }
+      }
+    });
+    return true;
   };
 }

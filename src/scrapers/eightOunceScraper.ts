@@ -6,6 +6,7 @@ import Helper from '../helper/helper';
 import { brands } from '../data/brands';
 import { BaseUrl } from '../enums/baseUrls';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { EightOunceHelper } from '../helper/eightOunceHelper';
 
 export default class EightOunceScraper
   extends ShopifyBaseScraper
@@ -52,7 +53,7 @@ export default class EightOunceScraper
     if (country !== '') {
       return country;
     } else {
-      const bodyText = await Helper.getEightOunceBodyText(
+      const bodyText = await EightOunceHelper.getProductInfo(
         this.getProductUrl(item, BaseUrl.EightOunce)
       );
       if (bodyText.length !== 0) {
@@ -98,7 +99,7 @@ export default class EightOunceScraper
         process = process.trim();
       }
       if (process === '') {
-        const bodyText = await Helper.getEightOunceBodyText(
+        const bodyText = await EightOunceHelper.getProductInfo(
           this.getProductUrl(item, BaseUrl.EightOunce)
         );
         if (bodyText.length !== 0) {
@@ -187,7 +188,7 @@ export default class EightOunceScraper
         variety = variety.split(', ')[1];
       }
       if (variety === '') {
-        const bodyText = await Helper.getEightOunceBodyText(
+        const bodyText = await EightOunceHelper.getProductInfo(
           this.getProductUrl(item, BaseUrl.EightOunce)
         );
         if (bodyText.length !== 0) {

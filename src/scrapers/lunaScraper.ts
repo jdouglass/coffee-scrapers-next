@@ -1,18 +1,17 @@
 import { ProcessCategory } from '../enums/processCategory';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
-import { Page } from 'puppeteer';
 import { IWordpressScraper } from '../interfaces/wordpress/wordpressScraper.interface';
+import { CheerioAPI } from 'cheerio';
+import { LunaHelper } from '../helper/lunaHelper';
 
 export default class LunaScraper implements IWordpressScraper {
   getContinent = (country: string): string => {
     return worldData.get(country) ?? 'Unknown';
   };
 
-  getCountry = async (page: Page): Promise<string> => {
-    const descriptionElement = await page.$('[class^="product_title"]');
-    const descriptionContent =
-      (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
+  getCountry = ($: CheerioAPI): string => {
+    const descriptionContent = $('[class^="product_title"]').text();
     const countryList: Array<string> = [];
     for (const country of worldData.keys()) {
       if (descriptionContent.includes(country)) {
@@ -36,17 +35,13 @@ export default class LunaScraper implements IWordpressScraper {
     return slug;
   };
 
-  getImageUrl = async (page: Page): Promise<string> => {
-    const priceElement = await page.$eval('.wp-post-image', (el) =>
-      el.getAttribute('src')
-    );
+  getImageUrl = ($: CheerioAPI): string => {
+    const priceElement = $('.wp-post-image').attr('src');
     return priceElement as string;
   };
 
-  getPrice = async (page: Page): Promise<number> => {
-    const priceElement = await page.$('.price');
-    const priceContent =
-      (await priceElement?.evaluate((el) => el.textContent)) ?? '';
+  getPrice = ($: CheerioAPI): number => {
+    const priceContent = $('.price').text();
     if (priceContent !== '') {
       let price = priceContent.split('$')[1];
       price = price.split(' ')[0].trim();
@@ -55,19 +50,19 @@ export default class LunaScraper implements IWordpressScraper {
     return 0;
   };
 
-  getProcess = async (page: Page): Promise<string> => {
-    const descriptionElement = await page.$('.product-summary');
-    const descriptionContent =
-      (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
-    if (descriptionContent.includes('Processing')) {
-      let process = descriptionContent.split('Processing:')[1];
-      process = process.split('\n')[0].trim();
-      if (process.includes('Export')) {
-        process = process.split('Export')[0].trim();
+  getProcess = ($: CheerioAPI): string => {
+    const descriptionContent = LunaHelper.getProductInfo($);
+    for (const detail of descriptionContent) {
+      if (detail.includes('Processing:')) {
+        let process = detail.split('Processing:')[1];
+        process = process.split('\n')[0].trim();
+        if (process.includes('Export')) {
+          process = process.split('Export')[0].trim();
+        }
+        process = Helper.firstLetterUppercase([process]).join(' ');
+        process = Helper.convertToUniversalProcess(process);
+        return process;
       }
-      process = Helper.firstLetterUppercase([process]).join(' ');
-      process = Helper.convertToUniversalProcess(process);
-      return process;
     }
     return 'Unknown';
   };
@@ -84,28 +79,27 @@ export default class LunaScraper implements IWordpressScraper {
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getSoldOut = async (page: Page): Promise<boolean> => {
-    const stockElement = await page.$('[class^="single_add_to_cart_button"]');
-    const stockContent =
-      (await stockElement?.evaluate((el) => el.textContent)) ?? '';
-    if (stockContent.includes('Add to cart')) {
+  getSoldOut = ($: CheerioAPI): boolean => {
+    const cartButton = $('[class^="single_add_to_cart_button"]').text();
+    if (cartButton.includes('Add to cart')) {
       return false;
     }
     return true;
   };
 
-  getVariety = async (page: Page): Promise<string[]> => {
-    const descriptionElement = await page.$('.product-summary');
-    const descriptionContent =
-      (await descriptionElement?.evaluate((el) => el.textContent)) ?? '';
+  getVariety = ($: CheerioAPI): string[] => {
+    const descriptionContent = LunaHelper.getProductInfo($);
     let variety = '';
-    if (descriptionContent.includes('Variety')) {
-      variety = descriptionContent.split('Variety:')[1];
-      variety = variety.split('Process')[0].trim();
-    } else if (descriptionContent.includes('Varieties')) {
-      variety = descriptionContent.split('Varieties:')[1];
-      variety = variety.split('Process')[0].trim();
-    } else {
+    for (const detail of descriptionContent) {
+      if (detail.includes('Variety')) {
+        variety = detail.split('Variety:')[1];
+        variety = variety.split('Process')[0].trim();
+      } else if (detail.includes('Varieties')) {
+        variety = detail.split('Varieties:')[1];
+        variety = variety.split('Process')[0].trim();
+      }
+    }
+    if (variety === '') {
       return ['Unknown'];
     }
     let varietyOptions = variety
@@ -117,27 +111,23 @@ export default class LunaScraper implements IWordpressScraper {
     return varietyOptions;
   };
 
-  getWeight = async (page: Page): Promise<number> => {
+  getWeight = ($: CheerioAPI): number => {
     const gramsToKg = 1000;
-    let weightOptions = await page.$$eval(
-      '.variation-radios label',
-      (options) => {
-        return options.map((option) => option.textContent);
-      }
-    );
+    let weightOptions = $('.variation-radios')
+      .find('label')
+      .toArray()
+      .map((node) => $(node).text());
     const weightSet = new Set(weightOptions);
     weightOptions = Array.from(weightSet);
     for (let i = 0; i < weightOptions.length; i++) {
       if (weightOptions[i]?.includes('kg')) {
-        weightOptions[i] = weightOptions[i]?.split('kg')[0] as string;
+        weightOptions[i] = weightOptions[i]?.split('kg')[0];
         weightOptions[i] = (Number(weightOptions[i]) * gramsToKg).toString();
       } else if (weightOptions[i]?.includes('g')) {
-        weightOptions[i] = weightOptions[i]?.split('g')[0] as string;
+        weightOptions[i] = weightOptions[i]?.split('g')[0];
       }
     }
-    const stockElement = await page.$('[class^="single_add_to_cart_button"]');
-    const stockContent =
-      (await stockElement?.evaluate((el) => el.textContent)) ?? '';
+    const stockContent = $('[class^="single_add_to_cart_button"]').text();
     if (stockContent.includes('Add to cart')) {
       return weightOptions[0] ? Number(weightOptions[0]) : 0;
     }
@@ -146,10 +136,8 @@ export default class LunaScraper implements IWordpressScraper {
       : 0;
   };
 
-  getTitle = async (page: Page): Promise<string> => {
-    const titleElement = await page.$('[class^="product_title"]');
-    let titleText =
-      (await titleElement?.evaluate((el) => el.textContent)) ?? '';
+  getTitle = ($: CheerioAPI): string => {
+    let titleText = $('[class^="product_title"]').text();
     if (titleText.includes(' in ')) {
       titleText = titleText.split(' in ')[0].trim();
     }
