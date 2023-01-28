@@ -9,9 +9,8 @@ import { IConfig } from '../interfaces/config';
 import config from '../config.json';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
-import puppeteer from 'puppeteer';
-import { puppeteerConfig } from '../puppeteerConfig';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { MonogramHelper } from '../helper/monogramHelper';
 
 export class MonogramClient {
   private static vendor: string = Vendor.Monogram;
@@ -33,22 +32,22 @@ export class MonogramClient {
             item.handle.toLowerCase().includes(unwantedString)
         )
       ) {
-        const browser = await puppeteer.launch(puppeteerConfig);
-        const page = await browser.newPage();
-        await page.goto(this.factory.getProductUrl(item, this.baseUrl));
+        const productDetails = await MonogramHelper.getProductInfo(
+          this.factory.getProductUrl(item, this.baseUrl)
+        );
         const brand = this.factory.getBrand(item);
-        const country = await this.factory.getCountry(item, page);
+        const country = this.factory.getCountry(item, productDetails);
         const continent = this.factory.getContinent(country);
         const dateAdded = this.factory.getDateAdded(item.published_at);
         const handle = this.factory.getHandle(item.handle);
         const imageUrl = this.factory.getImageUrl(item.images);
         const price = this.factory.getPrice(item.variants);
-        const process = await this.factory.getProcess(item, page);
+        const process = this.factory.getProcess(item, productDetails);
         const processCategory = this.factory.getProcessCategory(process);
         const productUrl = this.factory.getProductUrl(item, this.baseUrl);
         const isSoldOut = this.factory.getSoldOut(item.variants);
         const title = this.factory.getTitle(item);
-        const variety = await this.factory.getVariety(item, page);
+        const variety = this.factory.getVariety(item, productDetails);
         const weight = this.factory.getWeight(item);
         const product: IProduct = {
           brand,
@@ -71,7 +70,6 @@ export class MonogramClient {
           console.log(product);
         }
         this.monogramProducts.push(product);
-        await browser.close();
       }
     }
     if (this.config.useDatabase) {

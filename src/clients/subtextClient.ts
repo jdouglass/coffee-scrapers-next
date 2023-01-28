@@ -9,6 +9,7 @@ import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { ApiService } from '../service/apiService';
+import { SubtextHelper } from '../helper/subtextHelper';
 
 export class SubtextClient {
   private static vendor: string = Vendor.Subtext;
@@ -26,11 +27,9 @@ export class SubtextClient {
         this.baseUrl +
         '/collections/filter-coffee-beans/products/' +
         item.handle;
-      const newBodyText: (string | null)[] = await Helper.getSubtextBodyText(
-        productUrl
-      );
+      const newBodyText = await SubtextHelper.getProductInfo(productUrl);
       item.title = await Helper.getPageTitle(productUrl);
-      if (newBodyText) {
+      if (newBodyText.length) {
         item.body_html = newBodyText.join('\n');
       }
       if (

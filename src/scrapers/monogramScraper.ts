@@ -1,7 +1,6 @@
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import Helper from '../helper/helper';
-import { Page } from 'puppeteer';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 
 export default class MonogramScraper
@@ -16,32 +15,32 @@ export default class MonogramScraper
     return 'Monogram';
   };
 
-  getCountry = async (
+  getCountry = (
     item: IShopifyProductResponseData,
-    page?: Page
-  ): Promise<string> => {
-    let country: string;
+    productDetails?: string[]
+  ): string => {
+    let country = '';
     if (item.body_html.includes('ORIGIN:')) {
       country = item.body_html.split('ORIGIN:')[1];
     } else if (item.body_html.includes('Origin:')) {
       country = item.body_html.split('Origin:')[1];
     } else {
-      const productDescriptionElement = await page?.$(
-        '.metafield-multi_line_text_field'
-      );
-      const descriptionContent =
-        (await productDescriptionElement?.evaluate((el) => el.textContent)) ??
-        '';
-      if (descriptionContent.includes('Origin')) {
-        country = descriptionContent.split('Origin')[1];
-      } else if (descriptionContent.includes('ORIGIN')) {
-        country = descriptionContent.split('ORIGIN')[1];
-      } else {
-        return 'Unknown';
+      for (const detail of productDetails!) {
+        if (detail.includes('Origin')) {
+          country = detail.split('Origin')[1];
+        } else if (detail.includes('ORIGIN')) {
+          country = detail.split('ORIGIN')[1];
+        }
       }
       if (country !== '') {
-        country = country.split('\n')[0].trim();
-        country = country.split(':')[1].trim();
+        if (country.includes('\n')) {
+          country = country.split('\n')[0].trim();
+        }
+        if (country.includes(':')) {
+          country = country.split(':')[1].trim();
+        }
+      } else {
+        return 'Unknown';
       }
     }
     country = country
@@ -58,10 +57,10 @@ export default class MonogramScraper
     return Helper.firstLetterUppercase([country]).join(' ');
   };
 
-  getProcess = async (
+  getProcess = (
     item: IShopifyProductResponseData,
-    page?: Page
-  ): Promise<string> => {
+    productDetails?: string[]
+  ): string => {
     let process = '';
     if (item.body_html.includes('PROCESS:')) {
       process = item.body_html.split('PROCESS:')[1];
@@ -77,19 +76,20 @@ export default class MonogramScraper
       process = processOptions[0].trim();
       return Helper.firstLetterUppercase(process.split(' ')).join(' ');
     }
-    const productDescriptionElement = await page?.$(
-      '.metafield-multi_line_text_field'
-    );
-    const descriptionContent =
-      (await productDescriptionElement?.evaluate((el) => el.textContent)) ?? '';
-    if (descriptionContent.includes('Process')) {
-      process = descriptionContent.split('Process')[1];
-    } else if (descriptionContent.includes('PROCESS')) {
-      process = descriptionContent.split('PROCESS')[1];
+    for (const detail of productDetails!) {
+      if (detail.includes('Process')) {
+        process = detail.split('Process')[1];
+      } else if (detail.includes('PROCESS')) {
+        process = detail.split('PROCESS')[1];
+      }
     }
     if (process !== '') {
-      process = process.split('\n')[0].trim();
-      process = process.split(':')[1].trim();
+      if (process.includes('\n')) {
+        process = process.split('\n')[0].trim();
+      }
+      if (process.includes(':')) {
+        process = process.split(':')[1].trim();
+      }
       process = Helper.firstLetterUppercase([process]).join();
       process = Helper.convertToUniversalProcess(process);
       return process;
@@ -110,10 +110,10 @@ export default class MonogramScraper
     );
   };
 
-  getVariety = async (
+  getVariety = (
     item: IShopifyProductResponseData,
-    page?: Page
-  ): Promise<string[]> => {
+    productDetails?: string[]
+  ): string[] => {
     let variety: string = '';
     const body: string = item.body_html;
     if (body.includes('VARIETY:')) {
@@ -121,20 +121,20 @@ export default class MonogramScraper
     } else if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
     } else {
-      const productDescriptionElement = await page?.$(
-        '.metafield-multi_line_text_field'
-      );
-      const descriptionContent =
-        (await productDescriptionElement?.evaluate((el) => el.textContent)) ??
-        '';
-      if (descriptionContent.includes('Variety')) {
-        variety = descriptionContent.split('Variety')[1];
-      } else if (descriptionContent.includes('VARIETY')) {
-        variety = descriptionContent.split('VARIETY')[1];
+      for (const detail of productDetails!) {
+        if (detail.includes('Variety')) {
+          variety = detail.split('Variety')[1];
+        } else if (detail.includes('VARIETY')) {
+          variety = detail.split('VARIETY')[1];
+        }
       }
       if (variety !== '') {
-        variety = variety.split('\n')[0].trim();
-        variety = variety.split(':')[1].trim();
+        if (variety.includes('\n')) {
+          variety = variety.split('\n')[0].trim();
+        }
+        if (variety.includes(':')) {
+          variety = variety.split(':')[1].trim();
+        }
         variety = Helper.firstLetterUppercase([variety]).join();
       } else {
         return ['Unknown'];

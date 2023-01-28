@@ -5,12 +5,11 @@ import { IProduct } from '../interfaces/product';
 import { unwantedTitles } from '../data/unwantedTitles';
 import { IConfig } from '../interfaces/config';
 import config from '../config.json';
-import puppeteer from 'puppeteer';
-import Helper from '../helper/helper';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import { ISquareSpaceProductResponse } from '../interfaces/squareSpace/squareSpaceProductResponse.interface';
-import { puppeteerConfig } from '../puppeteerConfig';
+import { ApiService } from '../service/apiService';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export class PrototypeClient {
   private static vendor: string = Vendor.Prototype;
@@ -20,32 +19,25 @@ export class PrototypeClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const productUrls = await Helper.getProductUrls(
-      this.baseUrl + '/shop/',
-      '/shop/',
-      '/shop/'
-    );
-    const quantitySelector = '.quantity-label';
-    const productTitleSelector = '.ProductItem-details-title';
+    const squareSpaceApi = new ApiService(VendorApiUrl.Prototype);
+    const squareSpaceProducts = await squareSpaceApi.fetchSquareSpaceProducts();
 
-    for (const url of productUrls) {
-      const id = url.split('/')[url.split('/').length - 1];
-      const browser = await puppeteer.launch(puppeteerConfig);
-      const page = await browser.newPage();
-      await page.goto(url);
-      const productTitleElement = await page.$(productTitleSelector);
-      const productTitle =
-        (await productTitleElement?.evaluate((el) => el.textContent)) ?? '';
+    for (let i = 0; i < squareSpaceProducts.length; i++) {
+      const id =
+        squareSpaceProducts[i].fullUrl.split('/')[
+          squareSpaceProducts[i].fullUrl.split('/').length - 1
+        ];
+      const prototypeResponse: AxiosResponse<ISquareSpaceProductResponse> =
+        await axios.get(
+          PrototypeClient.baseUrl + '/shop/' + id + '?format=json-pretty'
+        );
       if (
         !unwantedTitles.some((unwantedString) =>
-          productTitle.includes(unwantedString)
+          squareSpaceProducts[i].title
+            .toLowerCase()
+            .includes(unwantedString.toLowerCase())
         )
       ) {
-        const prototypeResponse: AxiosResponse<ISquareSpaceProductResponse> =
-          await axios.get(
-            PrototypeClient.baseUrl + '/shop/' + id + '?format=json-pretty'
-          );
-
         const brand = this.vendor;
         const country = this.factory.getCountry(prototypeResponse.data.item);
         const continent = this.factory.getContinent(country);
@@ -59,11 +51,10 @@ export class PrototypeClient {
         const price = this.factory.getPrice(prototypeResponse.data.item);
         const process = this.factory.getProcess(prototypeResponse.data.item);
         const processCategory = this.factory.getProcessCategory(process);
-        const productUrl = this.factory.getProductUrl(
-          this.baseUrl,
-          prototypeResponse.data.item
+        const productUrl = this.baseUrl + squareSpaceProducts[i].fullUrl;
+        const isSoldOut = await this.factory.getSoldOut(
+          this.baseUrl + squareSpaceProducts[i].fullUrl
         );
-        const isSoldOut = await this.factory.getSoldOut(page, quantitySelector);
         const title = this.factory.getTitle(prototypeResponse.data.item);
         const variety = this.factory.getVariety(prototypeResponse.data.item);
         const weight = this.factory.getWeight(prototypeResponse.data.item);
@@ -89,7 +80,6 @@ export class PrototypeClient {
         }
         this.prototypeProducts.push(product);
       }
-      await browser.close();
     }
 
     if (this.config.useDatabase) {

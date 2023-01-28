@@ -1,4 +1,3 @@
-import { Page } from 'puppeteer';
 import { ISquareSpaceProductResponseData } from './squareSpaceResponseData.interface';
 
 export interface ISquareSpaceBaseScraper {
@@ -10,5 +9,5 @@ export interface ISquareSpaceBaseScraper {
     baseUrl: string,
     item: ISquareSpaceProductResponseData
   ) => string;
-  getSoldOut: (page: Page, selector: string) => Promise<boolean>;
+  getSoldOut: (productUrl: string) => Promise<boolean>;
 }
