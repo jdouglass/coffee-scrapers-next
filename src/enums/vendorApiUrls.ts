@@ -10,6 +10,7 @@ export enum VendorApiUrl {
   Prodigal = 'https://getprodigal.com/collections/87-pt-coffees/products.json?limit=250',
   Prototype = 'https://www.prototypecoffee.ca/shop?format=json-pretty',
   Quietly = 'https://www.quietlycoffee.com/collections/our-coffee/products.json?limit=250',
+  RabbitHole = 'https://www.rabbitholeroasters.com/collections/all-coffee/products.json?limit=250',
   Revolver = 'https://revolvercoffee.ca/collections/coffee/products.json?limit=250',
   RogueWave = 'https://www.roguewavecoffee.ca/collections/coffee/products.json?limit=250',
   Rosso = 'https://www.rossocoffeeroasters.com/collections/coffee/products.json?limit=250',
