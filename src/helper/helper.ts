@@ -214,40 +214,4 @@ export default class Helper {
       }
     })) as string;
   };
-
-  public static getProductUrls = async (
-    productPageUrl: string,
-    partialProductUrl: string
-  ): Promise<string[]> => {
-    return (await axios({
-      url: productPageUrl,
-      headers: {
-        Accept:
-          'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        Host: 'www.squarespace.com',
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36',
-      },
-    }).then((res) => {
-      if (res.data) {
-        const $ = load(res.data as string);
-        return $('a')
-          .toArray()
-          .map((el) => $(el).attr('href'))
-          .filter((href) => href?.includes(partialProductUrl)) as string[];
-      }
-    })) as string[];
-  };
-
-  public static isActiveProduct(
-    item: IWordpressProductResponseData,
-    productUrls: string[]
-  ): boolean {
-    for (const url of productUrls) {
-      if (item.guid.rendered === url) {
-        return true;
-      }
-    }
-    return false;
-  }
 }
