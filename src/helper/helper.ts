@@ -10,7 +10,6 @@ import { IProduct } from '../interfaces/product';
 import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
 import sharp from 'sharp';
-import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
 import { load } from 'cheerio';
 
 dotenv.config();
