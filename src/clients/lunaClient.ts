@@ -32,6 +32,9 @@ export class LunaClient {
         return productUrls.includes(item.link);
       });
 
+    productUrls.sort();
+    lunaResponseFiltered.sort((a, b) => (a.link > b.link ? 1 : -1));
+
     for (let i = 0; i < productUrls.length; i++) {
       const productTitle = await LunaHelper.getTitle(productUrls[i]);
       if (
