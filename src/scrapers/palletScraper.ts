@@ -26,7 +26,7 @@ export default class PalletScraper
   };
 
   getProcess = (item: IShopifyProductResponseData): string => {
-    if (item.body_html.includes('Process')) {
+    if (item.body_html.match(/Process.*-/)) {
       let process: string = item.body_html.split(/Process.*-/)[1];
       process = process.split('<')[0].trim();
       return Helper.convertToUniversalProcess(process);
