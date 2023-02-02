@@ -13,7 +13,7 @@ export default class TimbertrainScraper implements IWordpressScraper {
 
   getCountry = ($: CheerioAPI): string => {
     const descriptionContent = TimbertrainHelper.getProductInfo($);
-    const titleText = $('[class^="product-title"]').text();
+    const titleText = $('[class^="product-title"]').first().text();
     const countryList = new Set<string>();
     for (const country of worldData.keys()) {
       if (titleText.includes(country)) {
@@ -22,7 +22,7 @@ export default class TimbertrainScraper implements IWordpressScraper {
     }
     if (countryList.size === 0) {
       for (const detail of descriptionContent) {
-        if (detail.includes('Country:')) {
+        if (detail.includes('Country')) {
           for (const country of worldData.keys()) {
             if (detail.includes(country)) {
               countryList.add(country);
@@ -156,7 +156,7 @@ export default class TimbertrainScraper implements IWordpressScraper {
   };
 
   getTitle = ($: CheerioAPI): string => {
-    const titleText = $('[class^="product-title"]').text();
+    const titleText = $('[class^="product-title"]').first().text();
     return titleText.split('–')[0].trim();
   };
 }
