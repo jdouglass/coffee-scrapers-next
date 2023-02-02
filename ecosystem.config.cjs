@@ -107,4 +107,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'timbertrain',
+    script: 'dist/src/clients/timbertrainClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
