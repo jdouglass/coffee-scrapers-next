@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import LunaScraper from '../scrapers/lunaScraper';
+import TimbertrainScraper from '../scrapers/timbertrainScraper';
 import { ProductsDatabase } from '../database';
 import { IProduct } from '../interfaces/product';
 import { unwantedTitles } from '../data/unwantedTitles';
@@ -9,45 +9,53 @@ import { BaseUrl } from '../enums/baseUrls';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
 import { Vendor } from '../enums/vendors';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
-import { LunaHelper } from '../helper/lunaHelper';
+import { TimbertrainHelper } from '../helper/timbertrainHelper';
 
-export class LunaClient {
-  private static vendor: string = Vendor.Luna;
-  private static baseUrl: string = BaseUrl.Luna;
-  private static lunaProducts: Array<IProduct> = new Array<IProduct>();
-  private static factory: LunaScraper = new LunaScraper();
+export class TimbertrainClient {
+  private static vendor: string = Vendor.Timbertrain;
+  private static baseUrl: string = BaseUrl.Timbertrain;
+  private static timbertrainProducts: Array<IProduct> = new Array<IProduct>();
+  private static factory: TimbertrainScraper = new TimbertrainScraper();
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
-    const productUrls = await LunaHelper.getProductUrls(
+    const productUrls = await TimbertrainHelper.getProductUrls(
       this.baseUrl + '/product-category/coffee/',
-      '/product/'
+      '/shop/'
     );
 
-    const lunaResponse: AxiosResponse<IWordpressProductResponseData[]> =
-      await axios.get(VendorApiUrl.Luna);
+    const timbertrainResponse: AxiosResponse<IWordpressProductResponseData[]> =
+      await axios.get(VendorApiUrl.Timbertrain);
 
-    const lunaResponseFiltered: IWordpressProductResponseData[] =
-      lunaResponse.data.filter((item) => {
+    const timbertrainResponseFiltered: IWordpressProductResponseData[] =
+      timbertrainResponse.data.filter((item) => {
         return productUrls.includes(item.link);
       });
 
     productUrls.sort();
-    lunaResponseFiltered.sort((a, b) => (a.link > b.link ? 1 : -1));
+    timbertrainResponseFiltered.sort((a, b) => (a.link > b.link ? 1 : -1));
 
-    for (let i = 0; i < productUrls.length; i++) {
-      const productTitle = await LunaHelper.getTitle(productUrls[i]);
+    for (let i = 0; i < timbertrainResponseFiltered.length; i++) {
+      const productTitle = await TimbertrainHelper.getTitle(
+        timbertrainResponseFiltered[i].link
+      );
       if (
-        !unwantedTitles.some((unwantedString) =>
-          productTitle.toLowerCase().includes(unwantedString.toLowerCase())
-        )
+        !unwantedTitles.some((unwantedString) => {
+          productTitle.toLowerCase().includes(unwantedString.toLowerCase());
+        })
       ) {
-        const $ = await LunaHelper.getProductElement(productUrls[i]);
+        const $ = await TimbertrainHelper.getProductElement(
+          timbertrainResponseFiltered[i].link
+        );
         const brand = this.vendor;
         const country = this.factory.getCountry($);
         const continent = this.factory.getContinent(country);
-        const dateAdded = this.factory.getDateAdded(lunaResponseFiltered[i]);
-        const handle = this.factory.getHandle(lunaResponseFiltered[i].slug);
+        const dateAdded = this.factory.getDateAdded(
+          timbertrainResponseFiltered[i]
+        );
+        const handle = this.factory.getHandle(
+          timbertrainResponseFiltered[i].slug
+        );
         const imageUrl = this.factory.getImageUrl($);
         const price = this.factory.getPrice($);
         const process = this.factory.getProcess($);
@@ -66,7 +74,7 @@ export class LunaClient {
           price,
           process,
           processCategory,
-          productUrl: productUrls[i],
+          productUrl: timbertrainResponseFiltered[i].link,
           isSoldOut,
           title,
           variety,
@@ -76,19 +84,19 @@ export class LunaClient {
         if (this.config.logProducts) {
           console.log(product);
         }
-        this.lunaProducts.push(product);
+        this.timbertrainProducts.push(product);
       }
     }
 
     if (this.config.useDatabase) {
-      await ProductsDatabase.updateDb(this.lunaProducts);
+      await ProductsDatabase.updateDb(this.timbertrainProducts);
     }
   }
 }
 
 const main = async (): Promise<void> => {
   try {
-    await LunaClient.run();
+    await TimbertrainClient.run();
   } catch (error) {
     console.error(error);
   }

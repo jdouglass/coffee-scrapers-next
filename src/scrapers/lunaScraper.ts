@@ -4,6 +4,7 @@ import Helper from '../helper/helper';
 import { IWordpressScraper } from '../interfaces/wordpress/wordpressScraper.interface';
 import { CheerioAPI } from 'cheerio';
 import { LunaHelper } from '../helper/lunaHelper';
+import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
 
 export default class LunaScraper implements IWordpressScraper {
   getContinent = (country: string): string => {
@@ -27,8 +28,8 @@ export default class LunaScraper implements IWordpressScraper {
     return 'Multiple';
   };
 
-  getDateAdded = (): string => {
-    return new Date().toISOString();
+  getDateAdded = (item: IWordpressProductResponseData): string => {
+    return new Date(item.modified).toISOString();
   };
 
   getHandle = (slug: string): string => {
@@ -36,8 +37,8 @@ export default class LunaScraper implements IWordpressScraper {
   };
 
   getImageUrl = ($: CheerioAPI): string => {
-    const priceElement = $('.wp-post-image').attr('src');
-    return priceElement as string;
+    const imageElement = $('.wp-post-image').attr('src');
+    return imageElement as string;
   };
 
   getPrice = ($: CheerioAPI): number => {

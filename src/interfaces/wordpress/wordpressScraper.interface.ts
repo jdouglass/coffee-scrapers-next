@@ -1,10 +1,11 @@
 import { CheerioAPI } from 'cheerio';
+import { IWordpressProductResponseData } from './wordpressResponseData.interface';
 
 export interface IWordpressScraper {
   getBrand?: () => string;
   getContinent: (country: string) => string;
   getCountry: ($: CheerioAPI) => string;
-  getDateAdded: () => string;
+  getDateAdded: (item: IWordpressProductResponseData) => string;
   getHandle: (slug: string) => string;
   getImageUrl: ($: CheerioAPI) => string;
   getPrice: ($: CheerioAPI) => number;

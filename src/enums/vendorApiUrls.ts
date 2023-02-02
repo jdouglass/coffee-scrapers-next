@@ -17,4 +17,5 @@ export enum VendorApiUrl {
   Social = 'https://www.socialcoffeeroasters.ca/collections/coffee/products.json?limit=250',
   Sorellina = 'https://www.sorellina.ca/collections/beans/products.json?limit=250',
   Subtext = 'https://www.subtext.coffee/collections/filter-coffee-beans/products.json?limit=250',
+  Timbertrain = 'https://timbertraincoffeeroasters.com/wp-json/wp/v2/product?product_cat=20&per_page=100',
 }

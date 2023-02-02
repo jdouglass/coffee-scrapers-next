@@ -18,4 +18,5 @@ export enum Vendor {
   Sorellina = 'Sorellina Coffee',
   Subtext = 'Subtext Coffee Roasters',
   TheAngryRoaster = 'The Angry Roaster Coffee Co.',
+  Timbertrain = 'Timbertrain Coffee Roasters',
 }

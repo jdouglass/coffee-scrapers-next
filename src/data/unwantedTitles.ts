@@ -35,6 +35,7 @@ export const unwantedTitles: string[] = [
   'Subscription',
   'Surprise',
   'Sweater',
+  'Swiss Water',
   'T-Shirt',
   'Tea',
   'Third Wave Water',
