@@ -6,6 +6,7 @@ export enum VendorApiUrl {
   Monogram = 'https://monogramcoffee.com/collections/whole-bean-coffee/products.json?limit=250',
   Nemesis = 'https://www.nemesis.coffee/collections/shop-coffee/products.json?limit=250',
   Pallet = 'https://palletcoffeeroasters.com/collections/coffee/products.json?limit=250',
+  PhilAndSebastian = 'https://philsebastian.com/collections/coffee/products.json?limit=250',
   Pirates = 'https://piratesofcoffee.com/collections/coffee/products.json?limit=250',
   Prodigal = 'https://getprodigal.com/collections/87-pt-coffees/products.json?limit=250',
   Prototype = 'https://www.prototypecoffee.ca/shop?format=json-pretty',

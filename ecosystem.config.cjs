@@ -119,4 +119,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'philAndSebastian',
+    script: 'dist/src/clients/philAndSebastianClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
