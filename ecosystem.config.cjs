@@ -113,4 +113,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'zabCafe',
+    script: 'dist/src/clients/zabCafeClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
