@@ -39,14 +39,15 @@ export class SquareSpaceBaseScraper
   };
 
   getSoldOut = async (productUrl: string): Promise<boolean> => {
+    let isSoldOut = false;
     await axios(productUrl).then((res) => {
       if (res.data) {
         const $ = load(res.data as string);
-        if ($('div[class="quantity-label"]').length === 1) {
-          return false;
+        if (!$('div[class="quantity-label"]').length) {
+          isSoldOut = true;
         }
       }
     });
-    return true;
+    return isSoldOut;
   };
 }
