@@ -131,4 +131,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'transcend',
+    script: 'dist/src/clients/transcendClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];

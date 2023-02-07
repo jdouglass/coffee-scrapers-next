@@ -21,5 +21,6 @@ export enum BaseUrl {
   TheAngryRoaster = 'https://theangryroaster.com',
   ThomBargen = 'https://www.thombargen.com',
   Timbertrain = 'https://timbertraincoffeeroasters.com',
+  Transcend = 'https://transcendcoffee.ca',
   ZabCafe = 'https://zabcafe.com',
 }
