@@ -1,0 +1,10 @@
+-- DropIndex
+DROP INDEX "products_id_key";
+
+-- AlterTable
+ALTER TABLE "products" ALTER COLUMN "brand" SET DATA TYPE TEXT,
+ALTER COLUMN "title" SET DATA TYPE TEXT,
+ALTER COLUMN "process_category" SET DATA TYPE TEXT,
+ALTER COLUMN "country" SET DATA TYPE TEXT,
+ALTER COLUMN "continent" SET DATA TYPE TEXT,
+ALTER COLUMN "vendor" SET DATA TYPE TEXT;

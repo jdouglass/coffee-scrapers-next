@@ -11,20 +11,20 @@ datasource db {
 }
 
 model products {
-  id               Int      @id @unique @default(autoincrement())
-  brand            String   @db.VarChar(50)
-  title            String   @db.VarChar(100)
+  id               Int      @id @default(autoincrement())
+  brand            String   @db.Text
+  title            String   @db.Text
   price            Decimal  @db.Decimal(6, 2)
   weight           Int      @db.Integer
   process          String   @db.Text
-  process_category String   @db.VarChar(20)
+  process_category String   @db.Text
   variety          String[] @db.Text
-  country          String   @db.VarChar(56)
-  continent        String   @db.VarChar(20)
+  country          String   @db.Text
+  continent        String   @db.Text
   product_url      String   @unique @db.Text
   image_url        String   @db.Text
   sold_out         Boolean  @db.Boolean
   date_added       DateTime @db.Timestamp()
-  vendor           String   @db.VarChar(50)
+  vendor           String   @db.Text
   handle           String   @db.Text
 }
