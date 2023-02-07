@@ -41,11 +41,26 @@ export default class EightOunceScraper
     }
     let country = '';
     if (item.body_html.includes('Origin:')) {
-      country = item.body_html.split('Origin:')[1];
+      country = item.body_html.split('Origin:')[1].trim();
     } else if (item.body_html.includes('Region:')) {
-      country = item.body_html.split('Region:')[1];
+      country = item.body_html.split('Region:')[1].trim();
     }
     country = country.split('<')[0].trim();
+    country = country.split('\n')[0].trim();
+    const countrySet = new Set<string>();
+    for (const countryName of worldData.keys()) {
+      if (country.toLowerCase().includes(countryName.toLowerCase())) {
+        countrySet.add(countryName);
+      }
+    }
+    if (!countrySet.size) {
+      return defaultCountry;
+    }
+    if (countrySet.size === 1) {
+      return countrySet.values().next().value as string;
+    } else if (countrySet.size > 1) {
+      return 'Multiple';
+    }
     if (country.includes(', ')) {
       const locations = country.split(', ');
       country = locations[locations.length - 1].trim();
