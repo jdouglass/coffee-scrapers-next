@@ -101,7 +101,8 @@ export default class ThomBargenScraper
   getWeight = (item: IShopifyProductResponseData): number => {
     const defaultWeight = 300;
     const poundToGrams = 453.6;
-    if (item.title.toLowerCase().includes('lb')) {
+    const containsWeight = item.title.toLowerCase().match(/\d+\s+?lb/);
+    if (containsWeight) {
       const weightFromTitle = item.title.toLowerCase().split('lb')[0].trim();
       return (
         Number(weightFromTitle.charAt(weightFromTitle.length - 1)) *
