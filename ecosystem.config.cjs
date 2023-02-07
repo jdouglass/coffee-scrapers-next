@@ -125,4 +125,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'thomBargen',
+    script: 'dist/src/clients/thomBargenClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];

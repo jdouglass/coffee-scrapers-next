@@ -19,6 +19,7 @@ export enum BaseUrl {
   Sorellina = 'https://sorellina.ca',
   Subtext = 'https://subtext.coffee',
   TheAngryRoaster = 'https://theangryroaster.com',
+  ThomBargen = 'https://www.thombargen.com',
   Timbertrain = 'https://timbertraincoffeeroasters.com',
   ZabCafe = 'https://zabcafe.com',
 }
