@@ -143,4 +143,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'houseOfFunk',
+    script: 'dist/src/clients/houseOfFunkClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];

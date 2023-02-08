@@ -1,6 +1,7 @@
 export enum BaseUrl {
   EightOunce = 'https://eightouncecoffee.ca',
   Hatch = 'https://www.hatchcrafted.com',
+  HouseOfFunk = 'https://www.houseoffunkbrewing.com',
   LibrarySpecialtyCoffee = 'https://thelibraryspecialtycoffee.com',
   Luna = 'https://enjoylunacoffee.com',
   Monogram = 'https://monogramcoffee.com',
