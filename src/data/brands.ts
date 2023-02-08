@@ -13,6 +13,7 @@ export const brands: string[] = [
   'Coffee Collective',
   'COLONNA',
   'Colonna',
+  'Cuppers Choice',
   'DAK',
   'Dak',
   'David Kim Coffee',
