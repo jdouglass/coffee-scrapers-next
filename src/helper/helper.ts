@@ -116,6 +116,7 @@ export default class Helper {
           varieties[i] = 'Yellow Caturra';
           break;
         case 'Mostly Dega':
+        case 'Deega':
           varieties[i] = 'Dega';
           break;
         case 'Anacafé 14':

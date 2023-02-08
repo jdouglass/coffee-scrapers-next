@@ -4,24 +4,35 @@ import Helper from '../helper/helper';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 
-export default class TranscendScraper
+export default class TrafficScraper
   extends ShopifyBaseScraper
   implements IShopifyScraper
 {
   getCountry = (item: IShopifyProductResponseData): string => {
     let country = '';
-    for (const country of worldData.keys()) {
-      if (item.title.toLowerCase().includes(country.toLowerCase())) {
-        return country;
-      }
+    item.body_html = item.body_html.replace('Origine', '');
+    if (item.body_html.includes('Origin')) {
+      country = item.body_html.split('Origin')[1].trim();
     }
-    if (item.body_html.includes('Region:')) {
-      country = item.body_html.split('Region:')[1].trim();
+    if (country !== '') {
+      const countryList = new Set<string>();
+      country = country.split(':')[1].trim();
+      country = country.replace('</strong>', '').trim();
+      country = country.replace('</span>', '').trim();
+      country = country.replace('<span>', '').trim();
+      country = country.replace('<span data-mce-fragment="1">', '').trim();
       country = country.split('<')[0].trim();
       for (const location of worldData.keys()) {
         if (country.toLowerCase().includes(location.toLowerCase())) {
-          return location;
+          countryList.add(location);
         }
+      }
+      if (!countryList.size) {
+        return 'Unknown';
+      } else if (countryList.size === 1) {
+        return countryList.values().next().value as string;
+      } else {
+        return 'Multiple';
       }
     }
     return 'Unknown';
@@ -38,8 +49,7 @@ export default class TranscendScraper
       if (process.includes(':')) {
         process = process.split(':')[1].trim();
       }
-      process = process.replace('</span>', '').trim();
-      process = process.replace(/<span.*">/, '').trim();
+      process = process.replace('</strong>', '').trim();
       process = process.split('<')[0].trim();
       process = process
         .split(/[+\/]/)
@@ -61,16 +71,17 @@ export default class TranscendScraper
   getVariety = (item: IShopifyProductResponseData): string[] => {
     let variety = '';
     const body = item.body_html;
-    if (body.includes('Variety:')) {
-      variety = body.split('Variety:')[1];
-    } else if (body.includes('Varieties:')) {
-      variety = body.split('Varieties:')[1];
+    if (body.includes('Variet')) {
+      variety = body.split('Variet')[1];
+    } else if (body.includes('Variété')) {
+      variety = body.split('Variété')[1];
     } else {
       return ['Unknown'];
     }
     if (variety !== '') {
+      variety = variety.split(':')[1].trim();
+      variety = variety.replace('</strong>', '').trim();
       variety = variety.replace('</span>', '').trim();
-      variety = variety.replace(/<span.*\">/, '').trim();
       variety = variety.split('<')[0].trim();
       variety = variety.replaceAll('&amp;', ', ');
       variety = variety.replaceAll('and', ', ');
@@ -93,31 +104,17 @@ export default class TranscendScraper
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
-    if (item.title.includes('-')) {
-      return Helper.firstLetterUppercase([
-        item.title.split('-')[0].trim(),
-      ]).join();
-    }
     return Helper.firstLetterUppercase([item.title]).join();
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
     const poundToGrams = 453.6;
-    const threeQuarters = 0.75;
-    for (const variant of item.variants) {
-      if (variant.available && variant.grams !== 0) {
-        return variant.grams;
-      }
-    }
     for (const variant of item.variants) {
       if (variant.available) {
         if (variant.title.includes('g')) {
           return Number(variant.title.split('g')[0].trim());
         } else if (variant.title.includes('lb')) {
           const weightStr = variant.title.split('lb')[0].trim();
-          if (weightStr === '3/4') {
-            return Math.round(threeQuarters * poundToGrams);
-          }
           return Math.round(Number(weightStr) * poundToGrams);
         }
       }
@@ -126,9 +123,6 @@ export default class TranscendScraper
       return Number(item.variants[0].title.split('g')[0].trim());
     } else if (item.variants[0].title.includes('lb')) {
       const weightStr = item.variants[0].title.split('lb')[0].trim();
-      if (weightStr === '3/4') {
-        return Math.round(threeQuarters * poundToGrams);
-      }
       return Math.round(Number(weightStr) * poundToGrams);
     }
     return item.variants[0].grams;
