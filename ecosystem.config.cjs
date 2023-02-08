@@ -137,4 +137,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'traffic',
+    script: 'dist/src/clients/trafficClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
