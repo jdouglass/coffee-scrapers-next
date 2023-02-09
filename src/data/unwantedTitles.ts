@@ -50,4 +50,5 @@ export const unwantedTitles: string[] = [
   'TREASURE BOX',
   'Varie',
   'Workshop',
+  'World Map',
 ];
