@@ -4,9 +4,7 @@ import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface'
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
-import { BaseUrl } from '../enums/baseUrls';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
-import { EightOunceHelper } from '../helper/eightOunceHelper';
 
 export default class EightOunceScraper
   extends ShopifyBaseScraper
@@ -32,7 +30,10 @@ export default class EightOunceScraper
     return 'Unknown';
   };
 
-  getCountry = async (item: IShopifyProductResponseData): Promise<string> => {
+  getCountry = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
     const defaultCountry = 'Unknown';
     for (const country of worldData.keys()) {
       if (item.title.includes(country)) {
@@ -68,17 +69,14 @@ export default class EightOunceScraper
     if (country !== '') {
       return country;
     } else {
-      const bodyText = await EightOunceHelper.getProductInfo(
-        this.getProductUrl(item, BaseUrl.EightOunce)
-      );
-      if (bodyText.length !== 0) {
-        for (const detail of bodyText) {
-          if (detail?.includes('Origin:')) {
+      if (productDetails!.length !== 0) {
+        for (const detail of productDetails!) {
+          if (detail.includes('Origin:')) {
             if (detail?.includes('Blend')) {
               return 'Multiple';
             }
             for (const country of worldData.keys()) {
-              if (detail?.includes(country)) {
+              if (detail.includes(country)) {
                 return country;
               }
             }
@@ -89,7 +87,10 @@ export default class EightOunceScraper
     return defaultCountry;
   };
 
-  getProcess = async (item: IShopifyProductResponseData): Promise<string> => {
+  getProcess = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
     const defaultProcess = 'Unknown';
     const maxProcessLength = 75;
     let process = '';
@@ -114,11 +115,8 @@ export default class EightOunceScraper
         process = process.trim();
       }
       if (process === '') {
-        const bodyText = await EightOunceHelper.getProductInfo(
-          this.getProductUrl(item, BaseUrl.EightOunce)
-        );
-        if (bodyText.length !== 0) {
-          for (const detail of bodyText) {
+        if (productDetails!.length) {
+          for (const detail of productDetails!) {
             if (detail?.includes('Process:')) {
               process = detail.split('Process:')[1].trim();
             }
@@ -183,7 +181,10 @@ export default class EightOunceScraper
     return item.title.trim();
   };
 
-  getVariety = async (item: IShopifyProductResponseData): Promise<string[]> => {
+  getVariety = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
     let variety = '';
     const unknownVariety = ['Unknown'];
     const body: string = item.body_html;
@@ -203,11 +204,8 @@ export default class EightOunceScraper
         variety = variety.split(', ')[1];
       }
       if (variety === '') {
-        const bodyText = await EightOunceHelper.getProductInfo(
-          this.getProductUrl(item, BaseUrl.EightOunce)
-        );
-        if (bodyText.length !== 0) {
-          for (const detail of bodyText) {
+        if (productDetails!.length) {
+          for (const detail of productDetails!) {
             if (detail?.includes('Variety:')) {
               variety = detail.split('Variety:')[1].trim();
             }

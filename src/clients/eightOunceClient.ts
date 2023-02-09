@@ -7,6 +7,7 @@ import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { ApiService } from '../service/apiService';
+import { EightOunceHelper } from '../helper/eightOunceHelper';
 
 export class EightOunceClient {
   private static vendor: string = Vendor.EightOunce;
@@ -19,8 +20,11 @@ export class EightOunceClient {
     const shopifyApi = new ApiService(VendorApiUrl.EightOunce);
     const shopifyProducts = await shopifyApi.fetchShopifyProducts();
     for (const item of shopifyProducts) {
-      const country = await this.factory.getCountry(item);
-      const process = await this.factory.getProcess(item);
+      const productDetails = await EightOunceHelper.getProductInfo(
+        this.factory.getProductUrl(item, this.baseUrl)
+      );
+      const country = this.factory.getCountry(item, productDetails);
+      const process = this.factory.getProcess(item, productDetails);
       const product: IProduct = {
         brand: this.factory.getBrand(item),
         country,
@@ -34,7 +38,7 @@ export class EightOunceClient {
         productUrl: this.factory.getProductUrl(item, this.baseUrl),
         isSoldOut: this.factory.getSoldOut(item.variants),
         title: this.factory.getTitle(item),
-        variety: await this.factory.getVariety(item),
+        variety: this.factory.getVariety(item, productDetails),
         weight: this.factory.getWeight(item),
         vendor: this.vendor,
       };

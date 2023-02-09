@@ -108,10 +108,13 @@ export default class TrafficScraper
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
+    const kgToGrams = 1000;
     const poundToGrams = 453.6;
     for (const variant of item.variants) {
       if (variant.available) {
-        if (variant.title.includes('g')) {
+        if (variant.title.includes('kg')) {
+          return Number(variant.title.split('kg')[0].trim()) * kgToGrams;
+        } else if (variant.title.includes('g')) {
           return Number(variant.title.split('g')[0].trim());
         } else if (variant.title.includes('lb')) {
           const weightStr = variant.title.split('lb')[0].trim();
@@ -119,7 +122,9 @@ export default class TrafficScraper
         }
       }
     }
-    if (item.variants[0].title.includes('g')) {
+    if (item.variants[0].title.includes('kg')) {
+      return Number(item.variants[0].title.split('kg')[0].trim()) * kgToGrams;
+    } else if (item.variants[0].title.includes('g')) {
       return Number(item.variants[0].title.split('g')[0].trim());
     } else if (item.variants[0].title.includes('lb')) {
       const weightStr = item.variants[0].title.split('lb')[0].trim();
