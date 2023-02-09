@@ -1,4 +1,5 @@
 export enum Vendor {
+  DeMello = 'De Mello',
   EightOunce = 'Eight Ounce Coffee',
   Hatch = 'Hatch Coffee Roasters',
   HouseOfFunk = 'House of Funk Brewing Co.',
