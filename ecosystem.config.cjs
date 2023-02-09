@@ -149,4 +149,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'deMello',
+    script: 'dist/src/clients/deMelloClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
