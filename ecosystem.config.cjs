@@ -155,4 +155,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'popCoffeeWorks',
+    script: 'dist/src/clients/popCoffeeWorksClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];
