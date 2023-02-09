@@ -5,6 +5,7 @@ export enum VendorApiUrl {
   HouseOfFunk = 'https://www.houseoffunkbrewing.com/collections/coffee/products.json?limit=250',
   Library = 'https://www.thelibraryspecialtycoffee.com/collections/frontpage/products.json?limit=250',
   Luna = 'https://enjoylunacoffee.com/wp-json/wp/v2/product?product_cat=16&per_page=100',
+  Matchstick = 'https://matchstickyvr.com/collections/coffee/products.json?limit=250',
   Monogram = 'https://monogramcoffee.com/collections/whole-bean-coffee/products.json?limit=250',
   Nemesis = 'https://www.nemesis.coffee/collections/shop-coffee/products.json?limit=250',
   Pallet = 'https://palletcoffeeroasters.com/collections/coffee/products.json?limit=250',

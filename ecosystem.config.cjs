@@ -161,4 +161,10 @@ module.exports = [
     time: true,
     cron: '0 * * * *',
   },
+  {
+    name: 'matchstick',
+    script: 'dist/src/clients/matchstickClient.js',
+    time: true,
+    cron: '0 * * * *',
+  },
 ];

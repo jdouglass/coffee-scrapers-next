@@ -6,6 +6,7 @@ export interface IShopifyProductResponseData {
   handle: string;
   id: number;
   images: IShopifyImage[];
+  product_type: string;
   published_at: string;
   title: string;
   variants: IShopifyVariant[];
