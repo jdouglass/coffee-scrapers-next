@@ -19,6 +19,7 @@ export enum VendorApiUrl {
   Revolver = 'https://revolvercoffee.ca/collections/coffee/products.json?limit=250',
   RogueWave = 'https://www.roguewavecoffee.ca/collections/coffee/products.json?limit=250',
   Rosso = 'https://www.rossocoffeeroasters.com/collections/coffee/products.json?limit=250',
+  SamJames = 'https://www.samjamescoffeebar.com/collections/beans/products.json?limit=250',
   Social = 'https://www.socialcoffeeroasters.ca/collections/coffee/products.json?limit=250',
   Sorellina = 'https://www.sorellina.ca/collections/beans/products.json?limit=250',
   Subtext = 'https://www.subtext.coffee/collections/filter-coffee-beans/products.json?limit=250',
