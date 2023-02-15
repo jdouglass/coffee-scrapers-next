@@ -29,6 +29,7 @@ import ZabCafeScraper from './scrapers/zabCafeScraper';
 import DeMelloScraper from './scrapers/deMelloScraper';
 import LunaScraper from './scrapers/lunaScraper';
 import TimbertrainScraper from './scrapers/timbertrainScraper';
+import RevolverScraper from './scrapers/revolverScraper';
 
 // Shopify Scrapers
 schedule.scheduleJob(
@@ -86,6 +87,10 @@ schedule.scheduleJob(
 schedule.scheduleJob(
   config.cronSchedule,
   async () => await ShopifyClient.run(new RabbitHoleScraper())
+);
+schedule.scheduleJob(
+  config.cronSchedule,
+  async () => await ShopifyClient.run(new RevolverScraper())
 );
 schedule.scheduleJob(
   config.cronSchedule,
