@@ -1,13 +1,31 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
+import { BaseUrl } from '../enums/baseUrls';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { Vendor } from '../enums/vendors';
 import Helper from '../helper/helper';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 
 export default class SamJamesScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyScraper
 {
+  private vendor = Vendor.SamJames;
+
+  getVendorApiUrl = (): string => {
+    return VendorApiUrl.SamJames;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData) => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     const countryList = new Set<string>();
     for (const location of worldData.keys()) {
@@ -56,11 +74,8 @@ export default class SamJamesScraper
     return 'Unknown';
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/collections/beans/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.SamJames + '/collections/beans/products/' + item.handle;
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {

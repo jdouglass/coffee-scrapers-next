@@ -58,19 +58,3 @@ export class HatchHelper {
     })) as string[];
   };
 }
-
-// async function main() {
-//   console.log(
-//     await fetch('https://www.hatchcrafted.com/shop/product/4856707614').then(
-//       async (res) => {
-//         const $ = load(await res.text());
-//         return $('p[class="product-detail-description"]')
-//           .first()
-//           .text()
-//           .split('\n');
-//       }
-//     )
-//   );
-// }
-
-// void main();

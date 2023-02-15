@@ -2,11 +2,27 @@ import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyRespon
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import Helper from '../helper/helper';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
+import { BaseUrl } from '../enums/baseUrls';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { Vendor } from '../enums/vendors';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export default class MonogramScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.Monogram;
+  private vendorApiUrl = VendorApiUrl.Monogram;
+
+  getVendorApiUrl = (): string => {
+    return this.vendorApiUrl;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
   getBrand = (item: IShopifyProductResponseData): string => {
     if (item.handle.includes('atlas')) {
       const titleOptions: string[] = item.title.split('-');
@@ -97,12 +113,9 @@ export default class MonogramScraper
     return 'Unknown';
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
+  getProductUrl = (item: IShopifyProductResponseData): string => {
     return (
-      baseUrl +
+      BaseUrl.Monogram +
       '/products/' +
       item.handle +
       '?variant=' +

@@ -5,8 +5,21 @@ import { ICrateJoyScraper } from '../interfaces/crateJoy/crateJoyScraper.interfa
 import { ICrateJoyImage } from '../interfaces/crateJoy/crateJoyImage.interface';
 import { CheerioAPI } from 'cheerio';
 import { HatchHelper } from '../helper/hatchHelper';
+import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
 
-export default class HatchScraper implements ICrateJoyScraper {
+export default class HatchScraper implements ICrateJoyScraper, IScraper {
+  private vendor = Vendor.Hatch;
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_$: CheerioAPI) => {
+    return this.vendor;
+  };
+
   getContinent = (country: string): string => {
     return worldData.get(country) ?? 'Unknown';
   };
@@ -75,8 +88,8 @@ export default class HatchScraper implements ICrateJoyScraper {
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getProductUrl = (id: number, baseUrl: string): string => {
-    return baseUrl + '/shop/product/' + id.toString();
+  getProductUrl = (id: number): string => {
+    return BaseUrl.Hatch + '/shop/product/' + id.toString();
   };
 
   getSoldOut = ($: CheerioAPI): boolean => {

@@ -5,11 +5,23 @@ import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export default class EightOunceScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.EightOunce;
+  private vendorApiUrl = VendorApiUrl.EightOunce;
+
+  getVendorApiUrl = (): string => {
+    return this.vendorApiUrl;
+  };
+
   getBrand = (item: IShopifyProductResponseData): string => {
     let possibleBrand = '';
     if (item.title.includes(' - ')) {
@@ -154,11 +166,8 @@ export default class EightOunceScraper
     return defaultProcess;
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.EightOunce + '/products/' + item.handle;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
@@ -334,5 +343,9 @@ export default class EightOunceScraper
       return item.variants[0].grams;
     }
     return 0;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
   };
 }

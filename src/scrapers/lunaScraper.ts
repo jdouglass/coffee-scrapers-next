@@ -3,27 +3,73 @@ import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { IWordpressScraper } from '../interfaces/wordpress/wordpressScraper.interface';
 import { CheerioAPI } from 'cheerio';
-import { LunaHelper } from '../helper/lunaHelper';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
-export default class LunaScraper implements IWordpressScraper {
+export default class LunaScraper implements IWordpressScraper, IScraper {
+  private vendor = Vendor.Luna;
+
   getContinent = (country: string): string => {
     return worldData.get(country) ?? 'Unknown';
   };
 
-  getCountry = ($: CheerioAPI): string => {
-    const descriptionContent = $('[class^="product_title"]').text();
-    const countryList: Array<string> = [];
+  getProcessCategory = (process: string): string => {
+    if (
+      process === ProcessCategory[ProcessCategory.Washed] ||
+      process === ProcessCategory[ProcessCategory.Natural] ||
+      process === ProcessCategory[ProcessCategory.Honey] ||
+      process === ProcessCategory[ProcessCategory.Unknown]
+    ) {
+      return process;
+    }
+    return ProcessCategory[ProcessCategory.Experimental];
+  };
+
+  getProductUrl = (item: IWordpressProductResponseData): string => {
+    return item.link;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getVendorApiUrl = (): string => {
+    return VendorApiUrl.Luna;
+  };
+
+  getBrand = (
+    _item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    return this.vendor;
+  };
+
+  getCountry = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    const countryList = new Set<string>();
     for (const country of worldData.keys()) {
-      if (descriptionContent.includes(country)) {
-        countryList.push(country);
+      if (item.title.rendered.includes(country)) {
+        countryList.add(country);
       }
     }
-    if (countryList.length === 0) {
-      return 'Unknown';
+    if (!countryList.size && item.title.rendered.includes('Origin:')) {
+      let country = item.title.rendered.split('Origin:')[1].trim();
+      country = country.split('<')[0].trim();
+      for (const country of worldData.keys()) {
+        if (item.title.rendered.includes(country)) {
+          countryList.add(country);
+        }
+      }
+      if (!countryList.size) {
+        return 'Unknown';
+      }
     }
-    if (countryList.length === 1) {
-      return countryList[0];
+    if (countryList.size === 1) {
+      return [...countryList][0];
     }
     return 'Multiple';
   };
@@ -51,33 +97,21 @@ export default class LunaScraper implements IWordpressScraper {
     return 0;
   };
 
-  getProcess = ($: CheerioAPI): string => {
-    const descriptionContent = LunaHelper.getProductInfo($);
-    for (const detail of descriptionContent) {
-      if (detail.includes('Processing:')) {
-        let process = detail.split('Processing:')[1];
-        process = process.split('\n')[0].trim();
-        if (process.includes('Export')) {
-          process = process.split('Export')[0].trim();
-        }
-        process = Helper.firstLetterUppercase([process]).join(' ');
-        process = Helper.convertToUniversalProcess(process);
-        return process;
-      }
+  getProcess = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    let process = '';
+    if (item.content.rendered.includes('Processing:')) {
+      process = item.content.rendered.split('Processing:')[1].trim();
     }
-    return 'Unknown';
-  };
-
-  getProcessCategory = (process: string): string => {
-    if (
-      process === ProcessCategory[ProcessCategory.Washed] ||
-      process === ProcessCategory[ProcessCategory.Natural] ||
-      process === ProcessCategory[ProcessCategory.Honey] ||
-      process === ProcessCategory[ProcessCategory.Unknown]
-    ) {
-      return process;
+    if (process === '') {
+      return 'Unknown';
     }
-    return ProcessCategory[ProcessCategory.Experimental];
+    process = process.split('<')[0].trim();
+    process = Helper.firstLetterUppercase([process]).join(' ');
+    process = Helper.convertToUniversalProcess(process);
+    return process;
   };
 
   getSoldOut = ($: CheerioAPI): boolean => {
@@ -88,23 +122,23 @@ export default class LunaScraper implements IWordpressScraper {
     return true;
   };
 
-  getVariety = ($: CheerioAPI): string[] => {
-    const descriptionContent = LunaHelper.getProductInfo($);
+  getVariety = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string[] => {
     let variety = '';
-    for (const detail of descriptionContent) {
-      if (detail.includes('Variety')) {
-        variety = detail.split('Variety:')[1];
-        variety = variety.split('Process')[0].trim();
-      } else if (detail.includes('Varieties')) {
-        variety = detail.split('Varieties:')[1];
-        variety = variety.split('Process')[0].trim();
-      }
+    if (item.content.rendered.includes('Variety:')) {
+      variety = item.content.rendered.split('Variety:')[1].trim();
+    } else if (item.content.rendered.includes('Varieties:')) {
+      variety = item.content.rendered.split('Varieties:')[1].trim();
     }
     if (variety === '') {
       return ['Unknown'];
     }
+    variety = variety.split('<')[0].trim();
+
     let varietyOptions = variety
-      .split(/, | & | and /)
+      .split(/, | & | and | \&amp; /)
       .map((variety: string) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
@@ -112,7 +146,7 @@ export default class LunaScraper implements IWordpressScraper {
     return varietyOptions;
   };
 
-  getWeight = ($: CheerioAPI): number => {
+  getWeight = (_item: IWordpressProductResponseData, $: CheerioAPI): number => {
     const gramsToKg = 1000;
     let weightOptions = $('.variation-radios')
       .find('label')
@@ -137,11 +171,13 @@ export default class LunaScraper implements IWordpressScraper {
       : 0;
   };
 
-  getTitle = ($: CheerioAPI): string => {
-    let titleText = $('[class^="product_title"]').text();
-    if (titleText.includes(' in ')) {
-      titleText = titleText.split(' in ')[0].trim();
+  getTitle = (item: IWordpressProductResponseData, _$?: CheerioAPI): string => {
+    let title = item.title.rendered;
+    if (item.title.rendered.includes(' in ')) {
+      title = title.split(' in ')[0].trim();
     }
-    return titleText.split('–')[0].trim();
+    title = title.replaceAll('&#8211;', '-');
+    title = title.replaceAll('&#038;', '&');
+    return title;
   };
 }

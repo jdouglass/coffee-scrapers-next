@@ -2,11 +2,30 @@ import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyRespon
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import Helper from '../helper/helper';
+import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export default class RabbitHoleScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.RabbitHole;
+
+  getVendorApiUrl = (): string => {
+    return VendorApiUrl.RabbitHole;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData) => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     const defaultCountry = 'Unknown';
     if (item.body_html.includes('Country:')) {
@@ -28,11 +47,10 @@ export default class RabbitHoleScraper
     return defaultProcess;
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/collections/all-coffee/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return (
+      BaseUrl.RabbitHole + '/collections/all-coffee/products/' + item.handle
+    );
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {

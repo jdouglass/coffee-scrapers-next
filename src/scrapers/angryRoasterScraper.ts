@@ -1,14 +1,29 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
+import { BaseUrl } from '../enums/baseUrls';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { Vendor } from '../enums/vendors';
 import Helper from '../helper/helper';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
-import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant.interface';
 
 export default class AngryRoasterScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyBaseScraper, IShopifyScraper, IScraper
 {
+  private vendor = Vendor.TheAngryRoaster;
+  private vendorApiUrl = VendorApiUrl.AngryRoaster;
+
+  getVendorApiUrl = (): string => {
+    return this.vendorApiUrl;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData): string => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     let country = '';
     if (item.body_html.includes('Origin')) {
@@ -49,21 +64,8 @@ export default class AngryRoasterScraper
     return 'Unknown';
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/collections/all/products/' + item.handle;
-  };
-
-  getSoldOut = (variants: IShopifyVariant[]): boolean => {
-    let isAvailable = true;
-    for (const variant of variants) {
-      if (variant.available) {
-        isAvailable = false;
-      }
-    }
-    return isAvailable;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.TheAngryRoaster + '/collections/all/products/' + item.handle;
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
@@ -89,15 +91,6 @@ export default class AngryRoasterScraper
     return varietyOptions;
   };
 
-  getWeight = (item: IShopifyProductResponseData): number => {
-    for (const variant of item.variants) {
-      if (variant.available) {
-        return variant.grams;
-      }
-    }
-    return item.variants[0].grams;
-  };
-
   getTitle = (item: IShopifyProductResponseData): string => {
     if (item.title.includes('-')) {
       return Helper.firstLetterUppercase([
@@ -105,5 +98,9 @@ export default class AngryRoasterScraper
       ]).join();
     }
     return Helper.firstLetterUppercase([item.title]).join();
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
   };
 }

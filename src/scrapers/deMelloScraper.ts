@@ -5,27 +5,56 @@ import { IWordpressScraper } from '../interfaces/wordpress/wordpressScraper.inte
 import { CheerioAPI } from 'cheerio';
 import { DeMelloHelper } from '../helper/deMelloHelper';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
-export default class DeMelloScraper implements IWordpressScraper {
+export default class DeMelloScraper implements IWordpressScraper, IScraper {
+  private vendor = Vendor.DeMello;
+
+  getProductUrl = (item: IWordpressProductResponseData): string => {
+    return item.link;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getVendorApiUrl = (): string => {
+    return VendorApiUrl.DeMello;
+  };
+
+  getBrand = (
+    _item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    return this.vendor;
+  };
+
   getContinent = (country: string): string => {
     return worldData.get(country) ?? 'Unknown';
   };
 
-  getCountry = ($: CheerioAPI): string => {
-    const descriptionContent = DeMelloHelper.getProductInfo($);
-    const titleText = $('[class^="product_title"]').first().text();
+  getCountry = (
+    _item: IWordpressProductResponseData,
+    $?: CheerioAPI
+  ): string => {
     const countryList = new Set<string>();
-    for (const country of worldData.keys()) {
-      if (titleText.includes(country)) {
-        countryList.add(country);
+    if ($) {
+      const descriptionContent = DeMelloHelper.getProductInfo($);
+      const titleText = $('[class^="product_title"]').first().text();
+      for (const country of worldData.keys()) {
+        if (titleText.includes(country)) {
+          countryList.add(country);
+        }
       }
-    }
-    if (countryList.size === 0) {
-      for (const detail of descriptionContent) {
-        if (detail.includes('COUNTRY') || detail.includes('REGION')) {
-          for (const country of worldData.keys()) {
-            if (detail.toLowerCase().includes(country.toLowerCase())) {
-              countryList.add(country);
+      if (countryList.size === 0) {
+        for (const detail of descriptionContent) {
+          if (detail.includes('COUNTRY') || detail.includes('REGION')) {
+            for (const country of worldData.keys()) {
+              if (detail.toLowerCase().includes(country.toLowerCase())) {
+                countryList.add(country);
+              }
             }
           }
         }
@@ -67,15 +96,20 @@ export default class DeMelloScraper implements IWordpressScraper {
     return 0;
   };
 
-  getProcess = ($: CheerioAPI): string => {
-    const descriptionContent = DeMelloHelper.getProductInfo($);
-    for (const detail of descriptionContent) {
-      if (detail.includes('PROCESS')) {
-        let process = detail.split('PROCESS')[1].trim();
-        process = process.split('\n')[0].trim();
-        process = Helper.firstLetterUppercase([process]).join(' ');
-        process = Helper.convertToUniversalProcess(process);
-        return process;
+  getProcess = (
+    _item: IWordpressProductResponseData,
+    $?: CheerioAPI
+  ): string => {
+    if ($) {
+      const descriptionContent = DeMelloHelper.getProductInfo($);
+      for (const detail of descriptionContent) {
+        if (detail.includes('PROCESS')) {
+          let process = detail.split('PROCESS')[1].trim();
+          process = process.split('\n')[0].trim();
+          process = Helper.firstLetterUppercase([process]).join(' ');
+          process = Helper.convertToUniversalProcess(process);
+          return process;
+        }
       }
     }
     return 'Unknown';
@@ -97,13 +131,18 @@ export default class DeMelloScraper implements IWordpressScraper {
     return $('[class^="single_add_to_cart_button"]').length ? false : true;
   };
 
-  getVariety = ($: CheerioAPI): string[] => {
-    const descriptionContent = DeMelloHelper.getProductInfo($);
+  getVariety = (
+    _item: IWordpressProductResponseData,
+    $?: CheerioAPI
+  ): string[] => {
     let variety = '';
-    for (const detail of descriptionContent) {
-      if (detail.includes('VARIETY')) {
-        variety = detail.split('VARIETY')[1].trim();
-        variety = variety.split('\n')[0].trim();
+    if ($) {
+      const descriptionContent = DeMelloHelper.getProductInfo($);
+      for (const detail of descriptionContent) {
+        if (detail.includes('VARIETY')) {
+          variety = detail.split('VARIETY')[1].trim();
+          variety = variety.split('\n')[0].trim();
+        }
       }
     }
     if (variety === '') {
@@ -121,7 +160,7 @@ export default class DeMelloScraper implements IWordpressScraper {
     return varietyOptions;
   };
 
-  getWeight = ($: CheerioAPI): number => {
+  getWeight = (_item: IWordpressProductResponseData, $: CheerioAPI): number => {
     const defaultSize = 227;
     let weightOptions: string[];
     if ($('#size').length) {
@@ -136,17 +175,17 @@ export default class DeMelloScraper implements IWordpressScraper {
         }
       }
     }
-
     return defaultSize;
   };
 
-  getTitle = ($: CheerioAPI): string => {
-    let titleText = $('[class^="product_title"]').first().text();
+  getTitle = (item: IWordpressProductResponseData, _$?: CheerioAPI): string => {
     for (const country of worldData.keys()) {
-      if (titleText.includes(country)) {
-        titleText = titleText.replace(country, '').trim();
+      if (item.title.rendered.includes(country)) {
+        item.title.rendered = item.title.rendered.replace(country, '').trim();
       }
     }
-    return titleText;
+    item.title.rendered = item.title.rendered.replaceAll('&#8211;', '-');
+    item.title.rendered = item.title.rendered.replaceAll('&#8217;', "'");
+    return item.title.rendered;
   };
 }

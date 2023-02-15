@@ -3,11 +3,23 @@ import Helper from '../helper/helper';
 import { ISquareSpaceBaseScraper } from '../interfaces/squareSpace/squareSpaceScraper.interface';
 import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squareSpaceResponseData.interface';
 import { SquareSpaceBaseScraper } from '../baseScrapers/squareSpaceBaseScraper';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
 
 export default class PrototypeScraper
   extends SquareSpaceBaseScraper
-  implements ISquareSpaceBaseScraper
+  implements ISquareSpaceBaseScraper, IScraper
 {
+  private vendor = Vendor.Prototype;
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: ISquareSpaceProductResponseData): string => {
+    return this.vendor;
+  };
+
   getCountry = (item: ISquareSpaceProductResponseData): string => {
     const title = item.title;
     const excerpt = item.excerpt;

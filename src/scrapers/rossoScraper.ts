@@ -2,11 +2,30 @@ import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyRespon
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import Helper from '../helper/helper';
+import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export default class RossoScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.Rosso;
+
+  getVendorApiUrl = (): string => {
+    return VendorApiUrl.Rosso;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData) => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     let reportBody: string = item.body_html.split('Geography')[1];
     reportBody = reportBody.replace(/<.*>\n.*\n<.*">/, '');
@@ -22,11 +41,8 @@ export default class RossoScraper
     return Helper.convertToUniversalProcess(process);
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/collections/coffee/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.Rosso + '/collections/coffee/products/' + item.handle;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {

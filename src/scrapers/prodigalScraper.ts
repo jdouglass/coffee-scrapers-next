@@ -3,11 +3,31 @@ import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface'
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
+import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export default class ProdigalScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.Prodigal;
+  private vendorApiUrl = VendorApiUrl.Prodigal;
+
+  getVendorApiUrl = (): string => {
+    return this.vendorApiUrl;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData) => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     const defaultCountry = 'Unknown';
     const title = Helper.firstLetterUppercase([item.title]).join(' ');
@@ -53,11 +73,8 @@ export default class ProdigalScraper
     }
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.Prodigal + '/products/' + item.handle;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {

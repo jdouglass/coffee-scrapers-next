@@ -1,13 +1,33 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
+import { BaseUrl } from '../enums/baseUrls';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { Vendor } from '../enums/vendors';
 import Helper from '../helper/helper';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 
 export default class PopCoffeeWorksScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.PopCoffeeWorks;
+  private vendorApiUrl = VendorApiUrl.PopCoffeeWorks;
+
+  getVendorApiUrl = (): string => {
+    return this.vendorApiUrl;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData) => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     let country = '';
     const countryList = new Set<string>();
@@ -75,11 +95,8 @@ export default class PopCoffeeWorksScraper
     return 'Unknown';
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.PopCoffeeWorks + '/products/' + item.handle;
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {

@@ -2,6 +2,7 @@ import { PrismaClient, products } from '@prisma/client';
 import { Vendor } from './enums/vendors';
 import Helper from './helper/helper';
 import { IProduct } from './interfaces/product';
+import config from './config.json';
 
 export class ProductsDatabase {
   private static prisma: PrismaClient = new PrismaClient();
@@ -112,6 +113,9 @@ export class ProductsDatabase {
   }
 
   public static async updateDb(scrapedProducts: IProduct[]): Promise<void> {
+    if (!config.useDatabase) {
+      return;
+    }
     const dbProducts: products[] = await this.getProductsByVendor(
       scrapedProducts[0].vendor
     );

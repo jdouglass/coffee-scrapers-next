@@ -5,11 +5,26 @@ import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { brands } from '../data/brands';
+import { BaseUrl } from '../enums/baseUrls';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { Vendor } from '../enums/vendors';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export default class RevolverScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.Revolver;
+
+  getVendorApiUrl = (): string => {
+    return VendorApiUrl.Revolver;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
   getBrand = (item: IShopifyProductResponseData): string => {
     for (const brand of brands) {
       if (item.title.includes(brand)) {
@@ -92,11 +107,8 @@ export default class RevolverScraper
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/collections/coffee/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.Revolver + '/collections/coffee/products/' + item.handle;
   };
 
   getTitle = (

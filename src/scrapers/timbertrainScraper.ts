@@ -5,34 +5,57 @@ import { IWordpressScraper } from '../interfaces/wordpress/wordpressScraper.inte
 import { CheerioAPI } from 'cheerio';
 import { TimbertrainHelper } from '../helper/timbertrainHelper';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
-export default class TimbertrainScraper implements IWordpressScraper {
+export default class TimbertrainScraper implements IWordpressScraper, IScraper {
+  private vendor = Vendor.Timbertrain;
+
+  getProductUrl = (item: IWordpressProductResponseData): string => {
+    return item.link;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getVendorApiUrl = (): string => {
+    return VendorApiUrl.Timbertrain;
+  };
+
+  getBrand = (
+    _item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    return this.vendor;
+  };
+
   getContinent = (country: string): string => {
     return worldData.get(country) ?? 'Unknown';
   };
 
-  getCountry = ($: CheerioAPI): string => {
-    const descriptionContent = TimbertrainHelper.getProductInfo($);
-    const titleText = $('[class^="product-title"]').first().text();
+  getCountry = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
     const countryList = new Set<string>();
     for (const country of worldData.keys()) {
-      if (titleText.includes(country)) {
+      if (item.title.rendered.includes(country)) {
         countryList.add(country);
       }
     }
-    if (countryList.size === 0) {
-      for (const detail of descriptionContent) {
-        if (detail.includes('Country')) {
-          for (const country of worldData.keys()) {
-            if (detail.includes(country)) {
-              countryList.add(country);
-            }
-          }
+    if (!countryList.size && item.excerpt.rendered.includes('Country')) {
+      let countryInfo = item.excerpt.rendered.split('Country')[1].trim();
+      countryInfo = countryInfo.split('<')[0].trim();
+      for (const country of worldData.keys()) {
+        if (item.title.rendered.includes(country)) {
+          countryList.add(country);
         }
       }
-    }
-    if (countryList.size === 0) {
-      return 'Unknown';
+      if (!countryList.size) {
+        return 'Unknown';
+      }
     }
     if (countryList.size === 1) {
       return [...countryList][0];
@@ -67,18 +90,22 @@ export default class TimbertrainScraper implements IWordpressScraper {
     return 0;
   };
 
-  getProcess = ($: CheerioAPI): string => {
-    const descriptionContent = TimbertrainHelper.getProductInfo($);
-    for (const detail of descriptionContent) {
-      if (detail.includes('Process:')) {
-        let process = detail.split('Process:')[1].trim();
-        process = process.split('\n')[0].trim();
-        process = Helper.firstLetterUppercase([process]).join(' ');
-        process = Helper.convertToUniversalProcess(process);
-        return process;
-      }
+  getProcess = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    let process = '';
+    if (item.excerpt.rendered.includes('Process:')) {
+      process = item.excerpt.rendered.split('Process:')[1].trim();
     }
-    return 'Unknown';
+    process = process.split('<')[0].trim();
+    if (process === '') {
+      return 'Unknown';
+    }
+    process = process.split('\n')[0].trim();
+    process = Helper.firstLetterUppercase([process]).join(' ');
+    process = Helper.convertToUniversalProcess(process);
+    return process;
   };
 
   getProcessCategory = (process: string): string => {
@@ -97,15 +124,15 @@ export default class TimbertrainScraper implements IWordpressScraper {
     return $('[class^="single_add_to_cart_button"]').length ? false : true;
   };
 
-  getVariety = ($: CheerioAPI): string[] => {
-    const descriptionContent = TimbertrainHelper.getProductInfo($);
+  getVariety = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string[] => {
     let variety = '';
-    for (const detail of descriptionContent) {
-      if (detail.includes('Variety:')) {
-        variety = detail.split('Variety:')[1].trim();
-        variety = variety.split('\n')[0].trim();
-      }
+    if (item.excerpt.rendered.includes('Variety:')) {
+      variety = item.excerpt.rendered.split('Variety:')[1].trim();
     }
+    variety = variety.split('<')[0].trim();
     if (variety === '') {
       return ['Unknown'];
     }
@@ -121,7 +148,7 @@ export default class TimbertrainScraper implements IWordpressScraper {
     return varietyOptions;
   };
 
-  getWeight = ($: CheerioAPI): number => {
+  getWeight = (_item: IWordpressProductResponseData, $: CheerioAPI): number => {
     const descriptionContent = TimbertrainHelper.getProductInfo($);
     const poundsToGrams = 454;
     let weightOptions: string[];
@@ -155,8 +182,7 @@ export default class TimbertrainScraper implements IWordpressScraper {
     return 0;
   };
 
-  getTitle = ($: CheerioAPI): string => {
-    const titleText = $('[class^="product-title"]').first().text();
-    return titleText.split('–')[0].trim();
+  getTitle = (item: IWordpressProductResponseData, _$?: CheerioAPI): string => {
+    return item.title.rendered.replaceAll('&#8211;', '-');
   };
 }

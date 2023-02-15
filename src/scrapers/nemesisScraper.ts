@@ -4,11 +4,31 @@ import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface'
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { BaseUrl } from '../enums/baseUrls';
+import { Vendor } from '../enums/vendors';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
 
 export default class NemesisScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.Nemesis;
+  private vendorApiUrl = VendorApiUrl.Nemesis;
+
+  getVendorApiUrl = (): string => {
+    return this.vendorApiUrl;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData) => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     const defaultCountry = 'Unknown';
     for (const country of worldData.keys()) {
@@ -70,11 +90,8 @@ export default class NemesisScraper
     }
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
-    return baseUrl + '/collections/shop-coffee/products/' + item.handle;
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    return BaseUrl.Nemesis + '/collections/shop-coffee/products/' + item.handle;
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {

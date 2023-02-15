@@ -51,10 +51,7 @@ export class HatchClient {
         const price = this.factory.getPrice($);
         const process = this.factory.getProcess($);
         const processCategory = this.factory.getProcessCategory(process);
-        const productUrl = this.factory.getProductUrl(
-          hatchResponse.data.id,
-          this.baseUrl
-        );
+        const productUrl = this.factory.getProductUrl(hatchResponse.data.id);
         const isSoldOut = this.factory.getSoldOut($);
         const title = this.factory.getTitle($);
         const variety = this.factory.getVariety($);

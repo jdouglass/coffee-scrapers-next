@@ -52,21 +52,3 @@ export class TimbertrainHelper {
       .map((node) => $(node).text());
   };
 }
-
-// async function main() {
-//   await fetch(
-//     'https://timbertraincoffeeroasters.com/shop/alma-guatemala/'
-//   ).then(async (res) => {
-//     if (res.ok) {
-//       const $ = load(await res.text());
-//       console.log(
-//         $('[class="product-short-description"]')
-//           .find('span')
-//           .toArray()
-//           .map((node) => $(node).text().replace('\n', ''))
-//       );
-//     }
-//   });
-// }
-
-// void main();

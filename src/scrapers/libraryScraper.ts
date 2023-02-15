@@ -1,14 +1,34 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
 import { worldData } from '../data/worldData';
+import { BaseUrl } from '../enums/baseUrls';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { Vendor } from '../enums/vendors';
 import Helper from '../helper/helper';
+import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant.interface';
 
 export default class LibraryScraper
   extends ShopifyBaseScraper
-  implements IShopifyScraper
+  implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
+  private vendor = Vendor.Library;
+  private vendorApiUrl = VendorApiUrl.Library;
+
+  getVendorApiUrl = (): string => {
+    return this.vendorApiUrl;
+  };
+
+  getVendor = (): string => {
+    return this.vendor;
+  };
+
+  getBrand = (_item: IShopifyProductResponseData) => {
+    return this.vendor;
+  };
+
   getCountry = (item: IShopifyProductResponseData): string => {
     let country = item.title
       .split(' - ')
@@ -42,10 +62,8 @@ export default class LibraryScraper
     return 'Unknown';
   };
 
-  getProductUrl = (
-    item: IShopifyProductResponseData,
-    baseUrl: string
-  ): string => {
+  getProductUrl = (item: IShopifyProductResponseData): string => {
+    const baseUrl = BaseUrl.LibrarySpecialtyCoffee;
     for (const variant of item.variants) {
       if (variant.available) {
         return (

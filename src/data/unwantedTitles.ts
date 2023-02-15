@@ -6,7 +6,6 @@ export const unwantedTitles: string[] = [
   'Avensi',
   'BAGS',
   'Bonavita',
-  'Box',
   'bundle',
   'Buckets',
   'Cans',
@@ -48,7 +47,6 @@ export const unwantedTitles: string[] = [
   'Timemore',
   'Tote',
   'TREASURE BOX',
-  'Varie',
   'Workshop',
   'World Map',
 ];
