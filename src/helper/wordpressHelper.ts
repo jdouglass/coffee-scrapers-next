@@ -26,7 +26,7 @@ export class WordpressHelper {
       title: scraper.getTitle(item),
       variety: scraper.getVariety(item, $),
       weight: scraper.getWeight(item, $),
-      vendor: scraper.getBrand(item),
+      vendor: scraper.getVendor(),
     };
   }
 }

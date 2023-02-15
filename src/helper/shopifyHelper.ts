@@ -36,7 +36,7 @@ export class ShopifyHelper {
       title: scraper.getTitle(item),
       variety: scraper.getVariety(item, productDetails),
       weight: scraper.getWeight(item),
-      vendor: scraper.getBrand(item),
+      vendor: scraper.getVendor(),
     };
   }
 }

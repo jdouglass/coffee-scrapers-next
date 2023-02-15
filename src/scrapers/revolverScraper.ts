@@ -111,16 +111,14 @@ export default class RevolverScraper
     return BaseUrl.Revolver + '/collections/coffee/products/' + item.handle;
   };
 
-  getTitle = (
-    item: IShopifyProductResponseData,
-    brand?: string,
-    country?: string
-  ): string => {
+  getTitle = (item: IShopifyProductResponseData): string => {
+    const brand = this.getBrand(item);
+    const country = this.getCountry(item);
     const title = item.title;
     try {
       let newTitle = title;
-      if (title.includes(brand as string)) {
-        newTitle = title.split(brand as string)[1];
+      if (title.includes(brand)) {
+        newTitle = title.split(brand)[1];
       }
       if (newTitle.includes('*')) {
         const titleOptions = newTitle.split('*');
@@ -130,8 +128,8 @@ export default class RevolverScraper
           newTitle = newTitle.split('*')[0];
         }
       }
-      if (newTitle.includes(country as string)) {
-        newTitle = newTitle.replace(country as string, '');
+      if (newTitle.includes(country)) {
+        newTitle = newTitle.replace(country, '');
       }
       if (newTitle.includes('"')) {
         newTitle = newTitle.replaceAll('"', '');
