@@ -89,13 +89,16 @@ export default class HouseOfFunkScraper
       return ['Unknown'];
     }
     if (variety !== '') {
+      variety = variety.replaceAll(/<\/?span.*?>/g, '');
+      variety = variety.replaceAll(/<\/?a.*?>/g, '');
       if (variety.includes(':')) {
         variety = variety.split(':')[1].trim();
       } else if (variety.includes('/')) {
         variety = variety.split('/')[1].trim();
       }
-      variety = variety.replace('</span>', '');
-      variety = variety.replace('<span class="JsGRdQ">', '');
+      if (variety.includes('Elevation')) {
+        variety = variety.split('Elevation')[0].trim();
+      }
       variety = variety.split('<')[0].trim();
       variety = variety.replaceAll('&amp;', ', ');
       variety = variety.replaceAll('and', ', ');
