@@ -39,7 +39,7 @@ export default class EightOunceScraper
         return Helper.convertToUniversalBrand(brand);
       }
     }
-    return 'Unknown';
+    return possibleBrand === '' ? 'Unknown' : possibleBrand;
   };
 
   getCountry = (
