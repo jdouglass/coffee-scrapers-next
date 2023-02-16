@@ -100,8 +100,8 @@ export default class HouseOfFunkScraper
         variety = variety.split('Elevation')[0].trim();
       }
       variety = variety.split('<')[0].trim();
-      variety = variety.replaceAll('&amp;', ', ');
-      variety = variety.replaceAll('and', ', ');
+      variety = variety.replaceAll('&amp;', ',');
+      variety = variety.replaceAll('and', ',');
       variety = variety
         .split(/[+\/\&]/)
         .map((item) => item.trim())
