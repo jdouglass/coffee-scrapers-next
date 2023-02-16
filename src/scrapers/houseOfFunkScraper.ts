@@ -103,7 +103,7 @@ export default class HouseOfFunkScraper
       variety = variety.replaceAll('&amp;', ',');
       variety = variety.replaceAll('and', ',');
       variety = variety
-        .split(/[+\/\&]/)
+        .split(/[+\/\&,]/)
         .map((item) => item.trim())
         .join(', ');
       variety = Helper.firstLetterUppercase([variety]).join();
