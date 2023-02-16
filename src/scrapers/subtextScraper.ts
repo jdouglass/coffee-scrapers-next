@@ -28,19 +28,38 @@ export default class SubtextScraper
   };
 
   getCountry = (item: IShopifyProductResponseData): string => {
-    let title = item.title.split(' | ')[1];
-    title = title.split(' - ')[0].trim();
     for (const country of worldData.keys()) {
-      if (title.includes(country)) {
+      if (item.title.includes(country)) {
         return country;
       }
     }
     return 'Unknown';
   };
 
-  getProcess = (item: IShopifyProductResponseData): string => {
-    let process = item.body_html.split('Process')[1];
-    process = process.split('\n')[0].trim();
+  getProcess = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let process = '';
+    if (item.body_html.includes('Process:')) {
+      process = item.body_html.split('Process:')[1].trim();
+    }
+    if (process === '') {
+      productDetails?.forEach((detail) => {
+        if (detail.includes('Process')) {
+          process = detail.split('Process')[1].trim();
+          return;
+        }
+      });
+    }
+    if (process === '') {
+      return 'Unknown';
+    }
+    if (process.includes('\n')) {
+      process = process.split('\n')[0].trim();
+    } else if (process.includes('<')) {
+      process = process.split('<')[0].trim();
+    }
     return Helper.firstLetterUppercase(process.split(' ')).join(' ');
   };
 
@@ -53,12 +72,40 @@ export default class SubtextScraper
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
-    return item.title.split(' | ')[0].trim();
+    for (const country of worldData.keys()) {
+      if (item.title.includes(country)) {
+        item.title = item.title.replace(country, '').trim();
+      }
+    }
+    if (item.title.includes(', ')) {
+      return item.title.split(', ')[0].trim();
+    }
+    return item.title;
   };
 
-  getVariety = (item: IShopifyProductResponseData): string[] => {
-    let variety = item.body_html.split('Varieties')[1];
-    variety = variety.split('\n')[0].trim();
+  getVariety = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
+    let variety = '';
+    if (item.body_html.includes('Varieties')) {
+      variety = item.body_html.split('Varieties')[1].trim();
+    }
+    if (variety === '') {
+      productDetails?.forEach((detail) => {
+        if (detail.includes('Varieties')) {
+          variety = detail.split('Varieties')[1].trim();
+        }
+      });
+    }
+    if (variety === '') {
+      return ['Unknown'];
+    }
+    if (variety.includes('<')) {
+      variety = variety.split('<')[0].trim();
+    } else if (variety.includes('\n')) {
+      variety = variety.split('\n')[0].trim();
+    }
     let varietyOptions = variety
       .split(/, | & /)
       .map((variety: string) => variety.trim());

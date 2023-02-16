@@ -126,9 +126,9 @@ export default class EightOunceScraper
         );
         process = process.trim();
       }
-      if (process === '') {
-        if (productDetails!.length) {
-          for (const detail of productDetails!) {
+      if (process === '' && productDetails) {
+        if (productDetails.length) {
+          for (const detail of productDetails) {
             if (detail?.includes('Process:')) {
               process = detail.split('Process:')[1].trim();
             }
@@ -213,8 +213,8 @@ export default class EightOunceScraper
         variety = variety.split(', ')[1];
       }
       if (variety === '') {
-        if (productDetails!.length) {
-          for (const detail of productDetails!) {
+        if (productDetails) {
+          for (const detail of productDetails) {
             if (detail?.includes('Variety:')) {
               variety = detail.split('Variety:')[1].trim();
             }
@@ -230,43 +230,45 @@ export default class EightOunceScraper
         }
       }
     }
-    if (variety[0] === ':') {
-      variety = variety.split(':')[1].trim();
-    }
-    if (variety.includes('SL 34 Ruiru 11')) {
-      variety = variety.replace('SL 34 ', 'SL 34, ');
-    } else if (variety.includes('SL 28 SL 34')) {
-      variety = variety.replace('SL 28 ', 'SL 28, ');
-    }
-    if (variety === 'Red and Yellow Catuai') {
-      return [variety];
-    }
-    let varietyOptions: string[];
-    if (
-      variety.includes(', ') ||
-      variety.includes(' &amp; ') ||
-      variety.includes(' + ') ||
-      variety.includes(' and ') ||
-      variety.includes(' / ') ||
-      variety.includes(' & ')
-    ) {
-      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; | \& /);
-    } else if (variety === '') {
-      return unknownVariety;
-    } else {
-      varietyOptions = [variety];
-    }
-
-    for (let i = 0; i < varietyOptions.length; i++) {
-      if (varietyOptions[i].includes('%')) {
-        varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+    if (variety !== '') {
+      if (variety[0] === ':') {
+        variety = variety.split(':')[1].trim();
       }
-    }
-    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    if (varietyOptions.length !== 0) {
-      return varietyOptions;
+      if (variety.includes('SL 34 Ruiru 11')) {
+        variety = variety.replace('SL 34 ', 'SL 34, ');
+      } else if (variety.includes('SL 28 SL 34')) {
+        variety = variety.replace('SL 28 ', 'SL 28, ');
+      }
+      if (variety === 'Red and Yellow Catuai') {
+        return [variety];
+      }
+      let varietyOptions: string[];
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ') ||
+        variety.includes(' & ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; | \& /);
+      } else if (variety === '') {
+        return unknownVariety;
+      } else {
+        varietyOptions = [variety];
+      }
+
+      for (let i = 0; i < varietyOptions.length; i++) {
+        if (varietyOptions[i].includes('%')) {
+          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+        }
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      varietyOptions = Array.from([...new Set(varietyOptions)]);
+      if (varietyOptions.length !== 0) {
+        return varietyOptions;
+      }
     }
     return unknownVariety;
   };
