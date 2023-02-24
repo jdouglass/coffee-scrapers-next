@@ -37,7 +37,7 @@ schedule.scheduleJob(
   async () => await ShopifyClient.run(new AngryRoasterScraper())
 );
 schedule.scheduleJob(
-  config.cronSchedule,
+  '50 * * * *',
   async () => await ShopifyClient.run(new EightOunceScraper())
 );
 schedule.scheduleJob(

@@ -176,7 +176,7 @@ export default class MonogramScraper
 
   getTitle = (item: IShopifyProductResponseData): string => {
     let titleOptions: string[];
-    const title = item.title.replace('*Pre-Order*', '').trim();
+    const title = item.title.replace(/\*.*(Pre|PRE).*\*\s+/, '').trim();
     if (item.handle.includes('atlas')) {
       titleOptions = title.split('-');
       return titleOptions[titleOptions.length - 1].trim();

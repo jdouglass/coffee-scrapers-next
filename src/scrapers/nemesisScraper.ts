@@ -84,7 +84,10 @@ export default class NemesisScraper
           return defaultProcess;
         }
       }
-      return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+      if (process !== '') {
+        return Helper.firstLetterUppercase(process.split(' ')).join(' ');
+      }
+      return 'Unknown';
     } catch {
       return 'Unknown';
     }
@@ -153,6 +156,9 @@ export default class NemesisScraper
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
       varietyOptions = Array.from([...new Set(varietyOptions)]);
+      if (varietyOptions.length === 1 && varietyOptions[0] === '') {
+        return ['Unknown'];
+      }
       return varietyOptions;
     } catch {
       return ['Unknown'];

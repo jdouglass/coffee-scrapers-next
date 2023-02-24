@@ -80,22 +80,16 @@ export default class MatchstickScraper
       process = process.replace('<span>', '').trim();
       process = process.replace('</span>', '').trim();
       process = process.replace('</strong>', '').trim();
-      process = process.replace('<span class="s1">', '').trim();
-      process = process.replace('<span style="font-weight: 400;">', '').trim();
-      process = process.replace('<span mce-data-marked="1">', '').trim();
-      process = process
-        .replace(
-          '<span style="font-weight: 400;" data-mce-fragment="1" data-mce-style="font-weight: 400;">',
-          ''
-        )
-        .trim();
+      process = process.replaceAll(/<\/?span.*?>/g, '');
       process = process.split('<')[0].trim();
       process = process
         .split(/[+\/]/)
         .map((item) => item.trim())
         .join(', ');
       process = Helper.firstLetterUppercase([process]).join();
-      return Helper.convertToUniversalProcess(process);
+      if (process !== '') {
+        return Helper.convertToUniversalProcess(process);
+      }
     }
     return 'Unknown';
   };
@@ -118,15 +112,8 @@ export default class MatchstickScraper
       variety = variety.replace('<span>', '').trim();
       variety = variety.replace('</span>', '').trim();
       variety = variety.replace('</strong>', '').trim();
-      variety = variety.replace('<span class="s1">', '').trim();
-      variety = variety.replace('<span mce-data-marked="1">', '').trim();
-      variety = variety.replace('<span style="font-weight: 400;">', '').trim();
-      variety = variety
-        .replace(
-          '<span style="font-weight: 400;" data-mce-fragment="1" data-mce-style="font-weight: 400;">',
-          ''
-        )
-        .trim();
+      variety = variety.replace('<meta charset="utf-8">', '').trim();
+      variety = variety.replaceAll(/<\/?span.*?>/g, '');
       variety = variety.split('<')[0].trim();
       variety = variety.replaceAll(', and', ', ');
       variety = variety.replaceAll('&amp;', ', ');
@@ -144,6 +131,9 @@ export default class MatchstickScraper
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
       varietyOptions = Array.from([...new Set(varietyOptions)]);
+      if (varietyOptions.length === 1 && varietyOptions[0] === '') {
+        return ['Unknown'];
+      }
       return varietyOptions;
     }
     return ['Unknown'];

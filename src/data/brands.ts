@@ -66,6 +66,7 @@ export const brands: string[] = [
   'Proud Mary',
   'Rabbit Hole',
   'Rabbit Hole Roasters',
+  'ReAnimator',
   'Red Bank',
   'Rogue Wave',
   'Rosso',
