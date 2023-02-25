@@ -53,7 +53,7 @@ schedule.scheduleJob(
   async () => await ShopifyClient.run(new MatchstickScraper())
 );
 schedule.scheduleJob(
-  config.cronSchedule,
+  '55 * * * *',
   async () => await ShopifyClient.run(new MonogramScraper())
 );
 schedule.scheduleJob(
