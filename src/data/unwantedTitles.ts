@@ -23,6 +23,7 @@ export const unwantedTitles: string[] = [
   'Garage',
   'Gift',
   'Hario',
+  'Hoodie',
   'Instant',
   'INSTANT',
   'Kalita',
