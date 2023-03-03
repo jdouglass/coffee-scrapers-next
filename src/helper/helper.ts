@@ -1,32 +1,19 @@
-import {
-  S3Client,
-  PutObjectCommandInput,
-  PutObjectCommand,
-  DeleteObjectCommand,
-  DeleteObjectCommandInput,
-} from '@aws-sdk/client-s3';
 import axios from 'axios';
 import { IProduct } from '../interfaces/product';
 import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
 import sharp from 'sharp';
 import { load } from 'cheerio';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 
 export default class Helper {
   static namespace: string = 'f2360818-52f8-4f09-b463-8a3887f56810';
-  static region: string = process.env.AWS_BUCKET_REGION;
-  static bucket: string = process.env.AWS_BUCKET_NAME;
-  static accessKeyId: string = process.env.AWS_ACCESS_KEY_ID;
-  static secretAccessKey: string = process.env.AWS_SECRET_ACCESS_KEY;
-  static s3Client: S3Client = new S3Client({
-    region: this.region,
-    credentials: {
-      accessKeyId: this.accessKeyId,
-      secretAccessKey: this.secretAccessKey,
-    },
-  });
+  static supabaseUrl: string = process.env.SUPABASE_URL as string;
+  static supabaseApiKey: string = process.env.SUPABASE_API_KEY as string;
+  static supabase = createClient(this.supabaseUrl, this.supabaseApiKey);
+  static bucketName: string = 'collection-coffee-images';
 
   static firstLetterUppercase = (input: string[]): string[] => {
     for (let i = 0; i < input.length; i++) {
@@ -154,41 +141,28 @@ export default class Helper {
     return brand;
   };
 
-  static uploadToS3 = async (product: IProduct): Promise<string> => {
+  static uploadToBucket = async (product: IProduct) => {
     const key: string = uuidv5(product.productUrl, this.namespace);
-    const params: PutObjectCommandInput = {
-      Bucket: this.bucket,
-      Key: key,
-      Body: await this.getBase64FromImageUrl(product.imageUrl),
-      ContentEncoding: 'base64',
-      ContentType: 'image/webp',
-    };
-    let collectionImageUrl: string = product.imageUrl;
-    try {
-      await this.s3Client.send(new PutObjectCommand(params));
-      collectionImageUrl =
-        'https://' +
-        this.bucket +
-        '.s3.' +
-        this.region +
-        '.amazonaws.com/' +
-        key;
-    } catch (err) {
-      console.log('Error', err);
-    }
+    await this.supabase.storage
+      .from(this.bucketName)
+      .upload(key, await this.getBase64FromImageUrl(product.imageUrl), {
+        contentType: 'image/webp',
+      });
+    const collectionImageUrl =
+      this.supabaseUrl +
+      '/storage/v1/object/public/collection-coffee-images/' +
+      key;
     return collectionImageUrl;
   };
 
-  static deleteFromS3 = async (productUrl: string): Promise<void> => {
+  static deleteFromBucket = async (productUrl: string) => {
     const key: string = uuidv5(productUrl, this.namespace);
-    const params: DeleteObjectCommandInput = {
-      Bucket: this.bucket,
-      Key: key,
-    };
-    try {
-      await this.s3Client.send(new DeleteObjectCommand(params));
-    } catch (err) {
-      console.log('Error', err);
+    const { error } = await this.supabase.storage
+      .from(this.bucketName)
+      .remove([key]);
+    if (error) {
+      console.error('Failed to delete image: ' + productUrl);
+      console.error(error);
     }
   };
 

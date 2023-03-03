@@ -1,13 +1,13 @@
 module.exports = [
   {
     name: 'hatch',
-    script: 'dist/src/clients/hatchClient.js',
+    script: 'src/clients/hatchClient.ts',
     time: true,
     cron: '0 * * * *',
   },
   {
     name: 'prototype',
-    script: 'dist/src/clients/prototypeClient.js',
+    script: 'src/clients/prototypeClient.ts',
     time: true,
     cron: '0 * * * *',
   },

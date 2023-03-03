@@ -38,7 +38,7 @@ export class ProductsDatabase {
             country: product.country,
             date_added: product.dateAdded,
             handle: product.handle,
-            image_url: await Helper.uploadToS3(product),
+            image_url: await Helper.uploadToBucket(product),
             sold_out: product.isSoldOut,
             price: product.price,
             process: product.process,
@@ -80,7 +80,7 @@ export class ProductsDatabase {
             country: product.country,
             date_added: product.dateAdded,
             handle: product.handle,
-            image_url: await Helper.uploadToS3(product),
+            image_url: await Helper.uploadToBucket(product),
             sold_out: product.isSoldOut,
             price: product.price,
             process: product.process,
@@ -127,7 +127,7 @@ export class ProductsDatabase {
         )
       ) {
         await this.deleteProductByUrl(dbProduct.product_url);
-        await Helper.deleteFromS3(dbProduct.product_url);
+        await Helper.deleteFromBucket(dbProduct.product_url);
       }
     }
 
