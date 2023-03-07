@@ -121,7 +121,6 @@ export class ProductsDatabase {
     }
     const dbProducts: { product_url: string }[] =
       await this.getProductUrlsByVendor(scrapedProducts[0].vendor);
-    console.log(dbProducts);
 
     for (const dbProduct of dbProducts) {
       if (
