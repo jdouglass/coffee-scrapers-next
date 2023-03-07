@@ -1,4 +1,4 @@
-import { PrismaClient, products } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { Vendor } from './enums/vendors';
 import Helper from './helper/helper';
 import { IProduct } from './interfaces/product';
@@ -7,12 +7,15 @@ import config from './config.json';
 export class ProductsDatabase {
   private static prisma: PrismaClient = new PrismaClient();
 
-  private static async getProductsByVendor(
+  private static async getProductUrlsByVendor(
     vendor: string
-  ): Promise<products[]> {
+  ): Promise<{ product_url: string }[]> {
     return await this.prisma.products.findMany({
       where: {
         vendor: vendor,
+      },
+      select: {
+        product_url: true,
       },
     });
   }
@@ -116,9 +119,9 @@ export class ProductsDatabase {
     if (!config.useDatabase) {
       return;
     }
-    const dbProducts: products[] = await this.getProductsByVendor(
-      scrapedProducts[0].vendor
-    );
+    const dbProducts: { product_url: string }[] =
+      await this.getProductUrlsByVendor(scrapedProducts[0].vendor);
+    console.log(dbProducts);
 
     for (const dbProduct of dbProducts) {
       if (
