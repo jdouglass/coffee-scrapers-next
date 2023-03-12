@@ -48,7 +48,13 @@ export default class PiratesScraper
   };
 
   getProcess = (item: IShopifyProductResponseData): string => {
-    let process: string = item.body_html.split('Process:')[1];
+    let process = '';
+    if (item.body_html.includes('Process:')) {
+      process = item.body_html.split('Process:')[1];
+    }
+    if (process === '') {
+      return 'Unknown';
+    }
     const processOptions: string[] = process.split('<');
     process = processOptions[0].trim();
     return Helper.convertToUniversalProcess(process);

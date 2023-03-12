@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { Vendor } from './enums/vendors';
 import Helper from './helper/helper';
 import { IProduct } from './interfaces/product';
 import config from './config.json';
@@ -29,89 +28,46 @@ export class ProductsDatabase {
   }
 
   private static async addOrUpdateProduct(product: IProduct): Promise<void> {
-    if (product.vendor !== Vendor.Hatch && product.vendor !== Vendor.Luna) {
-      try {
-        await this.prisma.products.upsert({
-          where: {
-            product_url: product.productUrl,
-          },
-          create: {
-            brand: product.brand,
-            continent: product.continent,
-            country: product.country,
-            date_added: product.dateAdded,
-            handle: product.handle,
-            image_url: await Helper.uploadToBucket(product),
-            sold_out: product.isSoldOut,
-            price: product.price,
-            process: product.process,
-            process_category: product.processCategory,
-            product_url: product.productUrl,
-            title: product.title,
-            variety: product.variety,
-            vendor: product.vendor,
-            weight: product.weight,
-          },
-          update: {
-            brand: product.brand,
-            continent: product.continent,
-            country: product.country,
-            date_added: product.dateAdded,
-            handle: product.handle,
-            sold_out: product.isSoldOut,
-            price: product.price,
-            process: product.process,
-            process_category: product.processCategory,
-            title: product.title,
-            variety: product.variety,
-            vendor: product.vendor,
-            weight: product.weight,
-          },
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      try {
-        await this.prisma.products.upsert({
-          where: {
-            product_url: product.productUrl,
-          },
-          create: {
-            brand: product.brand,
-            continent: product.continent,
-            country: product.country,
-            date_added: product.dateAdded,
-            handle: product.handle,
-            image_url: await Helper.uploadToBucket(product),
-            sold_out: product.isSoldOut,
-            price: product.price,
-            process: product.process,
-            process_category: product.processCategory,
-            product_url: product.productUrl,
-            title: product.title,
-            variety: product.variety,
-            vendor: product.vendor,
-            weight: product.weight,
-          },
-          update: {
-            brand: product.brand,
-            continent: product.continent,
-            country: product.country,
-            handle: product.handle,
-            sold_out: product.isSoldOut,
-            price: product.price,
-            process: product.process,
-            process_category: product.processCategory,
-            title: product.title,
-            variety: product.variety,
-            vendor: product.vendor,
-            weight: product.weight,
-          },
-        });
-      } catch (err) {
-        console.error(err);
-      }
+    try {
+      await this.prisma.products.upsert({
+        where: {
+          product_url: product.productUrl,
+        },
+        create: {
+          brand: product.brand,
+          continent: product.continent,
+          country: product.country,
+          date_added: product.dateAdded,
+          handle: product.handle,
+          image_url: product.imageUrl,
+          sold_out: product.isSoldOut,
+          price: product.price,
+          process: product.process,
+          process_category: product.processCategory,
+          product_url: product.productUrl,
+          title: product.title,
+          variety: product.variety,
+          vendor: product.vendor,
+          weight: product.weight,
+        },
+        update: {
+          brand: product.brand,
+          continent: product.continent,
+          country: product.country,
+          date_added: product.dateAdded,
+          handle: product.handle,
+          sold_out: product.isSoldOut,
+          price: product.price,
+          process: product.process,
+          process_category: product.processCategory,
+          title: product.title,
+          variety: product.variety,
+          vendor: product.vendor,
+          weight: product.weight,
+        },
+      });
+    } catch (err) {
+      console.error(err);
     }
   }
 
@@ -131,6 +87,20 @@ export class ProductsDatabase {
         await this.deleteProductByUrl(dbProduct.product_url);
         await Helper.deleteFromBucket(dbProduct.product_url);
       }
+    }
+
+    for (const scrapedProduct of scrapedProducts) {
+      let foundInDb = false;
+      for (const dbProduct of dbProducts) {
+        if (scrapedProduct.productUrl === dbProduct.product_url) {
+          foundInDb = true;
+        }
+      }
+      if (!foundInDb) {
+        const newImageUrl = await Helper.uploadToBucket(scrapedProduct);
+        scrapedProduct.imageUrl = newImageUrl;
+      }
+      foundInDb = false;
     }
 
     for (const product of scrapedProducts) {
