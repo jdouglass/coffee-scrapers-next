@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 import sharp from 'sharp';
 import { load } from 'cheerio';
 import { createClient } from '@supabase/supabase-js';
+import { Vendor } from '../enums/vendors';
 
 dotenv.config();
 
@@ -136,6 +137,36 @@ export default class Helper {
         break;
       case 'Abracadbra':
         brand = 'Abracadabra';
+        break;
+      case 'ETHICA':
+        brand = 'Ethica';
+        break;
+      case 'Hatch':
+        brand = Vendor.Hatch;
+        break;
+      case 'House of Funk':
+        brand = Vendor.HouseOfFunk;
+        break;
+      case 'Luna':
+        brand = Vendor.Luna;
+        break;
+      case 'Pilot':
+        brand = 'Pilot Coffee Roasters';
+        break;
+      case 'Rabbit Hole':
+        brand = Vendor.RabbitHole;
+        break;
+      case 'Rosso':
+        brand = Vendor.Rosso;
+        break;
+      case 'Subtext':
+        brand = Vendor.Subtext;
+        break;
+      case 'Thom Bargen':
+        brand = Vendor.ThomBargen;
+        break;
+      case 'Transcend':
+        brand = Vendor.Transcend;
         break;
     }
     return brand;
