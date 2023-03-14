@@ -165,6 +165,9 @@ export default class Helper {
       case 'Thom Bargen':
         brand = Vendor.ThomBargen;
         break;
+      case 'Traffic':
+        brand = Vendor.Traffic;
+        break;
       case 'Transcend':
         brand = Vendor.Transcend;
         break;
