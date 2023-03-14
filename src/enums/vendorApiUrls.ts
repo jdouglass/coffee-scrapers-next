@@ -1,5 +1,7 @@
 export enum VendorApiUrl {
   AngryRoaster = 'https://www.theangryroaster.com/collections/all/products.json?limit=250',
+  BlackCreekBlend = 'https://blackcreekcoffee.com/collections/premium-blends/products.json?limit=250',
+  BlackCreekSingleOrigin = 'https://blackcreekcoffee.com/collections/single-origin-coffee/products.json?limit=250',
   DeMello = 'https://hellodemello.com/wp-json/wp/v2/product?product_cat=30&per_page=100',
   EightOunce = 'https://eightouncecoffee.ca/collections/newest-coffee/products.json?limit=250',
   HouseOfFunk = 'https://www.houseoffunkbrewing.com/collections/coffee/products.json?limit=250',

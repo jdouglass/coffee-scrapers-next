@@ -1,4 +1,5 @@
 import AngryRoasterScraper from '../scrapers/angryRoasterScraper';
+import BlackCreekScraper from '../scrapers/blackCreekScraper';
 import EightOunceScraper from '../scrapers/eightOunceScraper';
 import HouseOfFunkScraper from '../scrapers/houseOfFunkScraper';
 import LibraryScraper from '../scrapers/libraryScraper';
@@ -26,6 +27,7 @@ import ZabCafeScraper from '../scrapers/zabCafeScraper';
 
 export type ShopifyScraperType =
   | AngryRoasterScraper
+  | BlackCreekScraper
   | EightOunceScraper
   | HouseOfFunkScraper
   | LibraryScraper

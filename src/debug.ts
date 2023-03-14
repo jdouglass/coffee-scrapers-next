@@ -1,8 +1,8 @@
 import { ShopifyClient } from './clients/shopifyClient';
-import PiratesScraper from './scrapers/piratesScraper';
+import BlackCreekScraper from './scrapers/blackCreekScraper';
 
 async function main() {
-  await ShopifyClient.run(new PiratesScraper());
+  await ShopifyClient.run(new BlackCreekScraper());
 }
 
 void main();

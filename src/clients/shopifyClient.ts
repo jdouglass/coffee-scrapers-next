@@ -9,6 +9,8 @@ import { MonogramHelper } from '../helper/monogramHelper';
 import { PhilAndSebastianHelper } from '../helper/philAndSebastianHelper';
 import { SubtextHelper } from '../helper/subtextHelper';
 import config from '../config.json';
+import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 
 export class ShopifyClient {
   public static async run(scraper: ShopifyScraperType): Promise<void> {
@@ -18,9 +20,20 @@ export class ShopifyClient {
     let productDetails: string[] | undefined;
     console.log(vendor, 'started');
     try {
-      const shopifyProducts = await new ApiService(
-        vendorApiUrl
-      ).fetchShopifyProducts();
+      let shopifyProducts: IShopifyProductResponseData[] = [];
+      if (vendor === Vendor.BlackCreek) {
+        const blendProducts = await new ApiService(
+          VendorApiUrl.BlackCreekBlend
+        ).fetchShopifyProducts();
+        const singleOriginProducts = await new ApiService(
+          VendorApiUrl.BlackCreekSingleOrigin
+        ).fetchShopifyProducts();
+        shopifyProducts = blendProducts.concat(singleOriginProducts);
+      } else {
+        shopifyProducts = await new ApiService(
+          vendorApiUrl
+        ).fetchShopifyProducts();
+      }
       for (const product of shopifyProducts) {
         if (vendor === Vendor.EightOunce) {
           productDetails = await EightOunceHelper.getProductInfo(

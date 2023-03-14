@@ -30,8 +30,13 @@ import DeMelloScraper from './scrapers/deMelloScraper';
 import LunaScraper from './scrapers/lunaScraper';
 import TimbertrainScraper from './scrapers/timbertrainScraper';
 import RevolverScraper from './scrapers/revolverScraper';
+import BlackCreekScraper from './scrapers/blackCreekScraper';
 
 // Shopify Scrapers
+schedule.scheduleJob(
+  config.cronSchedule,
+  async () => await ShopifyClient.run(new BlackCreekScraper())
+);
 schedule.scheduleJob(
   config.cronSchedule,
   async () => await ShopifyClient.run(new AngryRoasterScraper())
