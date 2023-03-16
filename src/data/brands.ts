@@ -21,6 +21,7 @@ export const brands: string[] = [
   'David Kim Coffee',
   'Detour',
   'Doubleshot',
+  'Duck-Rabbit',
   'Escape',
   'Ethica',
   "Father's Coffee Roastery",
