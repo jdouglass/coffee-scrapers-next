@@ -96,7 +96,9 @@ export default class ZabCafeScraper
   getVariety = (item: IShopifyProductResponseData): string[] => {
     let variety = '';
     const body = item.body_html;
-    if (body.includes('VARIETAL')) {
+    if (body.includes('VARIETALS')) {
+      variety = body.split('VARIETALS')[1];
+    } else if (body.includes('VARIETAL')) {
       variety = body.split('VARIETAL')[1];
     } else if (body.includes('VARIETY')) {
       variety = body.split('VARIETY')[1];

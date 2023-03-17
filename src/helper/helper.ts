@@ -115,6 +115,9 @@ export default class Helper {
         case 'Kureme':
           varieties[i] = 'Kurume';
           break;
+        case 'Ab':
+          varieties[i] = 'AB';
+          break;
       }
     }
     return varieties;
