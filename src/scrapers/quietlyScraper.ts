@@ -40,6 +40,11 @@ export default class QuietlyScraper
         return country;
       }
     }
+    for (const country of worldData.keys()) {
+      if (item.body_html.includes(country)) {
+        return country;
+      }
+    }
     return defaultCountry;
   };
 
@@ -89,17 +94,14 @@ export default class QuietlyScraper
       const body: string = item.body_html;
       if (body.includes('VARIETAL')) {
         variety = body.split('VARIETAL')[1];
+        variety = variety.split('ELEVATION')[0];
       } else {
         return ['Unknown'];
       }
-      variety = variety.replace('</strong>', '');
-      variety = variety.replaceAll('</span>', '');
-      variety = variety.replaceAll('<span>', '');
-      variety = variety.replace('<br>', '');
-      variety = variety.replaceAll(/<(br|span) data-mce-fragment=\"1\">/g, '');
-      variety = variety.replaceAll(/<(br|span) Data-mce-fragment=\"1\">/g, '');
-      variety = variety.split(':')[1].trim();
-      variety = variety.split('.')[0].trim();
+      variety = variety.replace(':', '');
+      variety = variety.replace('.', '');
+      variety = variety.replace(/<[^>]+>/gi, '').trim();
+      variety = variety.replaceAll('&amp;', ', ');
       if (variety.includes('SL 34 Ruiru 11')) {
         variety = variety.replace('SL 34 ', 'SL 34, ');
       }
@@ -109,7 +111,7 @@ export default class QuietlyScraper
       let varietyOptions: string[];
       if (
         variety.includes(', ') ||
-        variety.includes(' &amp; ') ||
+        variety.includes('&amp;') ||
         variety.includes(' + ') ||
         variety.includes(' and ') ||
         variety.includes(' / ')
@@ -118,7 +120,7 @@ export default class QuietlyScraper
       } else {
         varietyOptions = [variety];
       }
-
+      varietyOptions = varietyOptions.map((element) => element.trim());
       for (let i = 0; i < varietyOptions.length; i++) {
         if (varietyOptions[i].includes('%')) {
           varietyOptions[i] = varietyOptions[i].split('%')[1].trim();

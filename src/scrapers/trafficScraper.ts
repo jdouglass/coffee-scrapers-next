@@ -99,8 +99,9 @@ export default class TrafficScraper
       variety = variety.replace('</strong>', '').trim();
       variety = variety.replace('</span>', '').trim();
       variety = variety.split('<')[0].trim();
-      variety = variety.replaceAll('&amp;', ', ');
-      variety = variety.replaceAll('and', ', ');
+      variety = variety.replaceAll(' &amp; ', ', ');
+      variety = variety.replaceAll(' and ', ', ');
+      variety = variety.replaceAll(/\d+\%/g, '');
       variety = variety
         .split(/[+\/\&]/)
         .map((item) => item.trim())

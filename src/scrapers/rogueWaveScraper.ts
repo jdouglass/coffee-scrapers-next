@@ -128,9 +128,10 @@ export default class RogueWaveScraper
       variety.includes(' &amp; ') ||
       variety.includes(' + ') ||
       variety.includes(' and ') ||
-      variety.includes(' / ')
+      variety.includes('/')
     ) {
-      varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      varietyOptions = variety.split(/,|\/| and |\+|\&amp;/);
+      varietyOptions = varietyOptions.map((element) => element.trim());
     } else {
       varietyOptions = [variety];
     }

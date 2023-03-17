@@ -40,6 +40,7 @@ export default class Helper {
         case 'Sl-28':
         case 'Sl 28':
         case 'Sl - 28':
+        case 'Sl- 28':
           varieties[i] = 'SL-28';
           break;
         case 'Sl34':
@@ -84,6 +85,7 @@ export default class Helper {
           varieties[i] = 'Gesha';
           break;
         case 'Ihcafe90':
+        case 'Ih90':
           varieties[i] = 'IHCafe90';
           break;
         case 'Yellow-bourbon':

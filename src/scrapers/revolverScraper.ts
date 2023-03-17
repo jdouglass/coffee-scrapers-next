@@ -188,7 +188,10 @@ export default class RevolverScraper
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
       varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      if (varietyOptions[0] !== '') {
+        return varietyOptions;
+      }
+      return ['Unknown'];
     } catch (err) {
       console.error(err);
       return ['Unknown'];
@@ -196,6 +199,18 @@ export default class RevolverScraper
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
+    const kgToGrams = 1000;
+    if (item.title.includes('BULK') && item.title.includes('KG')) {
+      item.title = item.title.split('KG')[0];
+      const titleWeightOptions = item.title.split(' ');
+      if (!isNaN(parseInt(titleWeightOptions[titleWeightOptions.length - 1]))) {
+        return (
+          parseInt(titleWeightOptions[titleWeightOptions.length - 1]) *
+          kgToGrams
+        );
+      }
+    }
+
     let body = item.body_html;
     body = body.replaceAll(/<(br|span) data-mce-fragment=\"1\">/g, ' ');
     if (body && body.includes(' ')) {
