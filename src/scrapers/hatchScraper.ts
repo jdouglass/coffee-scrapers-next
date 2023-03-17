@@ -117,8 +117,10 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
       return ['Unknown'];
     }
     let varietyOptions = variety
-      .split(/, | & | and /)
-      .map((variety: string) => variety.trim());
+      .split(/,| & | and /)
+      .map((variety: string) => variety.trim())
+      .filter((element) => element !== '');
+    varietyOptions = varietyOptions.map((variety) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     varietyOptions = Array.from([...new Set(varietyOptions)]);
