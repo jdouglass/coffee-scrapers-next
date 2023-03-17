@@ -96,6 +96,7 @@ export default class BlackCreekScraper
     } else {
       varietyOptions = [variety];
     }
+    varietyOptions = varietyOptions.map((element) => element.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     varietyOptions = Array.from([...new Set(varietyOptions)]);
