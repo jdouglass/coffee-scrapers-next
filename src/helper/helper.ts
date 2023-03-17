@@ -54,6 +54,7 @@ export default class Helper {
           varieties[i] = 'SL-38';
           break;
         case 'Jarc':
+        case 'Jarc 760':
         case 'Jarc 74110':
         case 'Jarc Varietals':
         case 'Landrace':
@@ -72,7 +73,12 @@ export default class Helper {
         case 'Ethiopian Heirloom':
         case 'Ethiopian Heirlooms':
         case 'Ethiopia Landraces':
+        case 'Heirloom Ethiopia':
+        case 'Heirloom Ethiopian Varieties':
+        case 'Ethiopian Heirloom Varieties':
         case 'Jimma Research Varietals 74110':
+        case '762':
+        case '764':
         case '71158':
         case '74110':
         case '74112':
@@ -91,6 +97,7 @@ export default class Helper {
           varieties[i] = 'Gesha';
           break;
         case 'Ihcafe90':
+        case 'Ihcafe 90':
         case 'Ih90':
           varieties[i] = 'IHCafe90';
           break;

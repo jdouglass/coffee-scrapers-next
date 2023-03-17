@@ -140,7 +140,7 @@ export default class TimbertrainScraper implements IWordpressScraper, IScraper {
       variety = variety.split('(')[0].trim();
     }
     let varietyOptions = variety
-      .split(/, | & | and /)
+      .split(/, | & | and | \&amp; /)
       .map((variety: string) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);

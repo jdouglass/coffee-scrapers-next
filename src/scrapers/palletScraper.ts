@@ -83,7 +83,7 @@ export default class PalletScraper
     variety = variety.split(/\s?-\s/)[1];
     variety = variety.split('<')[0].trim();
     let varietyOptions = variety
-      .split(/,|&|&amp;|\+| and /)
+      .split(/,| & |&amp;|\+| and /)
       .map((variety: string) => variety.trim());
     varietyOptions = varietyOptions.map((element) => element.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);

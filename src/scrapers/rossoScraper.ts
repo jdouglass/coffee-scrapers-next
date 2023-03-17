@@ -30,24 +30,15 @@ export default class RossoScraper
   getCountry = (item: IShopifyProductResponseData): string => {
     const countryList = new Set<string>();
     let reportBody = '';
-    if (item.body_html.includes('Georgraphy')) {
+    if (item.body_html.includes('Geography')) {
       reportBody = item.body_html.split('Geography')[1].trim();
     }
-    if (reportBody !== '') {
-      reportBody = reportBody.replace('<br>', '');
-      reportBody = reportBody.replace('</td>', '');
-      reportBody = reportBody.replace(
-        '<td style="height: 18px;" data-mce-style="height: 18px;">',
-        ''
-      );
-      reportBody = reportBody.replaceAll('\n', '');
-      if (reportBody.includes('<')) {
-        reportBody = reportBody.split('<')[0].trim();
-      }
-      for (const country of worldData.keys()) {
-        if (reportBody.includes(country)) {
-          countryList.add(country);
-        }
+    if (reportBody.includes('Rosso Direct Trade')) {
+      reportBody = reportBody.split('Rosso Direct Trade')[0].trim();
+    }
+    for (const country of worldData.keys()) {
+      if (reportBody.includes(country)) {
+        countryList.add(country);
       }
     }
     if (!countryList.size) {
