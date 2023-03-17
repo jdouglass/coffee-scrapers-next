@@ -17,6 +17,7 @@ import RevolverScraper from '../scrapers/revolverScraper';
 import RogueWaveScraper from '../scrapers/rogueWaveScraper';
 import RossoScraper from '../scrapers/rossoScraper';
 import SamJamesScraper from '../scrapers/samJamesScraper';
+import SeptemberScraper from '../scrapers/septemberScraper';
 import SocialScraper from '../scrapers/socialScraper';
 import SorellinaScraper from '../scrapers/sorellinaScraper';
 import SubtextScraper from '../scrapers/subtextScraper';
@@ -45,6 +46,7 @@ export type ShopifyScraperType =
   | RogueWaveScraper
   | RossoScraper
   | SamJamesScraper
+  | SeptemberScraper
   | SocialScraper
   | SorellinaScraper
   | SubtextScraper
