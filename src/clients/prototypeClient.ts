@@ -21,70 +21,75 @@ export class PrototypeClient {
   public static async run(): Promise<void> {
     const squareSpaceApi = new ApiService(VendorApiUrl.Prototype);
     const squareSpaceProducts = await squareSpaceApi.fetchSquareSpaceProducts();
-
-    for (let i = 0; i < squareSpaceProducts.length; i++) {
-      const id =
-        squareSpaceProducts[i].fullUrl.split('/')[
-          squareSpaceProducts[i].fullUrl.split('/').length - 1
-        ];
-      const prototypeResponse: AxiosResponse<ISquareSpaceProductResponse> =
-        await axios.get(
-          PrototypeClient.baseUrl + '/shop/' + id + '?format=json-pretty'
-        );
-      if (
-        !unwantedTitles.some((unwantedString) =>
-          squareSpaceProducts[i].title
-            .toLowerCase()
-            .includes(unwantedString.toLowerCase())
-        )
-      ) {
-        const brand = this.vendor;
-        const country = this.factory.getCountry(prototypeResponse.data.item);
-        const continent = this.factory.getContinent(country);
-        const dateAdded = this.factory.getDateAdded(
-          prototypeResponse.data.item
-        );
-        const handle = this.factory.getHandle(prototypeResponse.data.item);
-        const imageUrl = this.factory.getImageUrl(
-          prototypeResponse.data.item.items[0].assetUrl
-        );
-        const price = this.factory.getPrice(prototypeResponse.data.item);
-        const process = this.factory.getProcess(prototypeResponse.data.item);
-        const processCategory = this.factory.getProcessCategory(process);
-        const productUrl = this.baseUrl + squareSpaceProducts[i].fullUrl;
-        const isSoldOut = await this.factory.getSoldOut(
-          this.baseUrl + squareSpaceProducts[i].fullUrl
-        );
-        const title = this.factory.getTitle(prototypeResponse.data.item);
-        const variety = this.factory.getVariety(prototypeResponse.data.item);
-        const weight = this.factory.getWeight(prototypeResponse.data.item);
-        const product: IProduct = {
-          brand,
-          country,
-          continent,
-          dateAdded,
-          handle,
-          imageUrl,
-          price,
-          process,
-          processCategory,
-          productUrl,
-          isSoldOut,
-          title,
-          variety,
-          weight,
-          vendor: this.vendor,
-        };
-        if (this.config.logProducts) {
-          console.log(product);
+    console.log('Prototype Scraper started');
+    try {
+      for (let i = 0; i < squareSpaceProducts.length; i++) {
+        const id =
+          squareSpaceProducts[i].fullUrl.split('/')[
+            squareSpaceProducts[i].fullUrl.split('/').length - 1
+          ];
+        const prototypeResponse: AxiosResponse<ISquareSpaceProductResponse> =
+          await axios.get(
+            PrototypeClient.baseUrl + '/shop/' + id + '?format=json-pretty'
+          );
+        if (
+          !unwantedTitles.some((unwantedString) =>
+            squareSpaceProducts[i].title
+              .toLowerCase()
+              .includes(unwantedString.toLowerCase())
+          )
+        ) {
+          const brand = this.vendor;
+          const country = this.factory.getCountry(prototypeResponse.data.item);
+          const continent = this.factory.getContinent(country);
+          const dateAdded = this.factory.getDateAdded(
+            prototypeResponse.data.item
+          );
+          const handle = this.factory.getHandle(prototypeResponse.data.item);
+          const imageUrl = this.factory.getImageUrl(
+            prototypeResponse.data.item.items[0].assetUrl
+          );
+          const price = this.factory.getPrice(prototypeResponse.data.item);
+          const process = this.factory.getProcess(prototypeResponse.data.item);
+          const processCategory = this.factory.getProcessCategory(process);
+          const productUrl = this.baseUrl + squareSpaceProducts[i].fullUrl;
+          const isSoldOut = await this.factory.getSoldOut(
+            this.baseUrl + squareSpaceProducts[i].fullUrl
+          );
+          const title = this.factory.getTitle(prototypeResponse.data.item);
+          const variety = this.factory.getVariety(prototypeResponse.data.item);
+          const weight = this.factory.getWeight(prototypeResponse.data.item);
+          const product: IProduct = {
+            brand,
+            country,
+            continent,
+            dateAdded,
+            handle,
+            imageUrl,
+            price,
+            process,
+            processCategory,
+            productUrl,
+            isSoldOut,
+            title,
+            variety,
+            weight,
+            vendor: this.vendor,
+          };
+          if (this.config.logProducts) {
+            console.log(product);
+          }
+          this.prototypeProducts.push(product);
         }
-        this.prototypeProducts.push(product);
       }
-    }
 
-    if (this.config.useDatabase) {
-      await ProductsDatabase.updateDb(this.prototypeProducts);
+      if (this.config.useDatabase) {
+        await ProductsDatabase.updateDb(this.prototypeProducts);
+      }
+    } catch (err) {
+      console.error(err);
     }
+    console.log('Prototype Scraper ended');
   }
 }
 

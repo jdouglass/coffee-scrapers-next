@@ -1,8 +1,7 @@
-import { ShopifyClient } from './clients/shopifyClient';
-import BlackCreekScraper from './scrapers/blackCreekScraper';
+import { HatchClient } from './clients/hatchClient';
 
 async function main() {
-  await ShopifyClient.run(new BlackCreekScraper());
+  await HatchClient.run();
 }
 
 void main();

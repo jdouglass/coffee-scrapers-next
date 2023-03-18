@@ -19,73 +19,80 @@ export class HatchClient {
   private static config: IConfig = config;
 
   public static async run(): Promise<void> {
+    console.log('Hatch Scraper started');
     const productUrls = await HatchHelper.getProductUrls(
       this.baseUrl + '/shop/all/',
       '/shop/product/'
     );
-
-    for (let url of productUrls) {
-      if (!url.includes('https')) {
-        url = this.baseUrl + url;
-      }
-      const id = url.split('/')[url.split('/').length - 1];
-      const productCategory = await HatchHelper.getProductCategory(url);
-      if (
-        !unwantedTitles.some((unwantedString) =>
-          productCategory.toLowerCase().includes(unwantedString.toLowerCase())
-        )
-      ) {
-        const hatchResponse: AxiosResponse<ICrateJoyProductResponseData> =
-          await axios.get(HatchClient.baseUrl + '/v1/store/api/products/' + id);
-        const hatchDOM = await fetch(
-          HatchClient.baseUrl + '/shop/product/' + id
-        );
-        const $ = load(await hatchDOM.text());
-
-        const brand = this.vendor;
-        const country = this.factory.getCountry($);
-        const continent = this.factory.getContinent(country);
-        const dateAdded = this.factory.getDateAdded();
-        const handle = this.factory.getHandle(hatchResponse.data.slug);
-        const imageUrl = this.factory.getImageUrl(hatchResponse.data.images);
-        const price = this.factory.getPrice($);
-        const process = this.factory.getProcess($);
-        const processCategory = this.factory.getProcessCategory(process);
-        const productUrl = this.factory.getProductUrl(hatchResponse.data.id);
-        const isSoldOut = this.factory.getSoldOut($);
-        const title = this.factory.getTitle($);
-        const variety = this.factory.getVariety($);
-        const weight = this.factory.getWeight(
-          hatchResponse.data.slug,
-          hatchResponse.data.description
-        );
-        const product: IProduct = {
-          brand,
-          country,
-          continent,
-          dateAdded,
-          handle,
-          imageUrl,
-          price,
-          process,
-          processCategory,
-          productUrl,
-          isSoldOut,
-          title,
-          variety,
-          weight,
-          vendor: this.vendor,
-        };
-        if (this.config.logProducts) {
-          console.log(product);
+    try {
+      for (let url of productUrls) {
+        if (!url.includes('https')) {
+          url = this.baseUrl + url;
         }
-        this.hatchProducts.push(product);
-      }
-    }
+        const id = url.split('/')[url.split('/').length - 1];
+        const productCategory = await HatchHelper.getProductCategory(url);
+        if (
+          !unwantedTitles.some((unwantedString) =>
+            productCategory.toLowerCase().includes(unwantedString.toLowerCase())
+          )
+        ) {
+          const hatchResponse: AxiosResponse<ICrateJoyProductResponseData> =
+            await axios.get(
+              HatchClient.baseUrl + '/v1/store/api/products/' + id
+            );
+          const hatchDOM = await fetch(
+            HatchClient.baseUrl + '/shop/product/' + id
+          );
+          const $ = load(await hatchDOM.text());
 
-    if (this.config.useDatabase) {
-      await ProductsDatabase.updateDb(this.hatchProducts);
+          const brand = this.vendor;
+          const country = this.factory.getCountry($);
+          const continent = this.factory.getContinent(country);
+          const dateAdded = this.factory.getDateAdded();
+          const handle = this.factory.getHandle(hatchResponse.data.slug);
+          const imageUrl = this.factory.getImageUrl(hatchResponse.data.images);
+          const price = this.factory.getPrice($);
+          const process = this.factory.getProcess($);
+          const processCategory = this.factory.getProcessCategory(process);
+          const productUrl = this.factory.getProductUrl(hatchResponse.data.id);
+          const isSoldOut = this.factory.getSoldOut($);
+          const title = this.factory.getTitle($);
+          const variety = this.factory.getVariety($);
+          const weight = this.factory.getWeight(
+            hatchResponse.data.slug,
+            hatchResponse.data.description
+          );
+          const product: IProduct = {
+            brand,
+            country,
+            continent,
+            dateAdded,
+            handle,
+            imageUrl,
+            price,
+            process,
+            processCategory,
+            productUrl,
+            isSoldOut,
+            title,
+            variety,
+            weight,
+            vendor: this.vendor,
+          };
+          if (this.config.logProducts) {
+            console.log(product);
+          }
+          this.hatchProducts.push(product);
+        }
+      }
+
+      if (this.config.useDatabase) {
+        await ProductsDatabase.updateDb(this.hatchProducts);
+      }
+    } catch (err) {
+      console.error(err);
     }
+    console.log('Hatch Scraper ended');
   }
 }
 
