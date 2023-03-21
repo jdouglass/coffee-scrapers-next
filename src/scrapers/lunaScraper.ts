@@ -196,7 +196,6 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
     } else {
       return ['Unknown'];
     }
-    console.log(notes);
     notes = notes.split('<')[0].trim();
     if (notes !== '') {
       const notesArr = notes
