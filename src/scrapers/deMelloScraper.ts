@@ -198,6 +198,7 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
     $: CheerioAPI
   ): string[] => {
     const notes = $('.woocommerce-product-details__short-description')
+      .find('p')
       .first()
       .text()
       .trim();
