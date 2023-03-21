@@ -157,7 +157,7 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     const notes = $('h6:contains("Notes:")').next().first().text();
     if (notes !== '') {
       const notesArr = notes
-        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|./)
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|\./)
         .map((element) => element.trim())
         .filter((element) => element !== '');
       return Helper.firstLetterUppercase(notesArr);
