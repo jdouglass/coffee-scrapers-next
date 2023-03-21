@@ -10,6 +10,10 @@ export interface IShopifyScraper {
     productDetails?: string[]
   ) => Promise<string> | string;
   getProductUrl: (item: IShopifyProductResponseData) => string;
+  getTastingNotes: (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ) => string[];
   getTitle: (item: IShopifyProductResponseData) => string;
   getVariety: (
     item: IShopifyProductResponseData,

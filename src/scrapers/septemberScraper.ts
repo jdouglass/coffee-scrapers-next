@@ -122,4 +122,27 @@ export default class SeptemberScraper
     }
     return item.title;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Impressions')) {
+      notes = item.body_html.split('Impressions')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.replaceAll(':', '').trim();
+      notes = notes.replace('</strong>', '');
+      notes = notes.replace('</span>', '');
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

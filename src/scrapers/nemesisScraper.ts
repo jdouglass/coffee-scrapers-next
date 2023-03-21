@@ -1,4 +1,3 @@
-import { ProcessCategory } from '../enums/processCategory';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
 import { IShopifyScraper } from '../interfaces/shopify/shopifyScraper.interface';
 import { worldData } from '../data/worldData';
@@ -39,130 +38,38 @@ export default class NemesisScraper
     return defaultCountry;
   };
 
-  getProcess = (item: IShopifyProductResponseData): string => {
-    try {
-      const defaultProcess = 'Unknown';
-      const maxProcessLength = 75;
-      let process = '';
-
-      if (item.body_html.includes('Process')) {
-        process = item.body_html.split('Process')[1];
-      } else {
-        return defaultProcess;
-      }
-      process = process.replaceAll('</strong>', '');
-      process = process.replaceAll('</span>', '');
-      process = process.replaceAll('<br>', '');
-      process = process.replaceAll('</p>', '');
-      process = process.replaceAll('</td>', '');
-      process = process.replaceAll(
-        /<(br|span|p|td) (d|D)ata-mce-fragment=\"1\">/g,
-        ''
-      );
-      process = process.replaceAll(
-        /<(td|span) style=\"(font-weight|width): \d+.?\d+%?;\" data-mce-fragment=\"1\" data-mce-style=\"(font-weight|width): \d+.?\d+%?;\">/g,
-        ''
-      );
-      process = process.replace(/<span style=\"font-weight: 400;\">/, '');
-
-      if (process.includes('<')) {
-        process = process.split('<')[0].trim();
-      }
-
-      if (process.length >= maxProcessLength) {
-        if (item.title.includes(ProcessCategory[ProcessCategory.Washed])) {
-          return ProcessCategory[ProcessCategory.Washed];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Natural])
-        ) {
-          return ProcessCategory[ProcessCategory.Natural];
-        } else if (
-          item.title.includes(ProcessCategory[ProcessCategory.Honey])
-        ) {
-          return ProcessCategory[ProcessCategory.Honey];
-        } else {
-          return defaultProcess;
-        }
-      }
-      if (process !== '') {
+  getProcess = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    for (const detail of productDetails!) {
+      if (detail.includes('Process')) {
+        const processArr = detail.split('\n');
+        const process = processArr[processArr.length - 1].trim();
         return Helper.firstLetterUppercase(process.split(' ')).join(' ');
       }
-      return 'Unknown';
-    } catch {
-      return 'Unknown';
     }
+    return 'Unknown';
   };
 
   getProductUrl = (item: IShopifyProductResponseData): string => {
     return BaseUrl.Nemesis + '/collections/shop-coffee/products/' + item.handle;
   };
 
-  getVariety = (item: IShopifyProductResponseData): string[] => {
-    try {
-      let variety: string;
-      const body: string = item.body_html;
-      if (body.includes('Variety')) {
-        variety = body.split('Variety')[1];
-      } else {
-        return ['Unknown'];
+  getVariety = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
+    for (const detail of productDetails!) {
+      if (detail.includes('Variety')) {
+        const variety = detail.split('Variety')[1].trim();
+        let varietyArr = variety.split(/, | \/ | and | \+ | \&amp; | \& | \| /);
+        varietyArr = Helper.firstLetterUppercase(varietyArr);
+        varietyArr = Helper.convertToUniversalVariety(varietyArr);
+        return Array.from([...new Set(varietyArr)]);
       }
-      variety = variety.replaceAll('</strong>', '');
-      variety = variety.replaceAll('</span>', '');
-      variety = variety.replaceAll('<span>', '');
-      variety = variety.replaceAll('<br>', '');
-      variety = variety.replaceAll('</td>', '');
-      variety = variety.replaceAll('</p>', '');
-      variety = variety.replaceAll(
-        /<(br|span|p|td) (d|D)ata-mce-fragment=\"1\">/g,
-        ''
-      );
-      variety = variety.replaceAll(
-        /<(td|span) style=\"(font-weight|width): \d+.?\d+%?;\" data-mce-fragment=\"1\" data-mce-style=\"(font-weight|width): \d+.?\d+%?;\">/g,
-        ''
-      );
-      variety = variety.replace(/<span style=\"font-weight: 400;\">/, '');
-      variety = variety.replace(
-        /<span style=\"font-weight: 400;\" data-mce-style=\"font-weight: 400;\">/,
-        ''
-      );
-      variety = variety.split('<')[0].trim();
-      if (variety.includes('SL 34 Ruiru 11')) {
-        variety = variety.replace('SL 34 ', 'SL 34, ');
-      }
-      if (
-        variety === 'Red and Yellow Catuai' ||
-        variety === 'Red and Yellow Caturra'
-      ) {
-        return [variety];
-      }
-      let varietyOptions: string[];
-      if (
-        variety.includes(', ') ||
-        variety.includes(' &amp; ') ||
-        variety.includes(' + ') ||
-        variety.includes(' and ') ||
-        variety.includes(' / ')
-      ) {
-        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
-      } else {
-        varietyOptions = [variety];
-      }
-
-      for (let i = 0; i < varietyOptions.length; i++) {
-        if (varietyOptions[i].includes('%')) {
-          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
-        }
-      }
-      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      if (varietyOptions.length === 1 && varietyOptions[0] === '') {
-        return ['Unknown'];
-      }
-      return varietyOptions;
-    } catch {
-      return ['Unknown'];
     }
+    return ['Unknown'];
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
@@ -189,5 +96,20 @@ export default class NemesisScraper
       return item.title.split(' | ')[1].trim();
     }
     return item.title;
+  };
+
+  getTastingNotes = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
+    let notes = '';
+    for (const detail of productDetails!) {
+      if (detail.includes('Notes')) {
+        notes = detail.split('Notes')[1].trim();
+        const notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& | \| /);
+        return Helper.firstLetterUppercase(notesArr);
+      }
+    }
+    return ['Unknown'];
   };
 }

@@ -7,10 +7,15 @@ export class EightOunceHelper {
       .then((res) => {
         if (res.data) {
           const $ = load(res.data as string);
-          return $('div[class="grid__item medium-up--one-half"]')
-            .find('ul > li')
+          const tastingNotes = $('span[class^="main-product__block-text"]')
             .toArray()
-            .map((node) => $(node).text());
+            .map((node) => $(node).text().trim());
+          const productDetails = $(
+            'div[class="main-product__block-label  small-caption"]'
+          )
+            .toArray()
+            .map((node) => $(node).text().trim());
+          return tastingNotes.concat(productDetails);
         } else {
         }
       })

@@ -149,4 +149,17 @@ export default class TranscendScraper
     }
     return item.variants[0].grams;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = item.body_html.split('</h1>')[0];
+    if (notes !== '') {
+      notes = notes.replace(/<[^>]+>/gi, '').trim();
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr);
+    }
+    return ['Unknown'];
+  };
 }

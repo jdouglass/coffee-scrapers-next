@@ -175,4 +175,24 @@ export default class PopCoffeeWorksScraper
     }
     return item.variants[0].grams ? item.variants[0].grams : defaultWeight;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Tasting Notes')) {
+      notes = item.body_html.split('Tasting Notes')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    notes = notes.replace('</strong>', '');
+    notes = notes.replace('</div>', '');
+    notes = notes.replace('<span>', '');
+    notes = notes.replace('<p>', '');
+    notes = notes.split('<')[0].trim();
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& |\\n/);
+    notesArr = notesArr.filter((element) => element !== '');
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

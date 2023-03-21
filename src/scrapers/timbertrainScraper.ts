@@ -185,4 +185,28 @@ export default class TimbertrainScraper implements IWordpressScraper, IScraper {
   getTitle = (item: IWordpressProductResponseData, _$?: CheerioAPI): string => {
     return item.title.rendered.replaceAll('&#8211;', '-');
   };
+
+  getTastingNotes = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string[] => {
+    let notes = '';
+    if (item.excerpt.rendered.includes('notes:')) {
+      notes = item.excerpt.rendered.split('notes:')[1].trim();
+    } else if (item.excerpt.rendered.includes('notes of:')) {
+      notes = item.excerpt.rendered.split('notes of:')[1].trim();
+    }
+    notes = notes.replace('<strong>', '');
+    notes = notes.replace('<br />', '');
+    notes = notes.split('<')[0].trim();
+    notes = notes.replace('.', '');
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr);
+    }
+    return ['Unknown'];
+  };
 }

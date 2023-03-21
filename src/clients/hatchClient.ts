@@ -56,6 +56,7 @@ export class HatchClient {
           const processCategory = this.factory.getProcessCategory(process);
           const productUrl = this.factory.getProductUrl(hatchResponse.data.id);
           const isSoldOut = this.factory.getSoldOut($);
+          const tastingNotes = this.factory.getTastingNotes($);
           const title = this.factory.getTitle($);
           const variety = this.factory.getVariety($);
           const weight = this.factory.getWeight(
@@ -74,6 +75,7 @@ export class HatchClient {
             processCategory,
             productUrl,
             isSoldOut,
+            tastingNotes,
             title,
             variety,
             weight,

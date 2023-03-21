@@ -105,4 +105,25 @@ export default class PrototypeScraper
     }
     return title.trim();
   };
+
+  getTastingNotes = (item: ISquareSpaceProductResponseData): string[] => {
+    let notes = '';
+    if (item.excerpt.includes('Notes:')) {
+      notes = item.excerpt.split('Notes:')[1].trim();
+    } else if (item.body.includes('Notes:')) {
+      notes = item.body.split('Notes:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.split('<')[0];
+      notes = notes.replace('.', '').trim();
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr);
+    }
+    return ['Unknown'];
+  };
 }

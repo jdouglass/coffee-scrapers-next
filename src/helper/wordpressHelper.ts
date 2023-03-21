@@ -23,6 +23,7 @@ export class WordpressHelper {
       processCategory: scraper.getProcessCategory(process),
       productUrl: scraper.getProductUrl(item),
       isSoldOut: scraper.getSoldOut($),
+      tastingNotes: scraper.getTastingNotes(item, $),
       title: scraper.getTitle(item),
       variety: scraper.getVariety(item, $),
       weight: scraper.getWeight(item, $),

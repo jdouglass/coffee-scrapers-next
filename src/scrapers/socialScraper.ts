@@ -144,4 +144,30 @@ export default class SocialScraper
     }
     return item.variants[0].grams;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('think of...')) {
+      notes = item.body_html.split('think of...')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.replace('</span>', '');
+      notes = notes.replace('<br>', '');
+      notes = notes.replace('<span>', '');
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

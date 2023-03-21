@@ -186,4 +186,11 @@ export default class MonogramScraper
     }
     return title;
   };
+
+  getTastingNotes = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
+    return Helper.firstLetterUppercase(productDetails!.slice(1));
+  };
 }

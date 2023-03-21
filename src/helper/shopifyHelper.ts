@@ -33,6 +33,7 @@ export class ShopifyHelper {
       processCategory: scraper.getProcessCategory(process),
       productUrl: scraper.getProductUrl(item),
       isSoldOut: scraper.getSoldOut(item.variants),
+      tastingNotes: scraper.getTastingNotes(item, productDetails),
       title: scraper.getTitle(item),
       variety: scraper.getVariety(item, productDetails),
       weight: scraper.getWeight(item),

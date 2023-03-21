@@ -273,6 +273,20 @@ export default class EightOunceScraper
     return unknownVariety;
   };
 
+  getTastingNotes = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
+    for (const detail of productDetails!) {
+      if (detail.includes('Tasting Notes:')) {
+        const notes = detail.split('Tasting Notes:')[1].trim();
+        const notesArr = notes.split(/,\s+| \/ | and | \+ | \&amp; | \& /);
+        return Helper.firstLetterUppercase(notesArr);
+      }
+    }
+    return ['Unknown'];
+  };
+
   getWeight = (item: IShopifyProductResponseData): number => {
     let bodyWeight: string = '';
     let weight = 0;

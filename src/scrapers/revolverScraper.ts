@@ -229,4 +229,26 @@ export default class RevolverScraper
     }
     return item.variants[0].grams;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Notes:')) {
+      notes = item.body_html.split('Notes:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.replace('<span data-mce-fragment="1">', '').trim();
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, |\s+\/\s+| and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
+  };
 }

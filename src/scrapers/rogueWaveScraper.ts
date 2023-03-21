@@ -143,4 +143,41 @@ export default class RogueWaveScraper
     varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('of:')) {
+      notes = item.body_html.split('of:')[1].trim();
+    } else if (item.body_html.includes('notes:')) {
+      notes = item.body_html.split('notes:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    notes = notes.replace(
+      'This is one of our main in house Espresso coffees.',
+      ''
+    );
+    if (notes !== '') {
+      if (notes.includes('Origin')) {
+        notes = notes.split('Origin')[0];
+        notes = notes.replace(/<[^>]+>/gi, '').trim();
+      }
+      if (notes.includes('Region')) {
+        notes = notes.split('Region')[0];
+        notes = notes.replace(/<[^>]+>/gi, '').trim();
+      }
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes
+      .split(/,| \/ |\s?and\s+| \+ | \&amp; | \& |\s+\|\s+/)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
+  };
 }

@@ -91,6 +91,32 @@ export default class AngryRoasterScraper
     return varietyOptions;
   };
 
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Notes:')) {
+      notes = item.body_html.split('Notes:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      if (notes.includes('Altitude')) {
+        notes = notes.split('Altitude')[0];
+        notes = notes.replace(/<[^>]+>/gi, '').trim();
+      } else {
+        notes = notes.replace('</strong>', '');
+        notes = notes.split('<')[0].trim();
+      }
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/,\s+| \/ | and | \+ |\s+\&amp;\s+| \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
+
   getTitle = (item: IShopifyProductResponseData): string => {
     if (item.title.includes('-')) {
       return Helper.firstLetterUppercase([

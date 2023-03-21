@@ -188,4 +188,22 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
     item.title.rendered = item.title.rendered.replaceAll('&#8217;', "'");
     return item.title.rendered;
   };
+
+  getTastingNotes = (
+    _item: IWordpressProductResponseData,
+    $: CheerioAPI
+  ): string[] => {
+    const notes = $('.woocommerce-product-details__short-description')
+      .first()
+      .text()
+      .trim();
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr);
+    }
+    return ['Unknown'];
+  };
 }

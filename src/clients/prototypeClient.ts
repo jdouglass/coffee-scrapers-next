@@ -56,6 +56,9 @@ export class PrototypeClient {
           const isSoldOut = await this.factory.getSoldOut(
             this.baseUrl + squareSpaceProducts[i].fullUrl
           );
+          const tastingNotes = this.factory.getTastingNotes(
+            prototypeResponse.data.item
+          );
           const title = this.factory.getTitle(prototypeResponse.data.item);
           const variety = this.factory.getVariety(prototypeResponse.data.item);
           const weight = this.factory.getWeight(prototypeResponse.data.item);
@@ -71,6 +74,7 @@ export class PrototypeClient {
             processCategory,
             productUrl,
             isSoldOut,
+            tastingNotes,
             title,
             variety,
             weight,

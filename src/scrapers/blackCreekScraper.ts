@@ -103,6 +103,10 @@ export default class BlackCreekScraper
     return varietyOptions;
   };
 
+  getTastingNotes = (_item: IShopifyProductResponseData): string[] => {
+    return ['Unknown'];
+  };
+
   getTitle = (item: IShopifyProductResponseData): string => {
     for (const country of worldData.keys()) {
       if (item.title.includes(country)) {

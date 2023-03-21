@@ -101,4 +101,28 @@ export default class RossoScraper
     varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Sweetness')) {
+      notes = item.body_html.split('Sweetness')[0].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      if (notes.includes('</em>')) {
+        const emphasisArr = notes.split('</em>');
+        notes = emphasisArr[emphasisArr.length - 1];
+      }
+      notes = notes.replace(/<[^>]+>/gi, '').trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, |\s+\/\s+| and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

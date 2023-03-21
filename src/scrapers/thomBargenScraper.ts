@@ -138,4 +138,30 @@ export default class ThomBargenScraper
     }
     return Helper.firstLetterUppercase([item.title]).join();
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Tasting notes:')) {
+      notes = item.body_html.split('Tasting notes:')[1].trim();
+    } else if (item.body_html.includes('Tasting Notes:')) {
+      notes = item.body_html.split('Tasting Notes:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.replace('.', '').trim();
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

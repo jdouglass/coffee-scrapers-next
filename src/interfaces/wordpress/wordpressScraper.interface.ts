@@ -11,6 +11,10 @@ export interface IWordpressScraper {
   getProcess: (item: IWordpressProductResponseData, $?: CheerioAPI) => string;
   getProductUrl: (item: IWordpressProductResponseData) => string;
   getSoldOut: ($: CheerioAPI) => boolean;
+  getTastingNotes: (
+    item: IWordpressProductResponseData,
+    $: CheerioAPI
+  ) => string[];
   getTitle: (item: IWordpressProductResponseData) => string;
   getVariety: (item: IWordpressProductResponseData, $?: CheerioAPI) => string[];
   getVendor: () => string;

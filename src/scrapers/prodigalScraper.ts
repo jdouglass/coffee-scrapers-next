@@ -152,4 +152,15 @@ export default class ProdigalScraper
     }
     return 0;
   };
+
+  getTastingNotes = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
+    const notes = Helper.firstLetterUppercase(productDetails![0].split(', '));
+    if (notes[0] !== '') {
+      return notes;
+    }
+    return ['Unknown'];
+  };
 }

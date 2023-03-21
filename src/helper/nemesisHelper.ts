@@ -1,18 +1,15 @@
 import axios from 'axios';
 import { load } from 'cheerio';
 
-export class PhilAndSebastianHelper {
+export class NemesisHelper {
   public static async getProductInfo(productUrl: string): Promise<string[]> {
     return (await axios(productUrl)
       .then((res) => {
         if (res.data) {
           const $ = load(res.data as string);
-          const details = $('.factsOpen')
-            .find('li')
+          const details = $('tr')
             .toArray()
-            .map((node) => $(node).text());
-          const tastingNotes = $('.coffeeFlavour').text();
-          details.push(tastingNotes);
+            .map((node) => $(node).text().trim());
           return details;
         }
       })

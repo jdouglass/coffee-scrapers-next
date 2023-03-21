@@ -148,4 +148,33 @@ export default class SorellinaScraper
     }
     return 0;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.toLowerCase().includes('notes of')) {
+      notes = item.body_html.toLowerCase().split('notes of')[1].trim();
+    } else if (item.body_html.toLowerCase().includes('we taste')) {
+      notes = item.body_html.toLowerCase().split('we taste')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.toLowerCase().replace('tangy notes of', '');
+      notes = notes.split('.')[0];
+      if (notes.includes('<')) {
+        notes = notes.split('<')[0];
+      }
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

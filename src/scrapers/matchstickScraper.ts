@@ -175,4 +175,26 @@ export default class MatchstickScraper
     }
     return item.variants[0].grams;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Tasting Notes:')) {
+      notes = item.body_html.split('Tasting Notes:')[1].trim();
+    }
+    if (notes !== '') {
+      notes = notes.replace('<br>', '');
+      notes = notes.replace(/<\/?span>/, '');
+      notes = notes.replace('</strong>', '');
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/,\s+| \/ | and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
+  };
 }

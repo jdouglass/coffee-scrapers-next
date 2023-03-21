@@ -153,4 +153,27 @@ export default class QuietlyScraper
     }
     return 0;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('TASTE:')) {
+      notes = item.body_html.split('TASTE:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.split('REGION')[0];
+      notes = notes.replace(/<[^>]+>/gi, '').trim();
+      notes = notes.replace('.', '');
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& |\s+with\s+/);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
+  };
 }

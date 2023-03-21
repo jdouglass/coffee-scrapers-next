@@ -109,4 +109,26 @@ export default class PiratesScraper
     }
     return unknownVariety;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Tasting Notes')) {
+      notes = item.body_html.split('Tasting Notes')[1].trim();
+    } else if (item.body_html.includes('Tasting notes')) {
+      notes = item.body_html.split('Tasting notes')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    notes = notes.replace('</strong>', '');
+    notes = notes.replace('<span>', '');
+    notes = notes.replace('<span data-mce-fragment="1">', '');
+    notes = notes.replace(':', '').trim();
+    notes = notes.split('<')[0].trim();
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& |\\n/);
+    notesArr = notesArr.filter((element) => element !== '');
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

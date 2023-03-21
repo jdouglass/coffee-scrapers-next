@@ -136,4 +136,18 @@ export default class PhilAndSebastianScraper
     }
     return Helper.firstLetterUppercase([item.title]).join();
   };
+
+  getTastingNotes = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string[] => {
+    if (productDetails![productDetails!.length - 1] !== '') {
+      return Helper.firstLetterUppercase(
+        productDetails![productDetails!.length - 1].split(
+          /,\s+| \/ |\s+and\s+| \+ | \&amp; | \& |\s+with\s+/
+        )
+      );
+    }
+    return ['Unknown'];
+  };
 }

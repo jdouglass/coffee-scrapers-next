@@ -125,4 +125,28 @@ export default class SamJamesScraper
   getTitle = (item: IShopifyProductResponseData): string => {
     return Helper.firstLetterUppercase([item.title]).join(' ');
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Tastes Like:')) {
+      notes = item.body_html.split('Tastes Like:')[1].trim();
+    } else if (item.body_html.includes('TASTES LIKE:')) {
+      notes = item.body_html.split('TASTES LIKE:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.replace('</b>', '').trim();
+      notes = notes.replace('</strong>', '').trim();
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

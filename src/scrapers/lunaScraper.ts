@@ -131,6 +131,8 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
       variety = item.content.rendered.split('Variety:')[1].trim();
     } else if (item.content.rendered.includes('Varieties:')) {
       variety = item.content.rendered.split('Varieties:')[1].trim();
+    } else if (item.content.rendered.includes('Cultivar:')) {
+      variety = item.content.rendered.split('Cultivar:')[1].trim();
     }
     if (variety === '') {
       return ['Unknown'];
@@ -138,8 +140,9 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
     variety = variety.split('<')[0].trim();
 
     let varietyOptions = variety
-      .split(/, | & | and | \&amp; /)
-      .map((variety: string) => variety.trim());
+      .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     varietyOptions = Array.from([...new Set(varietyOptions)]);
@@ -179,5 +182,29 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
     title = title.replaceAll('&#8211;', '-');
     title = title.replaceAll('&#038;', '&');
     return title;
+  };
+
+  getTastingNotes = (
+    item: IWordpressProductResponseData,
+    _$: CheerioAPI
+  ): string[] => {
+    let notes = '';
+    if (item.content.rendered.includes('Tasting:')) {
+      notes = item.content.rendered.split('Tasting:')[1].trim();
+    } else if (item.content.rendered.includes('notes:')) {
+      notes = item.content.rendered.split('notes:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    console.log(notes);
+    notes = notes.split('<')[0].trim();
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr);
+    }
+    return ['Unknown'];
   };
 }

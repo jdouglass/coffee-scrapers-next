@@ -149,4 +149,31 @@ export default class TrafficScraper
     }
     return item.variants[0].grams;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Notes')) {
+      notes = item.body_html.split('Notes')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.replace(':', '');
+      notes = notes.replace(/<\/?span.*?>/g, '');
+      notes = notes.replace('</strong>', '');
+      notes = notes.replace('<strong>', '');
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr);
+  };
 }

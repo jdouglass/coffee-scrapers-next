@@ -10,6 +10,7 @@ export interface IProduct {
   process: string;
   processCategory: string;
   productUrl: string;
+  tastingNotes: string[];
   title: string;
   variety: string[];
   vendor: string;

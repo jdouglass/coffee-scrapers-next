@@ -91,4 +91,26 @@ export default class PalletScraper
     varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Category')) {
+      notes = item.body_html.split('Category')[0].trim();
+    }
+    if (notes !== '') {
+      notes = notes.replace(/<[^>]+>/gi, '').trim();
+      notes = notes.replaceAll('.', '').trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(
+      /,\s+| \/ |\s+and\s+| \+ | \&amp; | \& |\s+with\s+/
+    );
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
+  };
 }

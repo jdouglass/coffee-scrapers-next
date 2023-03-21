@@ -78,6 +78,26 @@ export default class HouseOfFunkScraper
     return BaseUrl.HouseOfFunk + '/collections/coffee/products/' + item.handle;
   };
 
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Reminds us of:')) {
+      notes = item.body_html.split('Reminds us of:')[1].trim();
+    }
+    if (notes !== '') {
+      notes = notes.split('<')[0];
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/, | \/ |\s?and | \+ | \&amp; | \&/);
+    notesArr = notesArr.filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
+  };
+
   getVariety = (item: IShopifyProductResponseData): string[] => {
     let variety = '';
     const body = item.body_html;

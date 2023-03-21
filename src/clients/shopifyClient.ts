@@ -11,6 +11,8 @@ import { SubtextHelper } from '../helper/subtextHelper';
 import config from '../config.json';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
+import { NemesisHelper } from '../helper/nemesisHelper';
+import { ProdigalHelper } from '../helper/prodigalHelper';
 
 export class ShopifyClient {
   public static async run(scraper: ShopifyScraperType): Promise<void> {
@@ -49,6 +51,14 @@ export class ShopifyClient {
           );
         } else if (vendor === Vendor.Subtext) {
           productDetails = await SubtextHelper.getProductInfo(
+            scraper.getProductUrl(product)
+          );
+        } else if (vendor === Vendor.Nemesis) {
+          productDetails = await NemesisHelper.getProductInfo(
+            scraper.getProductUrl(product)
+          );
+        } else if (vendor === Vendor.Prodigal) {
+          productDetails = await ProdigalHelper.getProductInfo(
             scraper.getProductUrl(product)
           );
         }

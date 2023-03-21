@@ -113,4 +113,23 @@ export default class LibraryScraper
     varietyOptions = Array.from([...new Set(varietyOptions)]);
     return varietyOptions;
   };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Cup:')) {
+      notes = item.body_html.split('Cup:')[1].trim();
+    }
+    if (notes !== '') {
+      notes = notes.split('<')[0];
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes.split(/,\s+| \/ | and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
+  };
 }

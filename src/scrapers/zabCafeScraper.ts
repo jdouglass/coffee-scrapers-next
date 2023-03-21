@@ -150,4 +150,8 @@ export default class ZabCafeScraper
     }
     return Helper.firstLetterUppercase([item.title]).join();
   };
+
+  getTastingNotes = (_item: IShopifyProductResponseData): string[] => {
+    return ['Unknown'];
+  };
 }

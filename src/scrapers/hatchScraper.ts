@@ -152,4 +152,16 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
   getTitle = ($: CheerioAPI): string => {
     return $('.product-title').first().text();
   };
+
+  getTastingNotes = ($: CheerioAPI): string[] => {
+    const notes = $('h6:contains("Notes:")').next().first().text();
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|./)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr);
+    }
+    return ['Unknown'];
+  };
 }

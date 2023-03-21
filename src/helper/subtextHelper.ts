@@ -7,10 +7,16 @@ export class SubtextHelper {
       .then((res) => {
         if (res.data) {
           const $ = load(res.data as string);
-          return $('div[class="shg-rich-text shg-default-text-content"]')
+          const details = $(
+            'div[class="shg-rich-text shg-default-text-content"]'
+          )
             .find('p')
             .toArray()
             .map((node) => $(node).text());
+          const tastingNotes = $(
+            'div[class="shg-rich-text shg-theme-text-content"]'
+          ).text();
+          return details.concat(tastingNotes);
         }
       })
       .catch((e) => {

@@ -116,6 +116,35 @@ export default class RabbitHoleScraper
         }
       }
     }
-    return 0;
+    return item.variants[0].grams ? item.variants[0].grams : 0;
+  };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Impressions:')) {
+      notes = item.body_html.split('Impressions:')[1].trim();
+    } else {
+      return ['Unknown'];
+    }
+    if (notes !== '') {
+      notes = notes.replace('</strong>', '');
+      notes = notes.replace('</b>', '');
+      notes = notes.replace('<span data-mce-fragment="1">', '');
+      notes = notes.replace('.', '');
+      notes = notes.replaceAll(/[()]/g, ', ');
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return ['Unknown'];
+    }
+    let notesArr = notes
+      .split(/,\s?| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    notesArr = Helper.firstLetterUppercase(notesArr);
+    return notesArr;
   };
 }
