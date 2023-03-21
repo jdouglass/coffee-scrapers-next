@@ -281,7 +281,10 @@ export default class EightOunceScraper
       if (detail.includes('Tasting Notes:')) {
         const notes = detail.split('Tasting Notes:')[1].trim();
         if (notes !== '') {
-          const notesArr = notes.split(/,\s+| \/ | and | \+ | \&amp; | \& /);
+          const notesArr = notes
+            .split(/,\s+| \/ | and | \+ | \&amp; | \& /)
+            .map((element) => element.trim())
+            .filter((element) => element !== '');
           return Helper.firstLetterUppercase(notesArr);
         } else {
           return ['Unknown'];

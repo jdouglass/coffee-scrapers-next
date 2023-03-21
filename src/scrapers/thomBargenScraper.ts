@@ -149,14 +149,13 @@ export default class ThomBargenScraper
       return ['Unknown'];
     }
     if (notes !== '') {
-      notes = notes.replace('.', '').trim();
       notes = notes.split('<')[0].trim();
     }
     if (notes === '') {
       return ['Unknown'];
     }
     let notesArr = notes
-      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .split(/,| \/ | and | \+ | \&amp; | \& |\./)
       .map((element) => element.trim())
       .filter((element) => element !== '');
     if (notesArr[0] === '') {
