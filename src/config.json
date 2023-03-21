@@ -1,5 +1,5 @@
 {
   "cronSchedule": "0 * * * *",
-  "logProducts": false,
-  "useDatabase": true
+  "logProducts": true,
+  "useDatabase": false
 }

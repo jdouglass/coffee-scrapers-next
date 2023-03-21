@@ -1,7 +1,8 @@
-import { HatchClient } from './clients/hatchClient';
+import { WordpressClient } from './clients/wordpressClient';
+import TimbertrainScraper from './scrapers/timbertrainScraper';
 
 async function main() {
-  await HatchClient.run();
+  await WordpressClient.run(new TimbertrainScraper());
 }
 
 void main();
