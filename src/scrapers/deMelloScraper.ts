@@ -8,6 +8,7 @@ import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpress
 import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { NO_IMAGE_AVAILABLE_URL } from '../constants';
 
 export default class DeMelloScraper implements IWordpressScraper, IScraper {
   private vendor = Vendor.DeMello;
@@ -79,7 +80,10 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
 
   getImageUrl = ($: CheerioAPI): string => {
     const imageElement = $('[class^="wp-post-image"]').attr('src');
-    return imageElement as string;
+    if (imageElement) {
+      return encodeURI(imageElement);
+    }
+    return NO_IMAGE_AVAILABLE_URL;
   };
 
   getPrice = ($: CheerioAPI): number => {
