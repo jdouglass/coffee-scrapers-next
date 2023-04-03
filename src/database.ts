@@ -32,7 +32,12 @@ export class ProductsDatabase {
     // Don't update the date_added if the vendor is Hatch Coffee
     // because Hatch doesn't have their timestamps in the Crate Joy API
     // so the date would always get updated whenever the scraper is run for Hatch
-    if (product.vendor !== Vendor.Hatch && product.vendor !== Vendor.Luna) {
+    if (
+      product.vendor !== Vendor.Hatch &&
+      product.vendor !== Vendor.Luna &&
+      product.vendor !== Vendor.DeMello &&
+      product.vendor !== Vendor.Timbertrain
+    ) {
       try {
         await this.prisma.products.upsert({
           where: {
