@@ -29,18 +29,26 @@ export default class SeptemberScraper
 
   getCountry = (item: IShopifyProductResponseData): string => {
     const defaultCountry = 'Unknown';
+    let body = item.body_html;
     for (const country of worldData.keys()) {
       if (item.title.toLowerCase().includes(country.toLowerCase())) {
         return country;
       }
     }
-    if (item.body_html.includes('Origin')) {
-      item.body_html = item.body_html.split('Origin')[1];
-      item.body_html = item.body_html.replace('</strong>', '');
-      item.body_html = item.body_html.split('<')[0];
+    if (body.includes('Origin')) {
+      body = body.split('Origin')[1];
+      body = body.replace(':', '');
+      body = body.replace('</strong>', '');
+      body = body.replace('</span>', '');
+      body = body.replace('<span class="s2">', '');
+      body = body.replace('</b>', '');
+      body = body
+        .replaceAll('<span data-mce-fragment="1" class="s2">', '')
+        .trim();
+      body = body.split('<')[0];
       const countrySet = new Set<string>();
       for (const country of worldData.keys()) {
-        if (item.body_html.toLowerCase().includes(country.toLowerCase())) {
+        if (body.toLowerCase().includes(country.toLowerCase())) {
           countrySet.add(country);
         }
       }
@@ -89,7 +97,7 @@ export default class SeptemberScraper
       return ['Unknown'];
     }
     if (variety !== '') {
-      variety = variety.replace(':', '');
+      variety = variety.split(':')[1].trim();
       variety = variety.replace('</strong>', '');
       variety = variety.replace('<span class="s3">', '');
       variety = variety.replaceAll('&amp;', ', ');
