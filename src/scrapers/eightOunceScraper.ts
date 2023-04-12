@@ -359,11 +359,19 @@ export default class EightOunceScraper
     }
     for (const variant of item.variants) {
       if (variant.available) {
-        return variant.grams;
+        if (variant.weight_unit === 'kg') {
+          return variant.grams * 1000;
+        } else {
+          return variant.grams;
+        }
       }
     }
     if (item.variants[0].grams) {
-      return item.variants[0].grams;
+      if (item.variants[0].weight_unit === 'kg') {
+        return item.variants[0].grams * 1000;
+      } else {
+        return item.variants[0].grams;
+      }
     }
     return 0;
   };
