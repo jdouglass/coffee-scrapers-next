@@ -301,23 +301,32 @@ export default class EightOunceScraper
       if (item.title.includes('(')) {
         const titleWeight: string =
           item.title.split('(')[item.title.split('(').length - 1];
-        if (titleWeight.includes('kg')) {
+        if (
+          titleWeight.includes('kg') &&
+          Number.isInteger(Number(titleWeight.split('kg')[0].trim()) * 1000)
+        ) {
           return Number(titleWeight.split('kg')[0].trim()) * 1000;
         }
-        return Number(titleWeight.split('KG')[0]) * 1000;
+        if (Number.isInteger(Number(titleWeight.split('KG')[0]) * 1000)) {
+          return Number(titleWeight.split('KG')[0]) * 1000;
+        }
       }
       if (item.title.includes('kg')) {
         let titleWeight = item.title.split('kg')[0];
         titleWeight = titleWeight
           .split(' ')
           [titleWeight.split(' ').length - 1].trim();
-        return Number(titleWeight) * 1000;
+        if (Number.isInteger(Number(titleWeight) * 1000)) {
+          return Number(titleWeight) * 1000;
+        }
       }
       let titleWeight = item.title.split('KG')[0];
       titleWeight = titleWeight
         .split(' ')
         [titleWeight.split(' ').length - 1].trim();
-      return Number(titleWeight.split('KG')[0]) * 1000;
+      if (Number.isInteger(Number(titleWeight.split('KG')[0]) * 1000)) {
+        return Number(titleWeight.split('KG')[0]) * 1000;
+      }
     } else if (
       item.title.includes('(') &&
       (item.title.includes('g') || item.title.includes('G'))
@@ -328,17 +337,34 @@ export default class EightOunceScraper
         if (titleWeight.includes('g')) {
           titleWeight = titleWeight.split('g')[0].trim();
           const values = titleWeight.toLowerCase().split(/\s?x\s?/);
-          return Number(values[0].trim()) * Number(values[1].trim());
+          if (
+            Number.isInteger(
+              Number(values[0].trim()) * Number(values[1].trim())
+            )
+          ) {
+            return Number(values[0].trim()) * Number(values[1].trim());
+          }
         } else if (titleWeight.includes('G')) {
           titleWeight = titleWeight.split('G')[0].trim();
           const values = titleWeight.toLowerCase().split(/\s?x\s?/);
-          return Number(values[0].trim()) * Number(values[1].trim());
+          if (
+            Number.isInteger(
+              Number(values[0].trim()) * Number(values[1].trim())
+            )
+          ) {
+            return Number(values[0].trim()) * Number(values[1].trim());
+          }
         }
       }
-      if (titleWeight.includes('g')) {
+      if (
+        titleWeight.includes('g') &&
+        Number.isInteger(Number(titleWeight.split('g')[0].trim()))
+      ) {
         return Number(titleWeight.split('g')[0].trim());
       }
-      return Number(titleWeight.split('G')[0]);
+      if (Number.isInteger(Number(titleWeight.split('G')[0]))) {
+        return Number(titleWeight.split('G')[0]);
+      }
     }
     if (item.body_html.includes('Quantity')) {
       bodyWeight = item.body_html.split('Quantity')[1];
@@ -353,23 +379,26 @@ export default class EightOunceScraper
         bodyWeight = bodyWeight.split('G')[0];
       }
       weight = Number(bodyWeight.trim());
-      if (weight !== 0 && !Number.isNaN(weight)) {
+      if (weight !== 0 && !Number.isNaN(weight) && Number.isInteger(weight)) {
         return weight;
       }
     }
     for (const variant of item.variants) {
       if (variant.available) {
         if (variant.weight_unit === 'kg') {
-          return variant.grams * 1000;
-        } else {
+          if (Number.isInteger(variant.grams * 1000)) {
+            return variant.grams * 1000;
+          }
+        } else if (Number.isInteger(variant.grams)) {
           return variant.grams;
         }
       }
     }
     if (item.variants[0].grams) {
       if (item.variants[0].weight_unit === 'kg') {
-        return item.variants[0].grams * 1000;
-      } else {
+        if (Number.isInteger(item.variants[0].grams * 1000))
+          return item.variants[0].grams * 1000;
+      } else if (Number.isInteger(item.variants[0].grams)) {
         return item.variants[0].grams;
       }
     }
