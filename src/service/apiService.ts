@@ -26,7 +26,8 @@ export class ApiService {
     for (const product of response.data.products) {
       for (const unwantedString of unwantedTitles) {
         if (
-          product.title.toLowerCase().includes(unwantedString.toLowerCase())
+          product.title.toLowerCase().includes(unwantedString.toLowerCase()) ||
+          product.body_html.toLowerCase().includes(unwantedString.toLowerCase())
         ) {
           containsUnwantedString = true;
         }
