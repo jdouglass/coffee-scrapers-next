@@ -88,7 +88,7 @@ export class PrototypeClient {
       }
 
       if (this.config.useDatabase) {
-        await ProductsDatabase.updateDb(this.prototypeProducts);
+        await ProductsDatabase.updateDb(this.prototypeProducts, this.vendor);
       }
     } catch (err) {
       console.error(err);

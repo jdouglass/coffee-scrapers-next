@@ -42,7 +42,7 @@ export class WordpressClient {
           console.log(products.at(-1));
         }
       }
-      await ProductsDatabase.updateDb(products);
+      await ProductsDatabase.updateDb(products, vendor);
     } catch (err) {
       console.error(err);
     }

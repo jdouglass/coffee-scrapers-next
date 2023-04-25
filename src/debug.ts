@@ -1,8 +1,8 @@
-import { ShopifyClient } from './clients/shopifyClient';
-import AngryRoasterScraper from './scrapers/angryRoasterScraper';
+import { WordpressClient } from './clients/wordpressClient';
+import TimbertrainScraper from './scrapers/timbertrainScraper';
 
 async function main() {
-  await ShopifyClient.run(new AngryRoasterScraper());
+  await WordpressClient.run(new TimbertrainScraper());
 }
 
 void main();

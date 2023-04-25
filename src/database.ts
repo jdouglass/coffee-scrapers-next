@@ -28,15 +28,18 @@ export class ProductsDatabase {
     });
   }
 
-  private static async addOrUpdateProduct(product: IProduct): Promise<void> {
+  private static async addOrUpdateProduct(
+    product: IProduct,
+    vendor: string
+  ): Promise<void> {
     // Don't update the date_added if the vendor is Hatch Coffee
     // because Hatch doesn't have their timestamps in the Crate Joy API
     // so the date would always get updated whenever the scraper is run for Hatch
     if (
-      product.vendor !== Vendor.Hatch &&
-      product.vendor !== Vendor.Luna &&
-      product.vendor !== Vendor.DeMello &&
-      product.vendor !== Vendor.Timbertrain
+      vendor !== Vendor.Hatch &&
+      vendor !== Vendor.Luna &&
+      vendor !== Vendor.DeMello &&
+      vendor !== Vendor.Timbertrain
     ) {
       try {
         await this.prisma.products.upsert({
@@ -127,12 +130,15 @@ export class ProductsDatabase {
     }
   }
 
-  public static async updateDb(scrapedProducts: IProduct[]): Promise<void> {
+  public static async updateDb(
+    scrapedProducts: IProduct[],
+    vendor: string
+  ): Promise<void> {
     if (!config.useDatabase) {
       return;
     }
     const dbProducts: { product_url: string }[] =
-      await this.getProductUrlsByVendor(scrapedProducts[0].vendor);
+      await this.getProductUrlsByVendor(vendor);
 
     for (const dbProduct of dbProducts) {
       if (
@@ -160,7 +166,7 @@ export class ProductsDatabase {
     }
 
     for (const product of scrapedProducts) {
-      await this.addOrUpdateProduct(product);
+      await this.addOrUpdateProduct(product, vendor);
     }
   }
 }

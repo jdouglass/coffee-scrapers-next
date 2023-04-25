@@ -89,7 +89,7 @@ export class HatchClient {
       }
 
       if (this.config.useDatabase) {
-        await ProductsDatabase.updateDb(this.hatchProducts);
+        await ProductsDatabase.updateDb(this.hatchProducts, this.vendor);
       }
     } catch (err) {
       console.error(err);
