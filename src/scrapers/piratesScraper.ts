@@ -33,6 +33,8 @@ export default class PiratesScraper
     const unknownCountry = 'Unknown';
     if (item.body_html.includes('Single ')) {
       reportBody = item.body_html.split('Single ')[1];
+    } else if (item.body_html.includes('origin from')) {
+      reportBody = item.body_html.split('origin from')[1];
     } else if (item.body_html.includes('Origin')) {
       reportBody = item.body_html.split('Origin:')[1];
     }

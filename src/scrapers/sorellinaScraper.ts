@@ -137,14 +137,18 @@ export default class SorellinaScraper
         if (variant.title.includes('g')) {
           return Number(variant.title.split('g')[0]);
         } else if (variant.title.includes('lb')) {
-          return Number(variant.title.split('lb')[0]) * poundToGrams;
+          return Math.round(
+            Number(variant.title.split('lb')[0]) * poundToGrams
+          );
         }
       }
     }
     if (item.variants[0].title.includes('g')) {
       return Number(item.variants[0].title.split('g')[0]);
     } else if (item.variants[0].title.includes('lb')) {
-      return Number(item.variants[0].title.split('lb')[0]) * poundToGrams;
+      return Math.round(
+        Number(item.variants[0].title.split('lb')[0]) * poundToGrams
+      );
     }
     return 0;
   };
