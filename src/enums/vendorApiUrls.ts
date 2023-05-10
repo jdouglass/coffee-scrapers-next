@@ -27,7 +27,7 @@ export enum VendorApiUrl {
   Sorellina = 'https://www.sorellina.ca/collections/beans/products.json?limit=250',
   Subtext = 'https://www.subtext.coffee/collections/filter-coffee-beans/products.json?limit=250',
   ThomBargen = 'https://www.thombargen.com/collections/frontpage/products.json?limit=250',
-  Timbertrain = 'https://timbertraincoffeeroasters.com/wp-json/wp/v3/product?product_cat=20&per_page=100',
+  Timbertrain = 'https://timbertraincoffeeroasters.com/wp-json/wp/v2/product?product_cat=20&per_page=100',
   Traffic = 'https://www.trafficcoffee.com/collections/our-coffees/products.json?limit=250',
   Transcend = 'https://transcendcoffee.ca/collections/coffee-beans/products.json?limit=250',
   ZabCafe = 'https://zabcafe.com/en/collections/cafes/products.json?limit=250',
