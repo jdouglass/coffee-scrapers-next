@@ -30,6 +30,7 @@ export const unwantedTitles: string[] = [
   'Kalita',
   'LOW CAF',
   'Merch',
+  'Coat Of Arms Mug',
   'Nitro',
   'Otto',
   'Pack',
