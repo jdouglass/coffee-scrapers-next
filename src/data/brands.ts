@@ -3,7 +3,6 @@ export const brands: string[] = [
   '3FE',
   '49th Parallel Coffee Roasters',
   'Abracadabra',
-  'Abracadbra',
   'April',
   'Barn',
   'Brandywine',

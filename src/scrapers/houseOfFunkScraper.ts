@@ -33,8 +33,12 @@ export default class HouseOfFunkScraper
       }
     }
     if (!countryList.size && item.body_html.includes('Origin')) {
-      country = item.body_html.split('Origin')[1].trim();
-      country = country.split(':')[1].trim();
+      if (item.body_html.includes('Origin /')) {
+        country = item.body_html.split('Origin /')[1].trim();
+      } else {
+        country = item.body_html.split('Origin')[1].trim();
+        country = country.split(':')[1].trim();
+      }
       country = country.split('<')[0].trim();
       if (country !== '') {
         for (const location of worldData.keys()) {

@@ -174,6 +174,9 @@ export default class Helper {
       case 'Rabbit Hole':
         brand = Vendor.RabbitHole;
         break;
+      case 'Reanimator':
+        brand = 'ReAnimator';
+        break;
       case 'Rosso':
         brand = Vendor.Rosso;
         break;
