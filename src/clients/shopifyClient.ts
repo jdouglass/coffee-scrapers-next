@@ -22,6 +22,7 @@ export class ShopifyClient {
     const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
       vendor
     );
+    const currency = await ProductsDatabase.getCountryCurrency(vendorLocation);
     let productDetails: string[] | undefined;
     console.log(vendor, 'started');
     try {
@@ -72,11 +73,14 @@ export class ShopifyClient {
               scraper,
               product,
               vendorLocation,
+              currency,
               productDetails
             )
           );
         } else {
-          products.push(ShopifyHelper.scrape(scraper, product, vendorLocation));
+          products.push(
+            ShopifyHelper.scrape(scraper, product, vendorLocation, currency)
+          );
         }
         if (config.logProducts) {
           console.log(products.at(-1));

@@ -7,6 +7,18 @@ import { Vendor } from './enums/vendors';
 export class ProductsDatabase {
   private static prisma: PrismaClient = new PrismaClient();
 
+  public static async getCountryCurrency(country: string): Promise<string> {
+    const currency = await this.prisma.countries.findFirst({
+      where: {
+        name: country,
+      },
+      select: {
+        currency: true,
+      },
+    });
+    return currency?.currency ? currency?.currency : 'Unknown';
+  }
+
   public static async getVendorCountryLocation(
     vendor: string
   ): Promise<string> {
@@ -78,6 +90,7 @@ export class ProductsDatabase {
             vendor: product.vendor,
             vendor_location: product.vendorLocation,
             weight: product.weight,
+            default_currency: product.currency,
           },
           update: {
             brand: product.brand,
@@ -95,6 +108,7 @@ export class ProductsDatabase {
             vendor: product.vendor,
             vendor_location: product.vendorLocation,
             weight: product.weight,
+            default_currency: product.currency,
           },
         });
       } catch (err) {
@@ -124,6 +138,7 @@ export class ProductsDatabase {
             vendor: product.vendor,
             vendor_location: product.vendorLocation,
             weight: product.weight,
+            default_currency: product.currency,
           },
           update: {
             brand: product.brand,
@@ -140,6 +155,7 @@ export class ProductsDatabase {
             vendor: product.vendor,
             vendor_location: product.vendorLocation,
             weight: product.weight,
+            default_currency: product.currency,
           },
         });
       } catch (err) {

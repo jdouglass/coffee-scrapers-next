@@ -37,3 +37,10 @@ model vendor_info {
   api_url          String[]
   default_currency String?
 }
+
+model countries {
+  id               Int      @id @default(autoincrement())
+  name             String?  @unique
+  iso2             String?
+  currency         String?
+}

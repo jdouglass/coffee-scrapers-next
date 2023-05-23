@@ -24,6 +24,7 @@ export class PrototypeClient {
     const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
       this.vendor
     );
+    const currency = await ProductsDatabase.getCountryCurrency(vendorLocation);
     console.log('Prototype Scraper started');
     try {
       for (let i = 0; i < squareSpaceProducts.length; i++) {
@@ -84,6 +85,7 @@ export class PrototypeClient {
             weight,
             vendor: this.vendor,
             vendorLocation,
+            currency,
           };
           if (this.config.logProducts) {
             console.log(product);

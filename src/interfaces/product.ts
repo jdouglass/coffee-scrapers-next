@@ -2,6 +2,7 @@ export interface IProduct {
   brand: string;
   continent: string;
   country: string;
+  currency: string;
   dateAdded: string;
   handle: string;
   imageUrl: string;

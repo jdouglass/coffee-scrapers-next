@@ -6,13 +6,15 @@ export class ShopifyHelper {
   public static scrape<T extends ShopifyScraperType>(
     scraper: T,
     item: IShopifyProductResponseData,
-    vendorLocation: string
+    vendorLocation: string,
+    currency: string
   ): IProduct;
 
   public static scrape<T extends ShopifyScraperType>(
     scraper: T,
     item: IShopifyProductResponseData,
     vendorLocation: string,
+    currency: string,
     productDetails: string[]
   ): IProduct;
 
@@ -20,6 +22,7 @@ export class ShopifyHelper {
     scraper: T,
     item: IShopifyProductResponseData,
     vendorLocation: string,
+    currency: string,
     productDetails?: string[]
   ): IProduct {
     const country = scraper.getCountry(item, productDetails);
@@ -42,6 +45,7 @@ export class ShopifyHelper {
       weight: scraper.getWeight(item),
       vendor: scraper.getVendor(),
       vendorLocation,
+      currency,
     };
   }
 }

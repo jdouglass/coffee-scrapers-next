@@ -23,6 +23,7 @@ export class HatchClient {
     const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
       this.vendor
     );
+    const currency = await ProductsDatabase.getCountryCurrency(vendorLocation);
     const productUrls = await HatchHelper.getProductUrls(
       this.baseUrl + '/shop/all/',
       '/shop/product/'
@@ -85,6 +86,7 @@ export class HatchClient {
             weight,
             vendor: this.vendor,
             vendorLocation,
+            currency,
           };
           if (this.config.logProducts) {
             console.log(product);
