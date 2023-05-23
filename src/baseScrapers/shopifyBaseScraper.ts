@@ -3,7 +3,6 @@ import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyRespon
 import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant.interface';
 import { Scraper } from './scraper';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
-import { ProductsDatabase } from '../database';
 
 export class ShopifyBaseScraper extends Scraper implements IShopifyBaseScraper {
   getDateAdded = (date: string): string => {
@@ -50,9 +49,5 @@ export class ShopifyBaseScraper extends Scraper implements IShopifyBaseScraper {
       }
     }
     return item.variants[0].grams;
-  };
-
-  getVendorCountryLocation = async (vendor: string): Promise<string> => {
-    return await ProductsDatabase.getVendorCountryLocation(vendor);
   };
 }

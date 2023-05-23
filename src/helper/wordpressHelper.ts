@@ -2,14 +2,14 @@ import { CheerioAPI } from 'cheerio';
 import { IProduct } from '../interfaces/product';
 import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpressResponseData.interface';
 import { WordpressScraperType } from '../types/wordpressScraperType';
-import { ProductsDatabase } from '../database';
 
 export class WordpressHelper {
-  public static async scrape<T extends WordpressScraperType>(
+  public static scrape<T extends WordpressScraperType>(
     scraper: T,
     item: IWordpressProductResponseData,
-    $: CheerioAPI
-  ): Promise<IProduct> {
+    $: CheerioAPI,
+    vendorLocation: string
+  ): IProduct {
     const country = scraper.getCountry(item, $);
     const process = scraper.getProcess(item, $);
     return {
@@ -29,9 +29,7 @@ export class WordpressHelper {
       variety: scraper.getVariety(item, $),
       weight: scraper.getWeight(item, $),
       vendor: scraper.getVendor(),
-      vendorLocation: await ProductsDatabase.getVendorCountryLocation(
-        scraper.getVendor()
-      ),
+      vendorLocation: vendorLocation,
     };
   }
 }

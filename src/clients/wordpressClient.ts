@@ -15,6 +15,9 @@ export class WordpressClient {
     const products = new Array<IProduct>();
     const vendor = scraper.getVendor();
     const vendorApiUrl = scraper.getVendorApiUrl();
+    const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
+      vendor
+    );
     let $: CheerioAPI | undefined;
     console.log(vendor, 'started');
     try {
@@ -36,7 +39,9 @@ export class WordpressClient {
           );
         }
         if ($) {
-          products.push(await WordpressHelper.scrape(scraper, product, $));
+          products.push(
+            WordpressHelper.scrape(scraper, product, $, vendorLocation)
+          );
         }
         if (config.logProducts) {
           console.log(products.at(-1));

@@ -21,6 +21,9 @@ export class PrototypeClient {
   public static async run(): Promise<void> {
     const squareSpaceApi = new ApiService(VendorApiUrl.Prototype);
     const squareSpaceProducts = await squareSpaceApi.fetchSquareSpaceProducts();
+    const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
+      this.vendor
+    );
     console.log('Prototype Scraper started');
     try {
       for (let i = 0; i < squareSpaceProducts.length; i++) {
@@ -62,8 +65,6 @@ export class PrototypeClient {
           const title = this.factory.getTitle(prototypeResponse.data.item);
           const variety = this.factory.getVariety(prototypeResponse.data.item);
           const weight = this.factory.getWeight(prototypeResponse.data.item);
-          const vendorLocation =
-            await ProductsDatabase.getVendorCountryLocation(this.vendor);
 
           const product: IProduct = {
             brand,

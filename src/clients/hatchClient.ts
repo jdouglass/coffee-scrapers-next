@@ -20,6 +20,9 @@ export class HatchClient {
 
   public static async run(): Promise<void> {
     console.log('Hatch Scraper started');
+    const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
+      this.vendor
+    );
     const productUrls = await HatchHelper.getProductUrls(
       this.baseUrl + '/shop/all/',
       '/shop/product/'
@@ -63,8 +66,6 @@ export class HatchClient {
             hatchResponse.data.slug,
             hatchResponse.data.description
           );
-          const vendorLocation =
-            await ProductsDatabase.getVendorCountryLocation(this.vendor);
 
           const product: IProduct = {
             brand,

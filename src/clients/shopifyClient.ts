@@ -19,6 +19,9 @@ export class ShopifyClient {
     const products = new Array<IProduct>();
     const vendor = scraper.getVendor();
     const vendorApiUrl = scraper.getVendorApiUrl();
+    const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
+      vendor
+    );
     let productDetails: string[] | undefined;
     console.log(vendor, 'started');
     try {
@@ -65,10 +68,15 @@ export class ShopifyClient {
 
         if (productDetails) {
           products.push(
-            await ShopifyHelper.scrape(scraper, product, productDetails)
+            ShopifyHelper.scrape(
+              scraper,
+              product,
+              vendorLocation,
+              productDetails
+            )
           );
         } else {
-          products.push(await ShopifyHelper.scrape(scraper, product));
+          products.push(ShopifyHelper.scrape(scraper, product, vendorLocation));
         }
         if (config.logProducts) {
           console.log(products.at(-1));
