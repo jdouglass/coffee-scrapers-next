@@ -18,6 +18,7 @@ export class WordpressClient {
     const vendorLocation = await ProductsDatabase.getVendorCountryLocation(
       vendor
     );
+    const currency = await ProductsDatabase.getCountryCurrency(vendorLocation);
     let $: CheerioAPI | undefined;
     console.log(vendor, 'started');
     try {
@@ -40,7 +41,13 @@ export class WordpressClient {
         }
         if ($) {
           products.push(
-            WordpressHelper.scrape(scraper, product, $, vendorLocation)
+            WordpressHelper.scrape(
+              scraper,
+              product,
+              $,
+              vendorLocation,
+              currency
+            )
           );
         }
         if (config.logProducts) {

@@ -8,7 +8,8 @@ export class WordpressHelper {
     scraper: T,
     item: IWordpressProductResponseData,
     $: CheerioAPI,
-    vendorLocation: string
+    vendorLocation: string,
+    currency: string
   ): IProduct {
     const country = scraper.getCountry(item, $);
     const process = scraper.getProcess(item, $);
@@ -29,7 +30,8 @@ export class WordpressHelper {
       variety: scraper.getVariety(item, $),
       weight: scraper.getWeight(item, $),
       vendor: scraper.getVendor(),
-      vendorLocation: vendorLocation,
+      vendorLocation,
+      currency,
     };
   }
 }
