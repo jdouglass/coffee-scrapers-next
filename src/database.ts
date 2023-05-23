@@ -7,6 +7,20 @@ import { Vendor } from './enums/vendors';
 export class ProductsDatabase {
   private static prisma: PrismaClient = new PrismaClient();
 
+  public static async getVendorCountryLocation(
+    vendor: string
+  ): Promise<string> {
+    const location = await this.prisma.vendor_info.findFirst({
+      where: {
+        name: vendor,
+      },
+      select: {
+        country_location: true,
+      },
+    });
+    return location?.country_location ? location?.country_location : 'Unknown';
+  }
+
   private static async getProductUrlsByVendor(
     vendor: string
   ): Promise<{ product_url: string }[]> {
@@ -62,6 +76,7 @@ export class ProductsDatabase {
             title: product.title,
             variety: product.variety,
             vendor: product.vendor,
+            vendor_location: product.vendorLocation,
             weight: product.weight,
           },
           update: {
@@ -78,6 +93,7 @@ export class ProductsDatabase {
             title: product.title,
             variety: product.variety,
             vendor: product.vendor,
+            vendor_location: product.vendorLocation,
             weight: product.weight,
           },
         });
@@ -106,6 +122,7 @@ export class ProductsDatabase {
             title: product.title,
             variety: product.variety,
             vendor: product.vendor,
+            vendor_location: product.vendorLocation,
             weight: product.weight,
           },
           update: {
@@ -121,6 +138,7 @@ export class ProductsDatabase {
             title: product.title,
             variety: product.variety,
             vendor: product.vendor,
+            vendor_location: product.vendorLocation,
             weight: product.weight,
           },
         });

@@ -64,9 +64,11 @@ export class ShopifyClient {
         }
 
         if (productDetails) {
-          products.push(ShopifyHelper.scrape(scraper, product, productDetails));
+          products.push(
+            await ShopifyHelper.scrape(scraper, product, productDetails)
+          );
         } else {
-          products.push(ShopifyHelper.scrape(scraper, product));
+          products.push(await ShopifyHelper.scrape(scraper, product));
         }
         if (config.logProducts) {
           console.log(products.at(-1));

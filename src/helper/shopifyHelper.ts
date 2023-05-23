@@ -3,22 +3,22 @@ import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyRespon
 import { ShopifyScraperType } from '../types/shopifyScraperType';
 
 export class ShopifyHelper {
-  public static scrape<T extends ShopifyScraperType>(
+  public static async scrape<T extends ShopifyScraperType>(
     scraper: T,
     item: IShopifyProductResponseData
-  ): IProduct;
+  ): Promise<IProduct>;
 
-  public static scrape<T extends ShopifyScraperType>(
+  public static async scrape<T extends ShopifyScraperType>(
     scraper: T,
     item: IShopifyProductResponseData,
     productDetails: string[]
-  ): IProduct;
+  ): Promise<IProduct>;
 
-  public static scrape<T extends ShopifyScraperType>(
+  public static async scrape<T extends ShopifyScraperType>(
     scraper: T,
     item: IShopifyProductResponseData,
     productDetails?: string[]
-  ): IProduct {
+  ): Promise<IProduct> {
     const country = scraper.getCountry(item, productDetails);
     const process = scraper.getProcess(item, productDetails);
     return {
@@ -38,6 +38,9 @@ export class ShopifyHelper {
       variety: scraper.getVariety(item, productDetails),
       weight: scraper.getWeight(item),
       vendor: scraper.getVendor(),
+      vendorLocation: await scraper.getVendorCountryLocation(
+        scraper.getVendor()
+      ),
     };
   }
 }

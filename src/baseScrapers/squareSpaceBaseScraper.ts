@@ -3,6 +3,7 @@ import { load } from 'cheerio';
 import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squareSpaceResponseData.interface';
 import { ISquareSpaceBaseScraper } from '../interfaces/squareSpace/squareSpaceScraper.interface';
 import { Scraper } from './scraper';
+import { ProductsDatabase } from '../database';
 
 export class SquareSpaceBaseScraper
   extends Scraper
@@ -49,5 +50,9 @@ export class SquareSpaceBaseScraper
       }
     });
     return isSoldOut;
+  };
+
+  getVendorCountryLocation = async (vendor: string): Promise<string> => {
+    return await ProductsDatabase.getVendorCountryLocation(vendor);
   };
 }

@@ -19,5 +19,6 @@ export interface IWordpressScraper {
   getVariety: (item: IWordpressProductResponseData, $?: CheerioAPI) => string[];
   getVendor: () => string;
   getVendorApiUrl: () => string;
+  getVendorCountryLocation: (vendor: string) => Promise<string>;
   getWeight: (item: IWordpressProductResponseData, $: CheerioAPI) => number;
 }

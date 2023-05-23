@@ -14,5 +14,6 @@ export interface IProduct {
   title: string;
   variety: string[];
   vendor: string;
+  vendorLocation: string;
   weight: number;
 }

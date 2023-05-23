@@ -36,7 +36,7 @@ export class WordpressClient {
           );
         }
         if ($) {
-          products.push(WordpressHelper.scrape(scraper, product, $));
+          products.push(await WordpressHelper.scrape(scraper, product, $));
         }
         if (config.logProducts) {
           console.log(products.at(-1));

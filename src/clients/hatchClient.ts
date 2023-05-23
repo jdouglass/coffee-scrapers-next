@@ -63,6 +63,9 @@ export class HatchClient {
             hatchResponse.data.slug,
             hatchResponse.data.description
           );
+          const vendorLocation =
+            await ProductsDatabase.getVendorCountryLocation(this.vendor);
+
           const product: IProduct = {
             brand,
             country,
@@ -80,6 +83,7 @@ export class HatchClient {
             variety,
             weight,
             vendor: this.vendor,
+            vendorLocation,
           };
           if (this.config.logProducts) {
             console.log(product);

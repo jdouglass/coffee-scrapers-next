@@ -62,6 +62,9 @@ export class PrototypeClient {
           const title = this.factory.getTitle(prototypeResponse.data.item);
           const variety = this.factory.getVariety(prototypeResponse.data.item);
           const weight = this.factory.getWeight(prototypeResponse.data.item);
+          const vendorLocation =
+            await ProductsDatabase.getVendorCountryLocation(this.vendor);
+
           const product: IProduct = {
             brand,
             country,
@@ -79,6 +82,7 @@ export class PrototypeClient {
             variety,
             weight,
             vendor: this.vendor,
+            vendorLocation,
           };
           if (this.config.logProducts) {
             console.log(product);
