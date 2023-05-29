@@ -16,7 +16,6 @@ export class EightOunceHelper {
             .toArray()
             .map((node) => $(node).text().trim());
           return tastingNotes.concat(productDetails);
-        } else {
         }
       })
       .catch((e) => {

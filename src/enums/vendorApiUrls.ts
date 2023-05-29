@@ -4,6 +4,7 @@ export enum VendorApiUrl {
   BlackCreekSingleOrigin = 'https://blackcreekcoffee.com/collections/single-origin-coffee/products.json?limit=250',
   DeMello = 'https://hellodemello.com/wp-json/wp/v2/product?product_cat=30&per_page=100',
   EightOunce = 'https://eightouncecoffee.ca/collections/newest-coffee/products.json?limit=250',
+  Heart = 'https://www.heartroasters.com/collections/beans/products.json?limit=250',
   HouseOfFunk = 'https://www.houseoffunkbrewing.com/collections/coffee/products.json?limit=250',
   Library = 'https://www.thelibraryspecialtycoffee.com/collections/frontpage/products.json?limit=250',
   Luna = 'https://enjoylunacoffee.com/wp-json/wp/v2/product?product_cat=16&per_page=100',

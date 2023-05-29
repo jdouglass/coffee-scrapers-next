@@ -3,6 +3,7 @@ export enum Vendor {
   DeMello = 'De Mello',
   EightOunce = 'Eight Ounce Coffee',
   Hatch = 'Hatch Coffee Roasters',
+  Heart = 'Heart Coffee Roasters',
   HouseOfFunk = 'House of Funk Brewing Co.',
   Library = 'Library Specialty Coffee',
   Luna = 'Luna Coffee',
