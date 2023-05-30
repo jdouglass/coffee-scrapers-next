@@ -91,6 +91,7 @@ export class ProductsDatabase {
             vendor_location: product.vendorLocation,
             weight: product.weight,
             default_currency: product.currency,
+            type: product.type,
           },
           update: {
             brand: product.brand,
@@ -109,6 +110,7 @@ export class ProductsDatabase {
             vendor_location: product.vendorLocation,
             weight: product.weight,
             default_currency: product.currency,
+            type: product.type,
           },
         });
       } catch (err) {
@@ -139,6 +141,7 @@ export class ProductsDatabase {
             vendor_location: product.vendorLocation,
             weight: product.weight,
             default_currency: product.currency,
+            type: product.type,
           },
           update: {
             brand: product.brand,
@@ -156,6 +159,7 @@ export class ProductsDatabase {
             vendor_location: product.vendorLocation,
             weight: product.weight,
             default_currency: product.currency,
+            type: product.type,
           },
         });
       } catch (err) {

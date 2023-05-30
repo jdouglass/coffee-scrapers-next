@@ -8,6 +8,7 @@ import { HatchHelper } from '../helper/hatchHelper';
 import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { CoffeeType } from '../enums/coffeeTypes';
 
 export default class HatchScraper implements ICrateJoyScraper, IScraper {
   private vendor = Vendor.Hatch;
@@ -163,5 +164,26 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
       return Helper.firstLetterUppercase(notesArr);
     }
     return ['Unknown'];
+  };
+
+  getType = ($: CheerioAPI, slug: string): string => {
+    const title = $('.product-title').first().text();
+    if (
+      title.toLowerCase().includes(CoffeeType.Capsule.toLowerCase()) ||
+      slug.includes(CoffeeType.Capsule.toLowerCase())
+    ) {
+      return CoffeeType.Capsule;
+    } else if (
+      title.toLowerCase().includes(CoffeeType.Instant.toLowerCase()) ||
+      slug.includes(CoffeeType.Instant.toLowerCase())
+    ) {
+      return CoffeeType.Instant;
+    } else if (
+      title.toLowerCase().includes('green') ||
+      slug.includes('green')
+    ) {
+      return CoffeeType.GreenWholeBean;
+    }
+    return CoffeeType.RoastedWholeBean;
   };
 }

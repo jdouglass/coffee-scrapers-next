@@ -13,6 +13,7 @@ export interface IProduct {
   productUrl: string;
   tastingNotes: string[];
   title: string;
+  type: string;
   variety: string[];
   vendor: string;
   vendorLocation: string;

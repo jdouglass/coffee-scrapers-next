@@ -32,6 +32,7 @@ export class WordpressHelper {
       vendor: scraper.getVendor(),
       vendorLocation,
       currency,
+      type: scraper.getType(item),
     };
   }
 }

@@ -6,5 +6,6 @@ export interface ISquareSpaceBaseScraper {
   getImageUrl: (item: ISquareSpaceProductResponseData) => string;
   getPrice: (item: ISquareSpaceProductResponseData) => number;
   getSoldOut: ($: CheerioAPI) => boolean;
+  getType: (item: ISquareSpaceProductResponseData) => string;
   getWeight: (item: ISquareSpaceProductResponseData) => number;
 }

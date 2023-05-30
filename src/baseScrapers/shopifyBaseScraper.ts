@@ -3,6 +3,7 @@ import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyRespon
 import { IShopifyVariant } from '../interfaces/shopify/shopifyVariant.interface';
 import { Scraper } from './scraper';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
+import { CoffeeType } from '../enums/coffeeTypes';
 
 export class ShopifyBaseScraper extends Scraper implements IShopifyBaseScraper {
   getDateAdded = (date: string): string => {
@@ -49,5 +50,18 @@ export class ShopifyBaseScraper extends Scraper implements IShopifyBaseScraper {
       }
     }
     return item.variants[0].grams;
+  };
+
+  getType = (item: IShopifyProductResponseData): string => {
+    if (item.title.toLowerCase().includes(CoffeeType.Capsule.toLowerCase())) {
+      return CoffeeType.Capsule;
+    } else if (
+      item.title.toLowerCase().includes(CoffeeType.Instant.toLowerCase())
+    ) {
+      return CoffeeType.Instant;
+    } else if (item.title.toLowerCase().includes('green')) {
+      return CoffeeType.GreenWholeBean;
+    }
+    return CoffeeType.RoastedWholeBean;
   };
 }

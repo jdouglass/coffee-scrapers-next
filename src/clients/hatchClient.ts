@@ -67,6 +67,7 @@ export class HatchClient {
             hatchResponse.data.slug,
             hatchResponse.data.description
           );
+          const type = this.factory.getType($, hatchResponse.data.slug);
 
           const product: IProduct = {
             brand,
@@ -87,6 +88,7 @@ export class HatchClient {
             vendor: this.vendor,
             vendorLocation,
             currency,
+            type,
           };
           if (this.config.logProducts) {
             console.log(product);

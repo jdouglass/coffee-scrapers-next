@@ -46,6 +46,7 @@ export class ShopifyHelper {
       vendor: scraper.getVendor(),
       vendorLocation,
       currency,
+      type: scraper.getType(item),
     };
   }
 }

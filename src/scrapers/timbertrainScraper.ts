@@ -8,6 +8,7 @@ import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpress
 import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { CoffeeType } from '../enums/coffeeTypes';
 
 export default class TimbertrainScraper implements IWordpressScraper, IScraper {
   private vendor = Vendor.Timbertrain;
@@ -208,5 +209,29 @@ export default class TimbertrainScraper implements IWordpressScraper, IScraper {
       return Helper.firstLetterUppercase(notesArr);
     }
     return ['Unknown'];
+  };
+
+  getType = (item: IWordpressProductResponseData): string => {
+    if (
+      item.title.rendered
+        .toLowerCase()
+        .includes(CoffeeType.Capsule.toLowerCase()) ||
+      item.slug.includes(CoffeeType.Capsule.toLowerCase())
+    ) {
+      return CoffeeType.Capsule;
+    } else if (
+      item.title.rendered
+        .toLowerCase()
+        .includes(CoffeeType.Instant.toLowerCase()) ||
+      item.slug.includes(CoffeeType.Instant.toLowerCase())
+    ) {
+      return CoffeeType.Instant;
+    } else if (
+      item.title.rendered.toLowerCase().includes('green') ||
+      item.slug.includes('green')
+    ) {
+      return CoffeeType.GreenWholeBean;
+    }
+    return CoffeeType.RoastedWholeBean;
   };
 }

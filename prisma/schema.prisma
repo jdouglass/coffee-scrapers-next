@@ -25,8 +25,11 @@ model products {
   handle           String
   price            Decimal  @db.Decimal(6, 2)
   tasting_notes    String[]
-  vendor_location  String?
-  default_currency String?
+  vendor_location  String
+  default_currency String
+  on_sale          Boolean?
+  sale_price       Decimal? @db.Decimal(6, 2)
+  type             String?
 }
 
 model vendor_info {
@@ -35,12 +38,12 @@ model vendor_info {
   base_url         String   @unique
   country_location String
   api_url          String[]
-  default_currency String?
+  default_currency String
 }
 
 model countries {
   id               Int      @id @default(autoincrement())
-  name             String?  @unique
-  iso2             String?
-  currency         String?
+  name             String   @unique
+  iso2             String
+  currency         String
 }

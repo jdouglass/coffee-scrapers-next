@@ -15,6 +15,7 @@ export interface ICrateJoyScraper {
   getSoldOut: ($: CheerioAPI) => boolean;
   getTastingNotes: ($: CheerioAPI) => string[];
   getTitle: ($: CheerioAPI) => string;
+  getType: ($: CheerioAPI, slug: string) => string;
   getVariety: ($: CheerioAPI) => string[];
   getWeight: (slug: string, description: string) => number;
 }

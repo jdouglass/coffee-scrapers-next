@@ -9,5 +9,6 @@ export interface IShopifyBaseScraper {
   getImageUrl: (images: IShopifyImage[]) => string;
   getPrice: (variants: IShopifyVariant[]) => number;
   getSoldOut: (variants: IShopifyVariant[]) => boolean;
+  getType: (item: IShopifyProductResponseData) => string;
   getWeight: (item: IShopifyProductResponseData) => number;
 }

@@ -4,6 +4,7 @@ import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squar
 import { ISquareSpaceBaseScraper } from '../interfaces/squareSpace/squareSpaceScraper.interface';
 import { Scraper } from './scraper';
 import { ProductsDatabase } from '../database';
+import { CoffeeType } from '../enums/coffeeTypes';
 
 export class SquareSpaceBaseScraper
   extends Scraper
@@ -54,5 +55,18 @@ export class SquareSpaceBaseScraper
 
   getVendorCountryLocation = async (vendor: string): Promise<string> => {
     return await ProductsDatabase.getVendorCountryLocation(vendor);
+  };
+
+  getType = (item: ISquareSpaceProductResponseData): string => {
+    if (item.title.toLowerCase().includes(CoffeeType.Capsule.toLowerCase())) {
+      return CoffeeType.Capsule;
+    } else if (
+      item.title.toLowerCase().includes(CoffeeType.Instant.toLowerCase())
+    ) {
+      return CoffeeType.Instant;
+    } else if (item.title.toLowerCase().includes('green')) {
+      return CoffeeType.GreenWholeBean;
+    }
+    return CoffeeType.RoastedWholeBean;
   };
 }
