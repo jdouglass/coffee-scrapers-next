@@ -14,6 +14,7 @@ import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyRespon
 import { NemesisHelper } from '../helper/nemesisHelper';
 import { ProdigalHelper } from '../helper/prodigalHelper';
 import { HeartHelper } from '../helper/heartHelper';
+import { SeyHelper } from '../helper/seyHelper';
 
 export class ShopifyClient {
   public static async run(scraper: ShopifyScraperType): Promise<void> {
@@ -68,6 +69,10 @@ export class ShopifyClient {
           );
         } else if (vendor === Vendor.Heart) {
           productDetails = await HeartHelper.getTastingNotes(
+            scraper.getProductUrl(product)
+          );
+        } else if (vendor === Vendor.Sey) {
+          productDetails = await SeyHelper.getProductInfo(
             scraper.getProductUrl(product)
           );
         }

@@ -19,6 +19,7 @@ import RogueWaveScraper from '../scrapers/rogueWaveScraper';
 import RossoScraper from '../scrapers/rossoScraper';
 import SamJamesScraper from '../scrapers/samJamesScraper';
 import SeptemberScraper from '../scrapers/septemberScraper';
+import SeyScraper from '../scrapers/seyScraper';
 import SocialScraper from '../scrapers/socialScraper';
 import SorellinaScraper from '../scrapers/sorellinaScraper';
 import SubtextScraper from '../scrapers/subtextScraper';
@@ -55,4 +56,5 @@ export type ShopifyScraperType =
   | TrafficScraper
   | TranscendScraper
   | ZabCafeScraper
-  | HeartScraper;
+  | HeartScraper
+  | SeyScraper;

@@ -10,12 +10,12 @@ import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { worldData } from '../data/worldData';
 import { MULTIPLE, UNKNOWN, UNKNOWN_ARR } from '../constants';
 
-export default class HeartScraper
+export default class SeyScraper
   extends ShopifyBaseScraper
   implements IShopifyScraper, IScraper, IShopifyBaseScraper
 {
-  private vendor = Vendor.Heart;
-  private vendorApiUrl = VendorApiUrl.Heart;
+  private vendor = Vendor.Sey;
+  private vendorApiUrl = VendorApiUrl.Sey;
 
   getVendorApiUrl = (): string => {
     return this.vendorApiUrl;
@@ -30,22 +30,19 @@ export default class HeartScraper
   };
 
   getCountry = (
-    item: IShopifyProductResponseData,
-    _productDetails?: string[]
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
   ): string => {
     const countryList = new Set<string>();
-    for (const location of worldData.keys()) {
-      if (item.title.toLowerCase().includes(location.toLowerCase())) {
-        countryList.add(location);
-      }
-    }
-    if (!countryList.size) {
-      for (const location of worldData.keys()) {
-        if (item.body_html.toLowerCase().includes(location.toLowerCase())) {
-          countryList.add(location);
+    productDetails?.forEach((value) => {
+      if (value.includes('Origin')) {
+        for (const location of worldData.keys()) {
+          if (value.toLowerCase().includes(location.toLowerCase())) {
+            countryList.add(location);
+          }
         }
       }
-    }
+    });
     if (countryList.size === 1) {
       return countryList.values().next().value as string;
     } else if (countryList.size > 1) {
@@ -55,43 +52,39 @@ export default class HeartScraper
   };
 
   getProcess = (
-    item: IShopifyProductResponseData,
-    _productDetails?: string[]
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
   ): string => {
     let process = '';
-    if (item.body_html.includes('Process:')) {
-      process = item.body_html.split('Process:')[1];
-    }
+    productDetails?.forEach((value) => {
+      if (value.includes('Process')) {
+        process = value.split('-')[1].trim();
+        process = Helper.firstLetterUppercase([process]).join();
+        process = Helper.convertToUniversalProcess(process);
+      }
+    });
     if (process !== '') {
-      const processOptions: string[] = process.split('<');
-      process = processOptions[0].trim();
-      process = Helper.firstLetterUppercase(process.split(' ')).join(' ');
-      return Helper.convertToUniversalProcess(process);
+      return process;
     }
     return UNKNOWN;
   };
 
   getProductUrl = (item: IShopifyProductResponseData): string => {
-    return BaseUrl.Heart + '/products/' + item.handle;
+    return BaseUrl.Sey + '/collections/coffee/products/' + item.handle;
   };
 
   getVariety = (
-    item: IShopifyProductResponseData,
-    _productDetails?: string[]
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
   ): string[] => {
     let variety: string = '';
-    const body: string = item.body_html;
-    if (body.includes('Variety:')) {
-      variety = body.split('Variety:')[1];
-    } else if (body.includes('Varieties:')) {
-      variety = body.split('Varieties:')[1];
-    }
+    productDetails?.forEach((value) => {
+      if (value.includes('VARIETAL')) {
+        variety = value.split('VARIETAL: ')[1].trim();
+      }
+    });
     let varietyOptions = [''];
     if (variety !== '') {
-      if (variety.includes('<')) {
-        varietyOptions = variety.split('<');
-        variety = varietyOptions[0].trim();
-      }
       if (variety.includes(',')) {
         varietyOptions = variety
           .split(/,\s+/)
@@ -108,30 +101,37 @@ export default class HeartScraper
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
-    for (const country of worldData.keys()) {
-      if (item.title.includes(country)) {
-        item.title = item.title.replace(country, '').trim();
-      }
-    }
     return item.title;
   };
 
   getTastingNotes = (
-    _item: IShopifyProductResponseData,
-    productDetails?: string[]
+    item: IShopifyProductResponseData,
+    _productDetails?: string[]
   ): string[] => {
-    return Helper.firstLetterUppercase(productDetails!);
+    let notesBody = '';
+    let notesArr: string[] = [];
+    if (item.body_html.includes('cup we find')) {
+      notesBody = item.body_html.split('cup we find')[1].trim();
+    } else if (item.body_html.includes('with a classic profile of')) {
+      notesBody = item.body_html.split('with a classic profile of')[1].trim();
+    }
+    if (notesBody !== '') {
+      notesBody = notesBody.split('.')[0];
+      notesBody = notesBody.replaceAll(', and ', ', ');
+      notesArr = Helper.firstLetterUppercase(notesBody.split(', '));
+    }
+    if (notesArr.length) {
+      return notesArr;
+    }
+    return UNKNOWN_ARR;
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
-    const ozToGrams = 28.35;
     const poundToGrams = 453;
     for (const variant of item.variants) {
       if (variant.available) {
-        if (variant.title.includes('oz')) {
-          return Math.round(
-            ozToGrams * Number(variant.title.split('oz')[0].trim())
-          );
+        if (variant.title.includes('g')) {
+          return Number(variant.title.split('g')[0].trim());
         } else if (variant.title.includes('lb')) {
           return poundToGrams * Number(variant.title.split('lb')[0].trim());
         }

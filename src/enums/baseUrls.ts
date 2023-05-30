@@ -23,6 +23,7 @@ export enum BaseUrl {
   Rosso = 'https://rossocoffeeroasters.com',
   SamJames = 'https://www.samjamescoffeebar.com',
   September = 'https://september.coffee',
+  Sey = 'https://www.seycoffee.com',
   Social = 'https://socialcoffeeroasters.ca',
   Sorellina = 'https://sorellina.ca',
   Subtext = 'https://subtext.coffee',

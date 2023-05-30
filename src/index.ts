@@ -33,8 +33,14 @@ import RevolverScraper from './scrapers/revolverScraper';
 import BlackCreekScraper from './scrapers/blackCreekScraper';
 import SeptemberScraper from './scrapers/septemberScraper';
 import HeartScraper from './scrapers/heartScraper';
+import SeyScraper from './scrapers/seyScraper';
 
 // Shopify Scrapers
+schedule.scheduleJob(
+  config.cronSchedule,
+  async () => await ShopifyClient.run(new SeyScraper())
+);
+
 schedule.scheduleJob(
   config.cronSchedule,
   async () => await ShopifyClient.run(new HeartScraper())
