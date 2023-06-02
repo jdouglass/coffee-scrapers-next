@@ -192,6 +192,9 @@ export default class Helper {
       case 'Transcend':
         brand = Vendor.Transcend;
         break;
+      case 'Prototype':
+        brand = Vendor.Prototype;
+        break;
     }
     return brand;
   };
