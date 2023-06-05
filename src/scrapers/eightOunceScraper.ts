@@ -249,9 +249,10 @@ export default class EightOunceScraper
         variety.includes(' + ') ||
         variety.includes(' and ') ||
         variety.includes(' / ') ||
-        variety.includes(' & ')
+        variety.includes(' & ') ||
+        variety.includes(' | ')
       ) {
-        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; | \& /);
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; | \& | \| /);
       } else if (variety === '') {
         return unknownVariety;
       } else {
