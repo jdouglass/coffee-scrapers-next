@@ -30,6 +30,8 @@ model products {
   on_sale          Boolean?
   sale_price       Decimal? @db.Decimal(6, 2)
   type             String?
+  variety_string   String?
+  tasting_notes_string String?
 }
 
 model vendor_info {
@@ -42,8 +44,8 @@ model vendor_info {
 }
 
 model countries {
-  id               Int      @id @default(autoincrement())
-  name             String   @unique
-  iso2             String
-  currency         String
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  iso2     String
+  currency String
 }
