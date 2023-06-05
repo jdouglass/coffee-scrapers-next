@@ -64,6 +64,7 @@ export default class BlackCreekScraper
       process = process.replaceAll('&amp;', '');
       process = process.split('<')[0].trim();
       process = Helper.firstLetterUppercase([process]).join();
+      process = process.replaceAll('Arabica', '').trim();
       return Helper.convertToUniversalProcess(process);
     }
     return 'Unknown';
