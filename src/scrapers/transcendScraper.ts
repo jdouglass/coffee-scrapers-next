@@ -49,16 +49,23 @@ export default class TranscendScraper
   getProcess = (item: IShopifyProductResponseData): string => {
     let process = '';
 
-    if (item.body_html.includes('Process')) {
-      process = item.body_html.split('Process')[1].trim();
+    if (item.body_html.includes('Processing Method:')) {
+      process = item.body_html.split('Processing Method:')[1].trim();
+    } else if (item.body_html.includes('Process:')) {
+      process = item.body_html.split('Process:')[1].trim();
+    } else if (item.body_html.includes('Processing:')) {
+      process = item.body_html.split('Processing:')[1].trim();
     }
 
     if (process !== '') {
-      if (process.includes(':')) {
-        process = process.split(':')[1].trim();
-      }
       process = process.replace('</span>', '').trim();
-      process = process.replace(/<span.*">/, '').trim();
+      process = process
+        .replace(
+          '<span style="font-weight: 400;" data-mce-fragment="1" data-mce-style="font-weight: 400;">',
+          ''
+        )
+        .trim();
+      // console.log(process);
       process = process.split('<')[0].trim();
       process = process
         .split(/[+\/]/)
@@ -86,10 +93,23 @@ export default class TranscendScraper
     }
     if (variety !== '') {
       variety = variety.replace('</span>', '').trim();
-      variety = variety.replace(/<span.*\">/, '').trim();
+      variety = variety.replace('<span style="font-weight: 400;">', '').trim();
+      variety = variety
+        .replace(
+          '<span style="font-weight: 400;" data-mce-fragment="1" data-mce-style="font-weight: 400;">',
+          ''
+        )
+        .trim();
+      variety = variety
+        .replace(
+          '<span style="font-weight: 400;" data-mce-style="font-weight: 400;">',
+          ''
+        )
+        .trim();
       variety = variety.split('<')[0].trim();
       variety = variety.replaceAll('&amp;', ', ');
       variety = variety.replaceAll('and', ', ');
+      variety = variety.replaceAll(/\(.*\)/g, '');
       variety = variety
         .split(/[+\/\&]/)
         .map((item) => item.trim())
