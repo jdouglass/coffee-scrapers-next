@@ -64,7 +64,6 @@ export default class BlackCreekScraper
       process = process.replaceAll('&amp;', '');
       process = process.split('<')[0].trim();
       process = Helper.firstLetterUppercase([process]).join();
-      process = process.replaceAll('Arabica', '').trim();
       return Helper.convertToUniversalProcess(process);
     }
     return 'Unknown';
@@ -90,6 +89,7 @@ export default class BlackCreekScraper
         .map((item) => item.trim())
         .join(', ');
       variety = Helper.firstLetterUppercase([variety]).join();
+      variety = variety.replaceAll('Arabica', '').trim();
     }
     let varietyOptions: string[];
     if (variety.includes(', ')) {
