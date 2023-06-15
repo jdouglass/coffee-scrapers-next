@@ -10,6 +10,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class EightOunceScraper
   extends ShopifyBaseScraper
@@ -190,12 +191,93 @@ export default class EightOunceScraper
     return item.title.trim();
   };
 
+  getVarietyString = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let variety = '';
+    const body: string = item.body_html;
+    if (body.includes('\nVariety')) {
+      variety = body.split('Variety')[1];
+      variety = variety.split('\n')[0].trim();
+    } else if (body.includes('\nVarieties')) {
+      variety = body.split('Varieties')[1];
+      variety = variety.split('\n')[0].trim();
+    } else {
+      if (body.includes('VARIET')) {
+        variety = body.split('VARIET')[1];
+      } else if (body.includes('Variet')) {
+        variety = body.split('Variet')[1];
+      } else if (body.includes('BEANS')) {
+        variety = body.split('BEANS')[1];
+        variety = variety.split(', ')[1];
+      }
+      if (variety === '') {
+        if (productDetails) {
+          for (const detail of productDetails) {
+            if (detail?.includes('Variety:')) {
+              variety = detail.split('Variety:')[1].trim();
+            }
+          }
+        }
+      } else {
+        variety = variety.replaceAll('</strong>', '');
+        if (variety.includes(':')) {
+          variety = variety.split(':')[1].trim();
+        }
+        if (variety.includes('<')) {
+          variety = variety.split('<')[0].trim();
+        }
+      }
+    }
+    if (variety !== '') {
+      if (variety[0] === ':') {
+        variety = variety.split(':')[1].trim();
+      }
+      if (variety.includes('SL 34 Ruiru 11')) {
+        variety = variety.replace('SL 34 ', 'SL 34, ');
+      } else if (variety.includes('SL 28 SL 34')) {
+        variety = variety.replace('SL 28 ', 'SL 28, ');
+      }
+      if (variety === 'Red and Yellow Catuai') {
+        return variety;
+      }
+      let varietyOptions: string[];
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ') ||
+        variety.includes(' & ') ||
+        variety.includes(' | ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; | \& | \| /);
+      } else if (variety === '') {
+        return UNKNOWN;
+      } else {
+        varietyOptions = [variety];
+      }
+
+      for (let i = 0; i < varietyOptions.length; i++) {
+        if (varietyOptions[i].includes('%')) {
+          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+        }
+      }
+      if (varietyOptions.length !== 0) {
+        varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+        varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+        return Array.from([...new Set(varietyOptions)]).join(', ');
+      }
+    }
+    return UNKNOWN;
+  };
+
   getVariety = (
     item: IShopifyProductResponseData,
     productDetails?: string[]
   ): string[] => {
     let variety = '';
-    const unknownVariety = ['Unknown'];
     const body: string = item.body_html;
     if (body.includes('\nVariety')) {
       variety = body.split('Variety')[1];
@@ -254,7 +336,7 @@ export default class EightOunceScraper
       ) {
         varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; | \& | \| /);
       } else if (variety === '') {
-        return unknownVariety;
+        return UNKNOWN_ARR;
       } else {
         varietyOptions = [variety];
       }
@@ -264,14 +346,34 @@ export default class EightOunceScraper
           varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
         }
       }
-      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
       if (varietyOptions.length !== 0) {
-        return varietyOptions;
+        varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+        varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+        return Array.from([...new Set(varietyOptions)]);
       }
     }
-    return unknownVariety;
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    for (const detail of productDetails!) {
+      if (detail.includes('Tasting Notes:')) {
+        const notes = detail.split('Tasting Notes:')[1].trim();
+        if (notes !== '') {
+          const notesArr = notes
+            .split(/,\s+| \/ | and | \+ | \&amp; | \& /)
+            .map((element) => element.trim())
+            .filter((element) => element !== '');
+          return Helper.firstLetterUppercase(notesArr).join(', ');
+        } else {
+          return UNKNOWN;
+        }
+      }
+    }
+    return UNKNOWN;
   };
 
   getTastingNotes = (
@@ -288,11 +390,11 @@ export default class EightOunceScraper
             .filter((element) => element !== '');
           return Helper.firstLetterUppercase(notesArr);
         } else {
-          return ['Unknown'];
+          return UNKNOWN_ARR;
         }
       }
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {

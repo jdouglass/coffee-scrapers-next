@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -103,10 +104,41 @@ export default class PhilAndSebastianScraper
       }
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      return Array.from([...new Set(varietyOptions)]);
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getVarietyString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let variety = '';
+    for (const detail of productDetails!) {
+      if (detail.toLowerCase().includes('variet')) {
+        variety = detail.toLowerCase().split('variet')[1].trim();
+        if (variety.includes(':')) {
+          variety = variety.split(':')[1].trim();
+        }
+      }
+    }
+    if (variety !== '') {
+      variety = variety
+        .split(/[+\/\&]/)
+        .map((item) => item.trim())
+        .join(', ');
+      variety = Helper.firstLetterUppercase([variety]).join();
+      let varietyOptions: string[];
+      if (variety.includes(', ')) {
+        varietyOptions = variety.split(', ');
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      return Array.from([...new Set(varietyOptions)]).join(', ');
+    }
+    return UNKNOWN;
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
@@ -148,6 +180,20 @@ export default class PhilAndSebastianScraper
         )
       );
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    if (productDetails![productDetails!.length - 1] !== '') {
+      return Helper.firstLetterUppercase(
+        productDetails![productDetails!.length - 1].split(
+          /,\s+| \/ |\s+and\s+| \+ | \&amp; | \& |\s+with\s+/
+        )
+      ).join(', ');
+    }
+    return UNKNOWN;
   };
 }

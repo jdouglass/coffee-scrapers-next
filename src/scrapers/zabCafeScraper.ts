@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -105,7 +106,7 @@ export default class ZabCafeScraper
     } else if (body.includes('VARIETIES')) {
       variety = body.split('VARIETIES')[1];
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (variety !== '') {
       variety = variety.replace('</td>\n<td>', '').trim();
@@ -124,8 +125,41 @@ export default class ZabCafeScraper
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    let variety = '';
+    const body = item.body_html;
+    if (body.includes('VARIETALS')) {
+      variety = body.split('VARIETALS')[1];
+    } else if (body.includes('VARIETAL')) {
+      variety = body.split('VARIETAL')[1];
+    } else if (body.includes('VARIETY')) {
+      variety = body.split('VARIETY')[1];
+    } else if (body.includes('VARIETIES')) {
+      variety = body.split('VARIETIES')[1];
+    } else {
+      return UNKNOWN;
+    }
+    if (variety !== '') {
+      variety = variety.replace('</td>\n<td>', '').trim();
+      variety = variety.replace('</td><td>', '').trim();
+      variety = variety.split('<')[0].trim();
+      if (variety.includes(':')) {
+        variety = variety.split(':')[1].trim();
+      }
+      variety = Helper.firstLetterUppercase([variety]).join();
+    }
+    let varietyOptions: string[];
+    if (variety.includes(', ')) {
+      varietyOptions = variety.split(', ');
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
@@ -152,6 +186,10 @@ export default class ZabCafeScraper
   };
 
   getTastingNotes = (_item: IShopifyProductResponseData): string[] => {
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (_item: IShopifyProductResponseData): string => {
+    return UNKNOWN;
   };
 }

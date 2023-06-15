@@ -8,6 +8,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class SorellinaScraper
   extends ShopifyBaseScraper
@@ -82,7 +83,7 @@ export default class SorellinaScraper
       if (body.includes('Variet')) {
         variety = body.split('Variet')[1];
       } else {
-        return ['Unknown'];
+        return UNKNOWN_ARR;
       }
       variety = variety.replaceAll('</strong>', '');
       variety = variety.replaceAll('</span>', '');
@@ -123,10 +124,63 @@ export default class SorellinaScraper
       }
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      return Array.from([...new Set(varietyOptions)]);
     } catch {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
+    }
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    try {
+      let variety: string;
+      const body: string = item.body_html;
+      if (body.includes('Variet')) {
+        variety = body.split('Variet')[1];
+      } else {
+        return UNKNOWN;
+      }
+      variety = variety.replaceAll('</strong>', '');
+      variety = variety.replaceAll('</span>', '');
+      variety = variety.replaceAll('<span>', '');
+      variety = variety.replaceAll('<br>', '');
+      variety = variety.replaceAll(
+        /<(br|span|strong) (d|D)ata-mce-fragment=\"1\">/g,
+        ''
+      );
+      variety = variety.split(':')[1].trim();
+      variety = variety.split('<')[0].trim();
+      if (variety.includes('SL 34 Ruiru 11')) {
+        variety = variety.replace('SL 34 ', 'SL 34, ');
+      }
+      if (
+        variety === 'Red and Yellow Catuai' ||
+        variety === 'Red and Yellow Caturra'
+      ) {
+        return variety;
+      }
+      let varietyOptions: string[];
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+
+      for (let i = 0; i < varietyOptions.length; i++) {
+        if (varietyOptions[i].includes('%')) {
+          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+        }
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      return Array.from([...new Set(varietyOptions)]).join(', ');
+    } catch {
+      return UNKNOWN;
     }
   };
 
@@ -160,7 +214,7 @@ export default class SorellinaScraper
     } else if (item.body_html.toLowerCase().includes('we taste')) {
       notes = item.body_html.toLowerCase().split('we taste')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes !== '') {
       notes = notes.toLowerCase().replace('tangy notes of', '');
@@ -170,7 +224,7 @@ export default class SorellinaScraper
       }
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes
       .split(/,| \/ | and | \+ | \&amp; | \& /)
@@ -180,5 +234,34 @@ export default class SorellinaScraper
       notesArr = [notes];
     }
     return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.toLowerCase().includes('notes of')) {
+      notes = item.body_html.toLowerCase().split('notes of')[1].trim();
+    } else if (item.body_html.toLowerCase().includes('we taste')) {
+      notes = item.body_html.toLowerCase().split('we taste')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    if (notes !== '') {
+      notes = notes.toLowerCase().replace('tangy notes of', '');
+      notes = notes.split('.')[0];
+      if (notes.includes('<')) {
+        notes = notes.split('<')[0];
+      }
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

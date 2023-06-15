@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -86,7 +87,7 @@ export default class SamJamesScraper
     } else if (body.includes('VARIETY:')) {
       variety = body.split('VARIETY:')[1];
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (variety !== '') {
       variety = variety
@@ -119,7 +120,51 @@ export default class SamJamesScraper
     if (varietyOptions.length && varietyOptions[0] !== '') {
       return varietyOptions;
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    let variety = '';
+    const body = item.body_html;
+    if (body.includes('Varietal:')) {
+      variety = body.split('Varietal:')[1];
+    } else if (body.includes('VARIETY:')) {
+      variety = body.split('VARIETY:')[1];
+    } else {
+      return UNKNOWN;
+    }
+    if (variety !== '') {
+      variety = variety
+        .replace('<span data-preserver-spaces="true">', '')
+        .trim();
+      variety = variety.replaceAll('<meta charset="utf-8">', '').trim();
+      variety = variety.replace('<span data-mce-fragment="1">', '').trim();
+      variety = variety.replace('<span>', '').trim();
+      variety = variety.replace('</span>', '').trim();
+      variety = variety.replace('<span mce-data-marked="1">', '').trim();
+      variety = variety.replace('</strong>', '').trim();
+      variety = variety.replace('</b>', '').trim();
+      variety = variety.split('<')[0].trim();
+      variety = variety.replaceAll('&amp;', ', ');
+      variety = variety
+        .split(/[+\/\&]/)
+        .map((item) => item.trim())
+        .join(', ');
+      variety = Helper.firstLetterUppercase([variety]).join();
+    }
+    let varietyOptions: string[];
+    if (variety.includes(', ')) {
+      varietyOptions = variety.split(', ');
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    varietyOptions = Array.from([...new Set(varietyOptions)]);
+    if (varietyOptions.length && varietyOptions[0] !== '') {
+      return varietyOptions.join(', ');
+    }
+    return UNKNOWN;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
@@ -133,7 +178,7 @@ export default class SamJamesScraper
     } else if (item.body_html.includes('TASTES LIKE:')) {
       notes = item.body_html.split('TASTES LIKE:')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes !== '') {
       notes = notes.replace('</b>', '').trim();
@@ -141,12 +186,36 @@ export default class SamJamesScraper
       notes = notes.split('<')[0].trim();
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& /);
     if (notesArr[0] === '') {
       notesArr = [notes];
     }
     return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.includes('Tastes Like:')) {
+      notes = item.body_html.split('Tastes Like:')[1].trim();
+    } else if (item.body_html.includes('TASTES LIKE:')) {
+      notes = item.body_html.split('TASTES LIKE:')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    if (notes !== '') {
+      notes = notes.replace('</b>', '').trim();
+      notes = notes.replace('</strong>', '').trim();
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

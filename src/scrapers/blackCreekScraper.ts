@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -73,13 +74,13 @@ export default class BlackCreekScraper
     return BaseUrl.BlackCreek + '/products/' + item.handle;
   };
 
-  getVariety = (item: IShopifyProductResponseData): string[] => {
+  getVarietyString = (item: IShopifyProductResponseData): string => {
     let variety = '';
     const body = item.body_html;
     if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
     } else {
-      return ['Unknown'];
+      return UNKNOWN;
     }
     if (variety !== '') {
       variety = variety.replaceAll('&amp;', ', ');
@@ -100,12 +101,45 @@ export default class BlackCreekScraper
     varietyOptions = varietyOptions.map((element) => element.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]).join(', ');
+  };
+
+  getVariety = (item: IShopifyProductResponseData): string[] => {
+    let variety = '';
+    const body = item.body_html;
+    if (body.includes('Variety:')) {
+      variety = body.split('Variety:')[1];
+    } else {
+      return UNKNOWN_ARR;
+    }
+    if (variety !== '') {
+      variety = variety.replaceAll('&amp;', ', ');
+      variety = variety.split('<')[0].trim();
+      variety = variety
+        .split(/[+\/]/)
+        .map((item) => item.trim())
+        .join(', ');
+      variety = Helper.firstLetterUppercase([variety]).join();
+      variety = variety.replaceAll('Arabica', '').trim();
+    }
+    let varietyOptions: string[];
+    if (variety.includes(', ')) {
+      varietyOptions = variety.split(', ');
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = varietyOptions.map((element) => element.trim());
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getTastingNotesString = (_item: IShopifyProductResponseData): string => {
+    return UNKNOWN;
   };
 
   getTastingNotes = (_item: IShopifyProductResponseData): string[] => {
-    return ['Unknown'];
+    return UNKNOWN_ARR;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {

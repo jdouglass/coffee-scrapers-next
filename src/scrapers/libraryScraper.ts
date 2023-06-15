@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -100,7 +101,7 @@ export default class LibraryScraper
       variety = body.split('Variety:')[1];
       variety = variety.split('<')[0].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let varietyOptions: string[];
     if (variety.includes(',')) {
@@ -110,8 +111,27 @@ export default class LibraryScraper
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    let variety: string;
+    const body = item.body_html;
+    if (body.includes('Variety:')) {
+      variety = body.split('Variety:')[1];
+      variety = variety.split('<')[0].trim();
+    } else {
+      return UNKNOWN;
+    }
+    let varietyOptions: string[];
+    if (variety.includes(',')) {
+      varietyOptions = variety.split(', ');
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getTastingNotes = (item: IShopifyProductResponseData): string[] => {
@@ -123,13 +143,30 @@ export default class LibraryScraper
       notes = notes.split('<')[0];
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes.split(/,\s+| \/ | and | \+ | \&amp; | \& /);
     if (notesArr[0] === '') {
       notesArr = [notes];
     }
-    notesArr = Helper.firstLetterUppercase(notesArr);
-    return notesArr;
+    return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.includes('Cup:')) {
+      notes = item.body_html.split('Cup:')[1].trim();
+    }
+    if (notes !== '') {
+      notes = notes.split('<')[0];
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes.split(/,\s+| \/ | and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

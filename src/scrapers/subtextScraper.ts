@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -99,7 +100,7 @@ export default class SubtextScraper
       });
     }
     if (variety === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (variety.includes('<')) {
       variety = variety.split('<')[0].trim();
@@ -111,8 +112,38 @@ export default class SubtextScraper
       .map((variety: string) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let variety = '';
+    if (item.body_html.includes('Varieties')) {
+      variety = item.body_html.split('Varieties')[1].trim();
+    }
+    if (variety === '') {
+      productDetails?.forEach((detail) => {
+        if (detail.includes('Varieties')) {
+          variety = detail.split('Varieties')[1].trim();
+        }
+      });
+    }
+    if (variety === '') {
+      return UNKNOWN;
+    }
+    if (variety.includes('<')) {
+      variety = variety.split('<')[0].trim();
+    } else if (variety.includes('\n')) {
+      variety = variety.split('\n')[0].trim();
+    }
+    let varietyOptions = variety
+      .split(/, | & /)
+      .map((variety: string) => variety.trim());
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getTastingNotes = (
@@ -121,7 +152,7 @@ export default class SubtextScraper
   ): string[] => {
     let notes = productDetails![productDetails!.length - 1];
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes.toLowerCase().includes('we find')) {
       notes = notes.toLowerCase().split('we find')[1].trim();
@@ -132,7 +163,7 @@ export default class SubtextScraper
     } else if (notes.toLowerCase().includes('reminding us of')) {
       notes = notes.toLowerCase().split('reminding us of')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes !== '') {
       notes = notes.toLowerCase().replace('tangy notes of', '');
@@ -142,7 +173,7 @@ export default class SubtextScraper
       }
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes
       .split(/,| \/ | and | \+ | \&amp; | \& /)
@@ -152,5 +183,44 @@ export default class SubtextScraper
       notesArr = [notes];
     }
     return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let notes = productDetails![productDetails!.length - 1];
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    if (notes.toLowerCase().includes('we find')) {
+      notes = notes.toLowerCase().split('we find')[1].trim();
+    } else if (notes.toLowerCase().includes('notes of')) {
+      notes = notes.toLowerCase().split('notes of')[1].trim();
+    } else if (notes.toLowerCase().includes('shows')) {
+      notes = notes.toLowerCase().split('shows')[1].trim();
+    } else if (notes.toLowerCase().includes('reminding us of')) {
+      notes = notes.toLowerCase().split('reminding us of')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    if (notes !== '') {
+      notes = notes.toLowerCase().replace('tangy notes of', '');
+      notes = notes.split('.')[0];
+      if (notes.includes('<')) {
+        notes = notes.split('<')[0];
+      }
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

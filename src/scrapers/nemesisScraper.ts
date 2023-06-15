@@ -8,6 +8,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class NemesisScraper
   extends ShopifyBaseScraper
@@ -69,7 +70,23 @@ export default class NemesisScraper
         return Array.from([...new Set(varietyArr)]);
       }
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getVarietyString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    for (const detail of productDetails!) {
+      if (detail.includes('Variety')) {
+        const variety = detail.split('Variety')[1].trim();
+        let varietyArr = variety.split(/, | \/ | and | \+ | \&amp; | \& | \| /);
+        varietyArr = Helper.firstLetterUppercase(varietyArr);
+        varietyArr = Helper.convertToUniversalVariety(varietyArr);
+        return Array.from([...new Set(varietyArr)]).join(', ');
+      }
+    }
+    return UNKNOWN;
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
@@ -110,6 +127,21 @@ export default class NemesisScraper
         return Helper.firstLetterUppercase(notesArr);
       }
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let notes = '';
+    for (const detail of productDetails!) {
+      if (detail.includes('Notes')) {
+        notes = detail.split('Notes')[1].trim();
+        const notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& | \| /);
+        return Helper.firstLetterUppercase(notesArr).join(', ');
+      }
+    }
+    return UNKNOWN;
   };
 }

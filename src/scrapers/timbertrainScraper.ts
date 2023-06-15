@@ -9,6 +9,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { CoffeeType } from '../enums/coffeeTypes';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class TimbertrainScraper implements IWordpressScraper, IScraper {
   private vendor = Vendor.Timbertrain;
@@ -135,7 +136,7 @@ export default class TimbertrainScraper implements IWordpressScraper, IScraper {
     }
     variety = variety.split('<')[0].trim();
     if (variety === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (variety.includes('(')) {
       variety = variety.split('(')[0].trim();
@@ -145,8 +146,30 @@ export default class TimbertrainScraper implements IWordpressScraper, IScraper {
       .map((variety: string) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    let variety = '';
+    if (item.excerpt.rendered.includes('Variety:')) {
+      variety = item.excerpt.rendered.split('Variety:')[1].trim();
+    }
+    variety = variety.split('<')[0].trim();
+    if (variety === '') {
+      return UNKNOWN;
+    }
+    if (variety.includes('(')) {
+      variety = variety.split('(')[0].trim();
+    }
+    let varietyOptions = variety
+      .split(/, | & | and | \&amp; /)
+      .map((variety: string) => variety.trim());
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getWeight = (_item: IWordpressProductResponseData, $: CheerioAPI): number => {
@@ -208,7 +231,31 @@ export default class TimbertrainScraper implements IWordpressScraper, IScraper {
         .filter((element) => element !== '');
       return Helper.firstLetterUppercase(notesArr);
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    let notes = '';
+    if (item.excerpt.rendered.includes('notes:')) {
+      notes = item.excerpt.rendered.split('notes:')[1].trim();
+    } else if (item.excerpt.rendered.includes('notes of:')) {
+      notes = item.excerpt.rendered.split('notes of:')[1].trim();
+    }
+    notes = notes.replace('<strong>', '');
+    notes = notes.replace('<br />', '');
+    notes = notes.split('<')[0].trim();
+    notes = notes.replace('.', '');
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr).join(', ');
+    }
+    return UNKNOWN;
   };
 
   getType = (item: IWordpressProductResponseData): string => {

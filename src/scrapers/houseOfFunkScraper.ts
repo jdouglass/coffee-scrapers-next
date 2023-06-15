@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -91,15 +92,33 @@ export default class HouseOfFunkScraper
       notes = notes.split('<')[0];
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes.split(/, | \/ |\s?and | \+ | \&amp; | \&/);
     notesArr = notesArr.filter((element) => element !== '');
     if (notesArr[0] === '') {
       notesArr = [notes];
     }
-    notesArr = Helper.firstLetterUppercase(notesArr);
-    return notesArr;
+    return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.includes('Reminds us of:')) {
+      notes = item.body_html.split('Reminds us of:')[1].trim();
+    }
+    if (notes !== '') {
+      notes = notes.split('<')[0];
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes.split(/, | \/ |\s?and | \+ | \&amp; | \&/);
+    notesArr = notesArr.filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
@@ -110,7 +129,7 @@ export default class HouseOfFunkScraper
     } else if (body.includes('Varit')) {
       variety = body.split('Varit')[1];
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (variety !== '') {
       variety = variety.replaceAll(/<\/?span.*?>/g, '');
@@ -132,7 +151,7 @@ export default class HouseOfFunkScraper
         .join(', ');
       variety = Helper.firstLetterUppercase([variety]).join();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let varietyOptions: string[];
     if (variety.includes(', ')) {
@@ -142,8 +161,50 @@ export default class HouseOfFunkScraper
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    let variety = '';
+    const body = item.body_html;
+    if (body.includes('Variet')) {
+      variety = body.split('Variet')[1];
+    } else if (body.includes('Varit')) {
+      variety = body.split('Varit')[1];
+    } else {
+      return UNKNOWN;
+    }
+    if (variety !== '') {
+      variety = variety.replaceAll(/<\/?span.*?>/g, '');
+      variety = variety.replaceAll(/<\/?a.*?>/g, '');
+      if (variety.includes(':')) {
+        variety = variety.split(':')[1].trim();
+      } else if (variety.includes('/')) {
+        variety = variety.split('/')[1].trim();
+      }
+      if (variety.includes('Elevation')) {
+        variety = variety.split('Elevation')[0].trim();
+      }
+      variety = variety.split('<')[0].trim();
+      variety = variety.replaceAll(' &amp; ', ',');
+      variety = variety.replaceAll(' and ', ',');
+      variety = variety
+        .split(/[+\/\&,]/)
+        .map((item) => item.trim())
+        .join(', ');
+      variety = Helper.firstLetterUppercase([variety]).join();
+    } else {
+      return UNKNOWN;
+    }
+    let varietyOptions: string[];
+    if (variety.includes(', ')) {
+      varietyOptions = variety.split(', ');
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {

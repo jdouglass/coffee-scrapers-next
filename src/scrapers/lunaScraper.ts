@@ -8,6 +8,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { CoffeeType } from '../enums/coffeeTypes';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class LunaScraper implements IWordpressScraper, IScraper {
   private vendor = Vendor.Luna;
@@ -136,7 +137,7 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
       variety = item.content.rendered.split('Cultivar:')[1].trim();
     }
     if (variety === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     variety = variety.split('<')[0].trim();
 
@@ -146,8 +147,33 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
       .filter((element) => element !== '');
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (
+    item: IWordpressProductResponseData,
+    _$?: CheerioAPI
+  ): string => {
+    let variety = '';
+    if (item.content.rendered.includes('Variety:')) {
+      variety = item.content.rendered.split('Variety:')[1].trim();
+    } else if (item.content.rendered.includes('Varieties:')) {
+      variety = item.content.rendered.split('Varieties:')[1].trim();
+    } else if (item.content.rendered.includes('Cultivar:')) {
+      variety = item.content.rendered.split('Cultivar:')[1].trim();
+    }
+    if (variety === '') {
+      return UNKNOWN;
+    }
+    variety = variety.split('<')[0].trim();
+
+    let varietyOptions = variety
+      .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getWeight = (_item: IWordpressProductResponseData, $: CheerioAPI): number => {
@@ -195,7 +221,7 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
     } else if (item.content.rendered.includes('notes:')) {
       notes = item.content.rendered.split('notes:')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     notes = notes.split('<')[0].trim();
     if (notes !== '') {
@@ -205,7 +231,30 @@ export default class LunaScraper implements IWordpressScraper, IScraper {
         .filter((element) => element !== '');
       return Helper.firstLetterUppercase(notesArr);
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (
+    item: IWordpressProductResponseData,
+    _$: CheerioAPI
+  ): string => {
+    let notes = '';
+    if (item.content.rendered.includes('Tasting:')) {
+      notes = item.content.rendered.split('Tasting:')[1].trim();
+    } else if (item.content.rendered.includes('notes:')) {
+      notes = item.content.rendered.split('notes:')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    notes = notes.split('<')[0].trim();
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr).join(', ');
+    }
+    return UNKNOWN;
   };
 
   getType = (item: IWordpressProductResponseData): string => {

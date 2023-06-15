@@ -7,6 +7,7 @@ import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { Vendor } from '../enums/vendors';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class MonogramScraper
   extends ShopifyBaseScraper
@@ -150,7 +151,7 @@ export default class MonogramScraper
         }
         variety = Helper.firstLetterUppercase([variety]).join();
       } else {
-        return ['Unknown'];
+        return UNKNOWN_ARR;
       }
     }
     variety = variety.replace('<meta charset="utf-8">', '');
@@ -170,8 +171,57 @@ export default class MonogramScraper
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let variety: string = '';
+    const body: string = item.body_html;
+    if (body.includes('VARIETY:')) {
+      variety = body.split('VARIETY:')[1];
+    } else if (body.includes('Variety:')) {
+      variety = body.split('Variety:')[1];
+    } else {
+      for (const detail of productDetails!) {
+        if (detail.includes('Variety')) {
+          variety = detail.split('Variety')[1];
+        } else if (detail.includes('VARIETY')) {
+          variety = detail.split('VARIETY')[1];
+        }
+      }
+      if (variety !== '') {
+        if (variety.includes('\n')) {
+          variety = variety.split('\n')[0].trim();
+        }
+        if (variety.includes(':')) {
+          variety = variety.split(':')[1].trim();
+        }
+        variety = Helper.firstLetterUppercase([variety]).join();
+      } else {
+        return UNKNOWN;
+      }
+    }
+    variety = variety.replace('<meta charset="utf-8">', '');
+    variety = variety.replace('<span data-mce-fragment="1">', '');
+    variety = variety.replace('</span>', '');
+    let varietyOptions = [''];
+    if (variety.includes('<')) {
+      varietyOptions = variety.split('<');
+      variety = varietyOptions[0].trim();
+    }
+    if (variety.includes(',')) {
+      varietyOptions = variety
+        .split(/,\s+/)
+        .map((variety: string) => variety.trim());
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
@@ -192,5 +242,12 @@ export default class MonogramScraper
     productDetails?: string[]
   ): string[] => {
     return Helper.firstLetterUppercase(productDetails!.slice(1));
+  };
+
+  getTastingNotesString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    return Helper.firstLetterUppercase(productDetails!.slice(1)).join(', ');
   };
 }

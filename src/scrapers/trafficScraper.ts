@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -92,7 +93,7 @@ export default class TrafficScraper
     } else if (body.includes('Variété')) {
       variety = body.split('Variété')[1];
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (variety !== '') {
       variety = variety.split(':')[1].trim();
@@ -116,8 +117,42 @@ export default class TrafficScraper
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    let variety = '';
+    const body = item.body_html;
+    if (body.includes('Variet')) {
+      variety = body.split('Variet')[1];
+    } else if (body.includes('Variété')) {
+      variety = body.split('Variété')[1];
+    } else {
+      return UNKNOWN;
+    }
+    if (variety !== '') {
+      variety = variety.split(':')[1].trim();
+      variety = variety.replace('</strong>', '').trim();
+      variety = variety.replace('</span>', '').trim();
+      variety = variety.split('<')[0].trim();
+      variety = variety.replaceAll(' &amp; ', ', ');
+      variety = variety.replaceAll(' and ', ', ');
+      variety = variety.replaceAll(/\d+\%/g, '');
+      variety = variety
+        .split(/[+\/\&]/)
+        .map((item) => item.trim())
+        .join(', ');
+      variety = Helper.firstLetterUppercase([variety]).join();
+    }
+    let varietyOptions: string[];
+    if (variety.includes(', ')) {
+      varietyOptions = variety.split(', ');
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
@@ -155,7 +190,7 @@ export default class TrafficScraper
     if (item.body_html.includes('Notes')) {
       notes = item.body_html.split('Notes')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes !== '') {
       notes = notes.replace(':', '');
@@ -165,7 +200,7 @@ export default class TrafficScraper
       notes = notes.split('<')[0].trim();
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes
       .split(/,| \/ | and | \+ | \&amp; | \& /)
@@ -175,5 +210,32 @@ export default class TrafficScraper
       notesArr = [notes];
     }
     return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.includes('Notes')) {
+      notes = item.body_html.split('Notes')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    if (notes !== '') {
+      notes = notes.replace(':', '');
+      notes = notes.replace(/<\/?span.*?>/g, '');
+      notes = notes.replace('</strong>', '');
+      notes = notes.replace('<strong>', '');
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& /)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

@@ -8,7 +8,7 @@ import { IWordpressProductResponseData } from '../interfaces/wordpress/wordpress
 import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
-import { NO_IMAGE_AVAILABLE_URL } from '../constants';
+import { NO_IMAGE_AVAILABLE_URL, UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { CoffeeType } from '../enums/coffeeTypes';
 
 export default class DeMelloScraper implements IWordpressScraper, IScraper {
@@ -136,6 +136,34 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
     return $('[class^="single_add_to_cart_button"]').length ? false : true;
   };
 
+  getVarietyString = (
+    _item: IWordpressProductResponseData,
+    $?: CheerioAPI
+  ): string => {
+    let variety = '';
+    if ($) {
+      const descriptionContent = DeMelloHelper.getProductInfo($);
+      for (const detail of descriptionContent) {
+        if (detail.includes('VARIETY')) {
+          variety = detail.split('VARIETY')[1].trim();
+          variety = variety.split('\n')[0].trim();
+        }
+      }
+    }
+    if (variety === '') {
+      return UNKNOWN;
+    }
+    if (variety.includes('(')) {
+      variety = variety.split('(')[0].trim();
+    }
+    let varietyOptions = variety
+      .split(/, | & | and /)
+      .map((variety: string) => variety.trim());
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
+  };
+
   getVariety = (
     _item: IWordpressProductResponseData,
     $?: CheerioAPI
@@ -151,7 +179,7 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
       }
     }
     if (variety === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (variety.includes('(')) {
       variety = variety.split('(')[0].trim();
@@ -161,8 +189,7 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
       .map((variety: string) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
   };
 
   getWeight = (_item: IWordpressProductResponseData, $: CheerioAPI): number => {
@@ -194,6 +221,25 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
     return item.title.rendered;
   };
 
+  getTastingNotesString = (
+    _item: IWordpressProductResponseData,
+    $: CheerioAPI
+  ): string => {
+    const notes = $('.woocommerce-product-details__short-description')
+      .find('p')
+      .first()
+      .text()
+      .trim();
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr).join(', ');
+    }
+    return UNKNOWN;
+  };
+
   getTastingNotes = (
     _item: IWordpressProductResponseData,
     $: CheerioAPI
@@ -210,7 +256,7 @@ export default class DeMelloScraper implements IWordpressScraper, IScraper {
         .filter((element) => element !== '');
       return Helper.firstLetterUppercase(notesArr);
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
   };
 
   getType = (item: IWordpressProductResponseData): string => {

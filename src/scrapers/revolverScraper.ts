@@ -10,6 +10,7 @@ import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { Vendor } from '../enums/vendors';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class RevolverScraper
   extends ShopifyBaseScraper
@@ -169,7 +170,7 @@ export default class RevolverScraper
       } else if (body.includes('Varieites')) {
         variety = body.split('Varieites:')[1];
       } else {
-        return ['Unknown'];
+        return UNKNOWN_ARR;
       }
       let varietyOptions: string[] = variety.split('<');
       variety = varietyOptions[0].trim();
@@ -191,10 +192,57 @@ export default class RevolverScraper
       if (varietyOptions[0] !== '') {
         return varietyOptions;
       }
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     } catch (err) {
       console.error(err);
-      return ['Unknown'];
+      return UNKNOWN_ARR;
+    }
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    try {
+      if (item.title.includes('Instrumental')) {
+        return 'Caturra, Castillo, Colombia';
+      } else if (item.title.includes('Rootbeer')) {
+        return 'Parainema';
+      }
+      let variety: string;
+      const body = item.body_html;
+      if (body.includes('Varietal:')) {
+        variety = body.split('Varietal:')[1];
+      } else if (body.includes('Variety:')) {
+        variety = body.split('Variety:')[1];
+      } else if (body.includes('Varieties:')) {
+        variety = body.split('Varieties:')[1];
+      } else if (body.includes('Varieites')) {
+        variety = body.split('Varieites:')[1];
+      } else {
+        return UNKNOWN;
+      }
+      let varietyOptions: string[] = variety.split('<');
+      variety = varietyOptions[0].trim();
+      variety = variety.replaceAll(/\(.*\)/g, '').trim();
+      if (
+        variety.includes(',') ||
+        variety.includes(' &amp; ') ||
+        variety.includes('+') ||
+        variety.includes(' and ') ||
+        variety.includes('/')
+      ) {
+        varietyOptions = variety.split(/, |\s?\/\s?| and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      varietyOptions = Array.from([...new Set(varietyOptions)]);
+      if (varietyOptions[0] !== '') {
+        return varietyOptions.join(', ');
+      }
+      return UNKNOWN;
+    } catch (err) {
+      console.error(err);
+      return UNKNOWN;
     }
   };
 
@@ -235,20 +283,40 @@ export default class RevolverScraper
     if (item.body_html.includes('Notes:')) {
       notes = item.body_html.split('Notes:')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes !== '') {
       notes = notes.replace('<span data-mce-fragment="1">', '').trim();
       notes = notes.split('<')[0].trim();
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes.split(/, |\s+\/\s+| and | \+ | \&amp; | \& /);
     if (notesArr[0] === '') {
       notesArr = [notes];
     }
-    notesArr = Helper.firstLetterUppercase(notesArr);
-    return notesArr;
+    return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.includes('Notes:')) {
+      notes = item.body_html.split('Notes:')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    if (notes !== '') {
+      notes = notes.replace('<span data-mce-fragment="1">', '').trim();
+      notes = notes.split('<')[0].trim();
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes.split(/, |\s+\/\s+| and | \+ | \&amp; | \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

@@ -8,6 +8,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class ProdigalScraper
   extends ShopifyBaseScraper
@@ -91,7 +92,7 @@ export default class ProdigalScraper
       if (body.includes('Variety')) {
         variety = body.split('Variety')[1];
       } else {
-        return ['Unknown'];
+        return UNKNOWN_ARR;
       }
       variety = variety.replace('</strong>', '');
       variety = variety.replaceAll('</span>', '');
@@ -127,10 +128,58 @@ export default class ProdigalScraper
       }
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      return Array.from([...new Set(varietyOptions)]);
     } catch {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
+    }
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    try {
+      let variety: string;
+      const body: string = item.body_html;
+      if (body.includes('Variety')) {
+        variety = body.split('Variety')[1];
+      } else {
+        return UNKNOWN;
+      }
+      variety = variety.replace('</strong>', '');
+      variety = variety.replaceAll('</span>', '');
+      variety = variety.replaceAll('<span>', '');
+      variety = variety.replace('<br>', '');
+      variety = variety.replaceAll(/<(br|span) data-mce-fragment=\"1\">/g, '');
+      variety = variety.replaceAll(/<(br|span) Data-mce-fragment=\"1\">/g, '');
+      variety = variety.split(':')[1].trim();
+      variety = variety.split('<')[0].trim();
+      if (variety.includes('SL 34 Ruiru 11')) {
+        variety = variety.replace('SL 34 ', 'SL 34, ');
+      }
+      if (variety === 'Red and Yellow Catuai') {
+        return variety;
+      }
+      let varietyOptions: string[];
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+
+      for (let i = 0; i < varietyOptions.length; i++) {
+        if (varietyOptions[i].includes('%')) {
+          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+        }
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      return Array.from([...new Set(varietyOptions)]).join(', ');
+    } catch {
+      return UNKNOWN;
     }
   };
 
@@ -161,6 +210,17 @@ export default class ProdigalScraper
     if (notes[0] !== '') {
       return notes;
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    const notes = Helper.firstLetterUppercase(productDetails![0].split(', '));
+    if (notes[0] !== '') {
+      return notes.join(', ');
+    }
+    return UNKNOWN;
   };
 }

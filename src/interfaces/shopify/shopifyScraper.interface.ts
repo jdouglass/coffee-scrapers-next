@@ -14,11 +14,19 @@ export interface IShopifyScraper {
     item: IShopifyProductResponseData,
     productDetails?: string[]
   ) => string[];
+  getTastingNotesString: (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ) => string;
   getTitle: (item: IShopifyProductResponseData) => string;
   getVariety: (
     item: IShopifyProductResponseData,
     productDetails?: string[]
   ) => Promise<string[]> | string[];
+  getVarietyString: (
+    item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ) => Promise<string> | string;
   getVendor: () => string;
   getVendorApiUrl: () => string;
 }

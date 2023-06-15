@@ -101,10 +101,40 @@ export default class HeartScraper
       }
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      return Array.from([...new Set(varietyOptions)]);
     }
     return UNKNOWN_ARR;
+  };
+
+  getVarietyString = (
+    item: IShopifyProductResponseData,
+    _productDetails?: string[]
+  ): string => {
+    let variety: string = '';
+    const body: string = item.body_html;
+    if (body.includes('Variety:')) {
+      variety = body.split('Variety:')[1];
+    } else if (body.includes('Varieties:')) {
+      variety = body.split('Varieties:')[1];
+    }
+    let varietyOptions = [''];
+    if (variety !== '') {
+      if (variety.includes('<')) {
+        varietyOptions = variety.split('<');
+        variety = varietyOptions[0].trim();
+      }
+      if (variety.includes(',')) {
+        varietyOptions = variety
+          .split(/,\s+/)
+          .map((variety: string) => variety.trim());
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      return Array.from([...new Set(varietyOptions)]).join(', ');
+    }
+    return UNKNOWN;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
@@ -121,6 +151,13 @@ export default class HeartScraper
     productDetails?: string[]
   ): string[] => {
     return Helper.firstLetterUppercase(productDetails!);
+  };
+
+  getTastingNotesString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    return Helper.firstLetterUppercase(productDetails!).join(', ');
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {

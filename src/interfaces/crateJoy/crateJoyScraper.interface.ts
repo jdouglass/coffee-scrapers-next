@@ -14,8 +14,10 @@ export interface ICrateJoyScraper {
   getProductUrl: (id: number, baseUrl: string) => string;
   getSoldOut: ($: CheerioAPI) => boolean;
   getTastingNotes: ($: CheerioAPI) => string[];
+  getTastingNotesString: ($: CheerioAPI) => string;
   getTitle: ($: CheerioAPI) => string;
   getType: ($: CheerioAPI, slug: string) => string;
   getVariety: ($: CheerioAPI) => string[];
+  getVarietyString: ($: CheerioAPI) => string;
   getWeight: (slug: string, description: string) => number;
 }

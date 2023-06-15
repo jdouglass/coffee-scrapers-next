@@ -5,6 +5,7 @@ import { ISquareSpaceProductResponseData } from '../interfaces/squareSpace/squar
 import { SquareSpaceBaseScraper } from '../baseScrapers/squareSpaceBaseScraper';
 import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class PrototypeScraper
   extends SquareSpaceBaseScraper
@@ -68,15 +69,32 @@ export default class PrototypeScraper
       variety = variety.split('/')[0];
       variety = variety.split(':')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let varietyOptions = variety
       .split(/, | & | and /)
       .map((variety: string) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = (item: ISquareSpaceProductResponseData): string => {
+    let variety = '';
+    if (item.body.includes('Cultivar')) {
+      variety = item.body.split('Cultivar')[1];
+      variety = variety.replaceAll('&nbsp;', '');
+      variety = variety.split('/')[0];
+      variety = variety.split(':')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    let varietyOptions = variety
+      .split(/, | & | and /)
+      .map((variety: string) => variety.trim());
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getWeight = (item: ISquareSpaceProductResponseData): number => {
@@ -113,7 +131,7 @@ export default class PrototypeScraper
     } else if (item.body.includes('Notes:')) {
       notes = item.body.split('Notes:')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes !== '') {
       notes = notes.split('<')[0];
@@ -124,6 +142,27 @@ export default class PrototypeScraper
         .filter((element) => element !== '');
       return Helper.firstLetterUppercase(notesArr);
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (item: ISquareSpaceProductResponseData): string => {
+    let notes = '';
+    if (item.excerpt.includes('Notes:')) {
+      notes = item.excerpt.split('Notes:')[1].trim();
+    } else if (item.body.includes('Notes:')) {
+      notes = item.body.split('Notes:')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    if (notes !== '') {
+      notes = notes.split('<')[0];
+      notes = notes.replace('.', '').trim();
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+/)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr).join(', ');
+    }
+    return UNKNOWN;
   };
 }

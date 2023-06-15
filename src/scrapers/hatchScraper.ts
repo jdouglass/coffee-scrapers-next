@@ -9,6 +9,7 @@ import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { CoffeeType } from '../enums/coffeeTypes';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class HatchScraper implements ICrateJoyScraper, IScraper {
   private vendor = Vendor.Hatch;
@@ -115,7 +116,7 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
       }
     }
     if (variety === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let varietyOptions = variety
       .split(/,| & | and /)
@@ -124,8 +125,30 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     varietyOptions = varietyOptions.map((variety) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getVarietyString = ($: CheerioAPI): string => {
+    const descriptionContent = HatchHelper.getProductDetails($);
+    let variety = '';
+    for (const detail of descriptionContent) {
+      if (detail.includes('Variety:')) {
+        variety = detail.split('Variety:')[1].trim();
+      } else if (detail.includes('Varieties:')) {
+        variety = detail.split('Varieties:')[1].trim();
+      }
+    }
+    if (variety === '') {
+      return UNKNOWN;
+    }
+    let varietyOptions = variety
+      .split(/,| & | and /)
+      .map((variety: string) => variety.trim())
+      .filter((element) => element !== '');
+    varietyOptions = varietyOptions.map((variety) => variety.trim());
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
   getWeight = (slug: string, description: string): number => {
@@ -154,6 +177,18 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     return $('.product-title').first().text();
   };
 
+  getTastingNotesString = ($: CheerioAPI): string => {
+    const notes = $('h6:contains("Notes:")').next().first().text();
+    if (notes !== '') {
+      const notesArr = notes
+        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|\./)
+        .map((element) => element.trim())
+        .filter((element) => element !== '');
+      return Helper.firstLetterUppercase(notesArr).join(', ');
+    }
+    return UNKNOWN;
+  };
+
   getTastingNotes = ($: CheerioAPI): string[] => {
     const notes = $('h6:contains("Notes:")').next().first().text();
     if (notes !== '') {
@@ -163,7 +198,7 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
         .filter((element) => element !== '');
       return Helper.firstLetterUppercase(notesArr);
     }
-    return ['Unknown'];
+    return UNKNOWN_ARR;
   };
 
   getType = ($: CheerioAPI, slug: string): string => {

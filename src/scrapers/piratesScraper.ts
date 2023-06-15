@@ -8,6 +8,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class PiratesScraper
   extends ShopifyBaseScraper
@@ -77,14 +78,13 @@ export default class PiratesScraper
 
   getVariety = (item: IShopifyProductResponseData): string[] => {
     let variety = '';
-    const unknownVariety = ['Unknown'];
     const body: string = item.body_html;
     if (body.includes('Varietal:')) {
       variety = body.split('Varietal:')[1];
     } else if (body.includes('Variety:')) {
       variety = body.split('Variety:')[1];
     } else {
-      return unknownVariety;
+      return UNKNOWN_ARR;
     }
     if (variety !== '') {
       variety = variety.replaceAll('</strong>', '').trim();
@@ -106,10 +106,45 @@ export default class PiratesScraper
       }
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      return Array.from([...new Set(varietyOptions)]);
     }
-    return unknownVariety;
+    return UNKNOWN_ARR;
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    let variety = '';
+    const unknownVariety = ['Unknown'];
+    const body: string = item.body_html;
+    if (body.includes('Varietal:')) {
+      variety = body.split('Varietal:')[1];
+    } else if (body.includes('Variety:')) {
+      variety = body.split('Variety:')[1];
+    } else {
+      return unknownVariety.join(', ');
+    }
+    if (variety !== '') {
+      variety = variety.replaceAll('</strong>', '').trim();
+      variety = variety.replaceAll('<span>', '').trim();
+      variety = variety.replaceAll('</span>', '').trim();
+      variety = variety.replaceAll(/\(.*\)/g, '').trim();
+      let varietyOptions: string[] = variety.split('<');
+      variety = varietyOptions[0].trim();
+      if (
+        variety.includes(', ') ||
+        variety.includes(' &amp; ') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      return Array.from([...new Set(varietyOptions)]).join(', ');
+    }
+    return unknownVariety.join(', ');
   };
 
   getTastingNotes = (item: IShopifyProductResponseData): string[] => {
@@ -119,7 +154,7 @@ export default class PiratesScraper
     } else if (item.body_html.includes('Tasting notes')) {
       notes = item.body_html.split('Tasting notes')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     notes = notes.replace('</strong>', '');
     notes = notes.replace('<span>', '');
@@ -127,10 +162,32 @@ export default class PiratesScraper
     notes = notes.replace(':', '').trim();
     notes = notes.split('<')[0].trim();
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& |\\n/);
     notesArr = notesArr.filter((element) => element !== '');
     return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.includes('Tasting Notes')) {
+      notes = item.body_html.split('Tasting Notes')[1].trim();
+    } else if (item.body_html.includes('Tasting notes')) {
+      notes = item.body_html.split('Tasting notes')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    notes = notes.replace('</strong>', '');
+    notes = notes.replace('<span>', '');
+    notes = notes.replace('<span data-mce-fragment="1">', '');
+    notes = notes.replace(':', '').trim();
+    notes = notes.split('<')[0].trim();
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& |\\n/);
+    notesArr = notesArr.filter((element) => element !== '');
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

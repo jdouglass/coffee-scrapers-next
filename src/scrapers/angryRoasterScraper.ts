@@ -1,4 +1,5 @@
 import { ShopifyBaseScraper } from '../baseScrapers/shopifyBaseScraper';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 import { worldData } from '../data/worldData';
 import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
@@ -68,7 +69,7 @@ export default class AngryRoasterScraper
     return BaseUrl.TheAngryRoaster + '/collections/all/products/' + item.handle;
   };
 
-  getVariety = (item: IShopifyProductResponseData): string[] => {
+  getVarietyString = (item: IShopifyProductResponseData): string => {
     let variety: string;
     const body = item.body_html;
     if (body.includes('Variety:')) {
@@ -77,7 +78,7 @@ export default class AngryRoasterScraper
       variety = variety.split('\n')[0].trim();
       variety = Helper.firstLetterUppercase([variety]).join();
     } else {
-      return ['Unknown'];
+      return UNKNOWN;
     }
     let varietyOptions: string[];
     if (variety.includes(',')) {
@@ -87,16 +88,37 @@ export default class AngryRoasterScraper
     }
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-    varietyOptions = Array.from([...new Set(varietyOptions)]);
-    return varietyOptions;
+    return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
-  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+  getVariety = (item: IShopifyProductResponseData): string[] => {
+    let variety: string;
+    const body = item.body_html;
+    if (body.includes('Variety:')) {
+      variety = body.split('Variety:')[1];
+      variety = variety.replaceAll(/\<.*?\>/g, '\n').trim();
+      variety = variety.split('\n')[0].trim();
+      variety = Helper.firstLetterUppercase([variety]).join();
+    } else {
+      return UNKNOWN_ARR;
+    }
+    let varietyOptions: string[];
+    if (variety.includes(',')) {
+      varietyOptions = variety.split(', ');
+    } else {
+      varietyOptions = [variety];
+    }
+    varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+    varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+    return Array.from([...new Set(varietyOptions)]);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
     let notes = '';
     if (item.body_html.includes('Notes:')) {
       notes = item.body_html.split('Notes:')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN;
     }
     if (notes !== '') {
       if (notes.includes('Altitude')) {
@@ -108,7 +130,33 @@ export default class AngryRoasterScraper
       }
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN;
+    }
+    let notesArr = notes.split(/,\s+| \/ | and | \+ |\s+\&amp;\s+| \& /);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
+  };
+
+  getTastingNotes = (item: IShopifyProductResponseData): string[] => {
+    let notes = '';
+    if (item.body_html.includes('Notes:')) {
+      notes = item.body_html.split('Notes:')[1].trim();
+    } else {
+      return UNKNOWN_ARR;
+    }
+    if (notes !== '') {
+      if (notes.includes('Altitude')) {
+        notes = notes.split('Altitude')[0];
+        notes = notes.replace(/<[^>]+>/gi, '').trim();
+      } else {
+        notes = notes.replace('</strong>', '');
+        notes = notes.split('<')[0].trim();
+      }
+    }
+    if (notes === '') {
+      return UNKNOWN_ARR;
     }
     let notesArr = notes.split(/,\s+| \/ | and | \+ |\s+\&amp;\s+| \& /);
     if (notesArr[0] === '') {

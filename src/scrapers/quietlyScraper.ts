@@ -8,6 +8,7 @@ import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
+import { UNKNOWN, UNKNOWN_ARR } from '../constants';
 
 export default class QuietlyScraper
   extends ShopifyBaseScraper
@@ -96,7 +97,7 @@ export default class QuietlyScraper
         variety = body.split('VARIETAL')[1];
         variety = variety.split('ELEVATION')[0];
       } else {
-        return ['Unknown'];
+        return UNKNOWN_ARR;
       }
       variety = variety.replace(':', '');
       variety = variety.replace('.', '');
@@ -128,10 +129,55 @@ export default class QuietlyScraper
       }
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      return Array.from([...new Set(varietyOptions)]);
     } catch {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
+    }
+  };
+
+  getVarietyString = (item: IShopifyProductResponseData): string => {
+    try {
+      let variety: string;
+      const body: string = item.body_html;
+      if (body.includes('VARIETAL')) {
+        variety = body.split('VARIETAL')[1];
+        variety = variety.split('ELEVATION')[0];
+      } else {
+        return UNKNOWN;
+      }
+      variety = variety.replace(':', '');
+      variety = variety.replace('.', '');
+      variety = variety.replace(/<[^>]+>/gi, '').trim();
+      variety = variety.replaceAll('&amp;', ', ');
+      if (variety.includes('SL 34 Ruiru 11')) {
+        variety = variety.replace('SL 34 ', 'SL 34, ');
+      }
+      if (variety === 'Red and Yellow Catuai') {
+        return variety;
+      }
+      let varietyOptions: string[];
+      if (
+        variety.includes(', ') ||
+        variety.includes('&amp;') ||
+        variety.includes(' + ') ||
+        variety.includes(' and ') ||
+        variety.includes(' / ')
+      ) {
+        varietyOptions = variety.split(/, | \/ | and | \+ | \&amp; /);
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = varietyOptions.map((element) => element.trim());
+      for (let i = 0; i < varietyOptions.length; i++) {
+        if (varietyOptions[i].includes('%')) {
+          varietyOptions[i] = varietyOptions[i].split('%')[1].trim();
+        }
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      return Array.from([...new Set(varietyOptions)]).join(', ');
+    } catch {
+      return UNKNOWN;
     }
   };
 
@@ -159,7 +205,7 @@ export default class QuietlyScraper
     if (item.body_html.includes('TASTE:')) {
       notes = item.body_html.split('TASTE:')[1].trim();
     } else {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     if (notes !== '') {
       notes = notes.split('REGION')[0];
@@ -167,13 +213,34 @@ export default class QuietlyScraper
       notes = notes.replace('.', '');
     }
     if (notes === '') {
-      return ['Unknown'];
+      return UNKNOWN_ARR;
     }
     let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& |\s+with\s+/);
     if (notesArr[0] === '') {
       notesArr = [notes];
     }
-    notesArr = Helper.firstLetterUppercase(notesArr);
-    return notesArr;
+    return Helper.firstLetterUppercase(notesArr);
+  };
+
+  getTastingNotesString = (item: IShopifyProductResponseData): string => {
+    let notes = '';
+    if (item.body_html.includes('TASTE:')) {
+      notes = item.body_html.split('TASTE:')[1].trim();
+    } else {
+      return UNKNOWN;
+    }
+    if (notes !== '') {
+      notes = notes.split('REGION')[0];
+      notes = notes.replace(/<[^>]+>/gi, '').trim();
+      notes = notes.replace('.', '');
+    }
+    if (notes === '') {
+      return UNKNOWN;
+    }
+    let notesArr = notes.split(/, | \/ | and | \+ | \&amp; | \& |\s+with\s+/);
+    if (notesArr[0] === '') {
+      notesArr = [notes];
+    }
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 }

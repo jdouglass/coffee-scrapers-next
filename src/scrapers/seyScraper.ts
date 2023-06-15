@@ -94,10 +94,35 @@ export default class SeyScraper
       }
       varietyOptions = Helper.firstLetterUppercase(varietyOptions);
       varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      varietyOptions = Array.from([...new Set(varietyOptions)]);
-      return varietyOptions;
+      return Array.from([...new Set(varietyOptions)]);
     }
     return UNKNOWN_ARR;
+  };
+
+  getVarietyString = (
+    _item: IShopifyProductResponseData,
+    productDetails?: string[]
+  ): string => {
+    let variety: string = '';
+    productDetails?.forEach((value) => {
+      if (value.includes('VARIETAL')) {
+        variety = value.split('VARIETAL: ')[1].trim();
+      }
+    });
+    let varietyOptions = [''];
+    if (variety !== '') {
+      if (variety.includes(',')) {
+        varietyOptions = variety
+          .split(/,\s+/)
+          .map((variety: string) => variety.trim());
+      } else {
+        varietyOptions = [variety];
+      }
+      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
+      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
+      return Array.from([...new Set(varietyOptions)]).join(', ');
+    }
+    return UNKNOWN;
   };
 
   getTitle = (item: IShopifyProductResponseData): string => {
@@ -124,6 +149,28 @@ export default class SeyScraper
       return notesArr;
     }
     return UNKNOWN_ARR;
+  };
+
+  getTastingNotesString = (
+    item: IShopifyProductResponseData,
+    _productDetails?: string[]
+  ): string => {
+    let notesBody = '';
+    let notesArr: string[] = [];
+    if (item.body_html.includes('cup we find')) {
+      notesBody = item.body_html.split('cup we find')[1].trim();
+    } else if (item.body_html.includes('with a classic profile of')) {
+      notesBody = item.body_html.split('with a classic profile of')[1].trim();
+    }
+    if (notesBody !== '') {
+      notesBody = notesBody.split('.')[0];
+      notesBody = notesBody.replaceAll(', and ', ', ');
+      notesArr = Helper.firstLetterUppercase(notesBody.split(', '));
+    }
+    if (notesArr.length) {
+      return notesArr.join(', ');
+    }
+    return UNKNOWN;
   };
 
   getWeight = (item: IShopifyProductResponseData): number => {
