@@ -61,8 +61,10 @@ export class HatchClient {
           const productUrl = this.factory.getProductUrl(hatchResponse.data.id);
           const isSoldOut = this.factory.getSoldOut($);
           const tastingNotes = this.factory.getTastingNotes($);
+          const tastingNotesString = this.factory.getTastingNotesString($);
           const title = this.factory.getTitle($);
           const variety = this.factory.getVariety($);
+          const varietyString = this.factory.getVarietyString($);
           const weight = this.factory.getWeight(
             hatchResponse.data.slug,
             hatchResponse.data.description
@@ -82,8 +84,10 @@ export class HatchClient {
             productUrl,
             isSoldOut,
             tastingNotes,
+            tastingNotesString,
             title,
             variety,
+            varietyString,
             weight,
             vendor: this.vendor,
             vendorLocation,
