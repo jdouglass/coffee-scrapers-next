@@ -63,8 +63,14 @@ export class PrototypeClient {
           const tastingNotes = this.factory.getTastingNotes(
             prototypeResponse.data.item
           );
+          const tastingNotesString = this.factory.getTastingNotesString(
+            prototypeResponse.data.item
+          );
           const title = this.factory.getTitle(prototypeResponse.data.item);
           const variety = this.factory.getVariety(prototypeResponse.data.item);
+          const varietyString = this.factory.getVarietyString(
+            prototypeResponse.data.item
+          );
           const weight = this.factory.getWeight(prototypeResponse.data.item);
           const type = this.factory.getType(prototypeResponse.data.item);
 
@@ -81,8 +87,10 @@ export class PrototypeClient {
             productUrl,
             isSoldOut,
             tastingNotes,
+            tastingNotesString,
             title,
             variety,
+            varietyString,
             weight,
             vendor: this.vendor,
             vendorLocation,
