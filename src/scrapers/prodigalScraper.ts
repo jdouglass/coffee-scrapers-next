@@ -30,16 +30,17 @@ export default class ProdigalScraper
   };
 
   getCountry = (item: IShopifyProductResponseData): string => {
-    const defaultCountry = 'Unknown';
     const title = Helper.firstLetterUppercase([item.title]).join(' ');
-    let countryBody = item.body_html.split('Region')[1];
-    countryBody = countryBody.split('<')[0].trim();
-    for (const country of worldData.keys()) {
-      if (title.includes(country) || countryBody.includes(country)) {
-        return country;
+    if (item.body_html.includes('Region')) {
+      let countryBody = item.body_html.split('Region')[1];
+      countryBody = countryBody.split('<')[0].trim();
+      for (const country of worldData.keys()) {
+        if (title.includes(country) || countryBody.includes(country)) {
+          return country;
+        }
       }
     }
-    return defaultCountry;
+    return UNKNOWN;
   };
 
   getProcess = (item: IShopifyProductResponseData): string => {
@@ -206,9 +207,11 @@ export default class ProdigalScraper
     _item: IShopifyProductResponseData,
     productDetails?: string[]
   ): string[] => {
-    const notes = Helper.firstLetterUppercase(productDetails![0].split(', '));
-    if (notes[0] !== '') {
-      return notes;
+    if (productDetails && productDetails.length) {
+      const notes = Helper.firstLetterUppercase(productDetails[0].split(', '));
+      if (notes[0] !== '') {
+        return notes;
+      }
     }
     return UNKNOWN_ARR;
   };
@@ -217,9 +220,11 @@ export default class ProdigalScraper
     _item: IShopifyProductResponseData,
     productDetails?: string[]
   ): string => {
-    const notes = Helper.firstLetterUppercase(productDetails![0].split(', '));
-    if (notes[0] !== '') {
-      return notes.join(', ');
+    if (productDetails && productDetails.length) {
+      const notes = Helper.firstLetterUppercase(productDetails[0].split(', '));
+      if (notes[0] !== '') {
+        return notes.join(', ');
+      }
     }
     return UNKNOWN;
   };
