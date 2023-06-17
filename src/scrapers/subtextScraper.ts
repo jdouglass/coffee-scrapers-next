@@ -109,7 +109,7 @@ export default class SubtextScraper
     }
     let varietyOptions = variety
       .split(/, | & /)
-      .map((variety: string) => variety.trim());
+      .map((variety: string) => variety.split('*')[0].trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     return Array.from([...new Set(varietyOptions)]);
@@ -140,7 +140,7 @@ export default class SubtextScraper
     }
     let varietyOptions = variety
       .split(/, | & /)
-      .map((variety: string) => variety.trim());
+      .map((variety: string) => variety.split('*')[0].trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     return Array.from([...new Set(varietyOptions)]).join(', ');
