@@ -85,7 +85,10 @@ export default class Helper {
         case '74148':
         case '74158':
         case '74110':
+        case '74116':
         case '741165':
+        case 'Jarc 74112':
+        case 'Landraces':
           varieties[i] = 'Ethiopian Landraces';
           break;
         case 'Blend':
@@ -106,7 +109,9 @@ export default class Helper {
           varieties[i] = 'Yellow Bourbon';
           break;
         case 'Riuru':
-          varieties[i] = 'Ruiru';
+        case 'Ruiru11':
+        case 'Ruiri':
+          varieties[i] = 'Ruiru 11';
           break;
         case 'Yellow Catuaí':
         case 'Yellow Catuia':
@@ -130,6 +135,18 @@ export default class Helper {
           break;
         case 'Ab':
           varieties[i] = 'AB';
+          break;
+        case 'Castillio':
+          varieties[i] = 'Castillo';
+          break;
+        case 'Typical':
+          varieties[i] = 'Typica';
+          break;
+        case 'Villa Sarchí':
+          varieties[i] = 'Villa Sarchi';
+          break;
+        case 'Paraïso':
+          varieties[i] = 'Paraiso';
           break;
       }
     }
