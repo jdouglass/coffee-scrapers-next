@@ -108,8 +108,8 @@ export default class TranscendScraper
         )
         .trim();
       variety = variety.split('<')[0].trim();
-      variety = variety.replaceAll('&amp;', ', ');
-      variety = variety.replaceAll('and', ', ');
+      variety = variety.replaceAll(' &amp; ', ', ');
+      variety = variety.replaceAll(' and ', ', ');
       variety = variety.replaceAll(/\(.*\)/g, '');
       variety = variety
         .split(/[+\/\&]/)

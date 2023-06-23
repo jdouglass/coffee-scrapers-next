@@ -88,15 +88,19 @@ export default class RossoScraper
     } else {
       return UNKNOWN_ARR;
     }
-    variety = variety.replace(/<.*>\n.*<.*">/, '');
-    variety = variety.replaceAll(/<.*>\n.*<.*">/g, ', ');
-    variety = variety.split('<')[0];
+    variety = variety.replaceAll(/<[^>]*>/g, '').trim();
+    variety = variety.replace(/(\n)+/, ', ').trim();
+    variety = variety.split('<')[0].trim();
     let varietyOptions: string[];
-    if (variety.includes(',')) {
+    if (variety.includes(', ')) {
       varietyOptions = variety.split(', ');
     } else {
       varietyOptions = [variety];
     }
+    varietyOptions = varietyOptions.filter(
+      (variety) => variety !== '' && variety !== ' '
+    );
+    varietyOptions = varietyOptions.map((variety) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     return Array.from([...new Set(varietyOptions)]);
@@ -111,15 +115,19 @@ export default class RossoScraper
     } else {
       return UNKNOWN;
     }
-    variety = variety.replace(/<.*>\n.*<.*">/, '');
-    variety = variety.replaceAll(/<.*>\n.*<.*">/g, ', ');
+    variety = variety.replaceAll(/<[^>]*>/g, '').trim();
+    variety = variety.replace(/(\n)+/, ', ').trim();
     variety = variety.split('<')[0];
     let varietyOptions: string[];
-    if (variety.includes(',')) {
+    if (variety.includes(', ')) {
       varietyOptions = variety.split(', ');
     } else {
       varietyOptions = [variety];
     }
+    varietyOptions = varietyOptions.filter(
+      (variety) => variety !== '' && variety !== ' '
+    );
+    varietyOptions = varietyOptions.map((variety) => variety.trim());
     varietyOptions = Helper.firstLetterUppercase(varietyOptions);
     varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
     return Array.from([...new Set(varietyOptions)]).join(', ');

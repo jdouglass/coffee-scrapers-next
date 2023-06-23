@@ -67,6 +67,7 @@ export default class RabbitHoleScraper
       } else {
         return UNKNOWN_ARR;
       }
+      variety = variety.replace('<span data-mce-fragment="1">', '');
       variety = variety.split(':')[1].trim();
       variety = variety.split('<')[0].trim();
       if (variety.includes('SL 34 Ruiru 11')) {
@@ -114,6 +115,7 @@ export default class RabbitHoleScraper
       } else {
         return UNKNOWN;
       }
+      variety = variety.replace('<span data-mce-fragment="1">', '');
       variety = variety.split(':')[1].trim();
       variety = variety.split('<')[0].trim();
       if (variety.includes('SL 34 Ruiru 11')) {
