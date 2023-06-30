@@ -4,7 +4,7 @@ export class StringUtil {
   }
 
   static convertAndToComma(str: string): string {
-    return str.replace(/(\+|&|,?\s+and\s+)/g, ',');
+    return str.replace(/(\+|&|,?\s+(and|&amp;)\s+)/g, ', ');
   }
 
   static removeHtmlTags(str: string): string {
