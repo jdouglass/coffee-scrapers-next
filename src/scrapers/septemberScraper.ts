@@ -5,6 +5,7 @@ import { BaseUrl } from '../enums/baseUrls';
 import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { Vendor } from '../enums/vendors';
 import Helper from '../helper/helper';
+import { StringUtil } from '../helper/stringUtil';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.interface';
 import { IShopifyProductResponseData } from '../interfaces/shopify/shopifyResponseData.interface';
@@ -66,23 +67,40 @@ export default class SeptemberScraper
   };
 
   getProcess = (item: IShopifyProductResponseData): string => {
-    let process = '';
+    const cleanedString = StringUtil.removeHtmlTags(item.body_html); // Remove HTML tags
 
-    if (item.body_html.includes('Process')) {
-      process = item.body_html.split('Process')[1].trim();
+    const processIndex = cleanedString.indexOf('Process');
+    if (processIndex === -1) {
+      return UNKNOWN;
+    }
+    const colonIndex = cleanedString.indexOf(':', processIndex);
+
+    // Find the index of "Country", "Producer", and "Variety" in the cleaned string
+    const countryIndex = cleanedString.indexOf('Country');
+    const producerIndex = cleanedString.indexOf('Producer');
+    const varietyIndex = cleanedString.indexOf('Variety');
+
+    // Determine the end index based on the positions of "Country", "Producer", and "Variety"
+    let endIndex = cleanedString.length;
+    if (countryIndex !== -1) {
+      endIndex = Math.min(endIndex, countryIndex);
+    }
+    if (producerIndex !== -1) {
+      endIndex = Math.min(endIndex, producerIndex);
+    }
+    if (varietyIndex !== -1) {
+      endIndex = Math.min(endIndex, varietyIndex);
     }
 
-    if (process !== '') {
-      process = process.replace(':', '');
-      process = process.replace('</strong>', '');
-      process = process.replace('</span>', '');
-      process = process.replace('<span class="s3">', '');
-      process = process.replaceAll('&amp;', ', ');
-      process = process.split('<')[0].trim();
-      process = Helper.firstLetterUppercase([process]).join();
-      return Helper.convertToUniversalProcess(process);
-    }
-    return 'Unknown';
+    // Extract the substring between "Process" and the determined end index
+    let processSubstring = cleanedString.substring(colonIndex + 1, endIndex);
+
+    // Remove leading and trailing spaces
+    processSubstring = processSubstring.trim();
+    processSubstring = StringUtil.convertAndToComma(processSubstring);
+    processSubstring = StringUtil.capitalizeFirstLetters(processSubstring);
+
+    return processSubstring || UNKNOWN;
   };
 
   getProductUrl = (item: IShopifyProductResponseData): string => {
