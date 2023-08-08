@@ -101,13 +101,10 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
 
   getSoldOut = ($: CheerioAPI): boolean => {
     const stockContent = $('span[class="helper-tooltip-stock"]').text().trim();
-    if (
-      stockContent.includes('Available') ||
-      stockContent.includes('Limited Remaining')
-    ) {
-      return false;
+    if (stockContent.includes('Unavailable')) {
+      return true;
     }
-    return true;
+    return false;
   };
 
   getVariety = ($: CheerioAPI): string[] => {
