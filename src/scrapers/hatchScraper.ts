@@ -2,10 +2,8 @@ import { ProcessCategory } from '../enums/processCategory';
 import { worldData } from '../data/worldData';
 import Helper from '../helper/helper';
 import { ICrateJoyScraper } from '../interfaces/crateJoy/crateJoyScraper.interface';
-import { ICrateJoyImage } from '../interfaces/crateJoy/crateJoyImage.interface';
 import { CheerioAPI } from 'cheerio';
 import { HatchHelper } from '../helper/hatchHelper';
-import { BaseUrl } from '../enums/baseUrls';
 import { Vendor } from '../enums/vendors';
 import { IScraper } from '../interfaces/scrapers/scraper.interface';
 import { CoffeeType } from '../enums/coffeeTypes';
@@ -51,18 +49,19 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     return slug;
   };
 
-  getImageUrl = (images: ICrateJoyImage[]): string => {
-    if (images.length !== 0) {
-      return 'https:' + images[0].url;
-    }
-    return 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
+  getImageUrl = ($: CheerioAPI): string => {
+    const imageUrl = $('div[class^="product-gallery-image-subbly"]').attr(
+      'data-src'
+    );
+    return imageUrl
+      ? imageUrl
+      : 'https://via.placeholder.com/300x280.webp?text=No+Image+Available';
   };
 
   getPrice = ($: CheerioAPI): number => {
-    let price = $('p[class="product-price"]').first().text();
+    let price = $('span[class="product-item-price"]').first().text();
     if (price !== '') {
-      price = price.split('$')[1];
-      price = price.split(' ')[0].trim();
+      price = price.split('$')[1].trim();
       return Number(Number(price).toFixed(2));
     }
     return 0;
@@ -70,9 +69,15 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
 
   getProcess = ($: CheerioAPI): string => {
     const descriptionContent = HatchHelper.getProductDetails($);
+    let process = '';
     for (const detail of descriptionContent) {
       if (detail.includes('Process:')) {
-        return detail.split('Process:')[1].trim();
+        process = detail.split('Process:')[1].trim();
+        if (process.toLowerCase().includes('elevation:')) {
+          return Helper.firstLetterUppercase([
+            process.toLowerCase().split('elevation:')[0].trim(),
+          ]).toString();
+        }
       }
     }
     return 'Unknown';
@@ -90,8 +95,8 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     return ProcessCategory[ProcessCategory.Experimental];
   };
 
-  getProductUrl = (id: number): string => {
-    return BaseUrl.Hatch + '/shop/product/' + id.toString();
+  getProductUrl = (url: string): string => {
+    return url;
   };
 
   getSoldOut = ($: CheerioAPI): boolean => {
@@ -117,6 +122,8 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     }
     if (variety === '') {
       return UNKNOWN_ARR;
+    } else if (variety.toLowerCase().includes('process:')) {
+      variety = variety.toLowerCase().split('process:')[0].trim();
     }
     let varietyOptions = variety
       .split(/,| & | and |\//)
@@ -140,6 +147,8 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     }
     if (variety === '') {
       return UNKNOWN;
+    } else if (variety.toLowerCase().includes('process:')) {
+      variety = variety.toLowerCase().split('process:')[0].trim();
     }
     let varietyOptions = variety
       .split(/,| & | and /)
@@ -151,18 +160,9 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
     return Array.from([...new Set(varietyOptions)]).join(', ');
   };
 
-  getWeight = (slug: string, description: string): number => {
+  getWeight = ($: CheerioAPI): number => {
     const gramsToKg = 1000;
-    const weightArray = slug.split('-');
-    const weight = slug.split('-')[slug.split('-').length - 1];
-    for (const element of weightArray) {
-      if (element.includes('kg')) {
-        return Number(element.split('kg')[0]) * gramsToKg;
-      }
-    }
-    if (weight.includes('g')) {
-      return Number(weight.split('g')[0]);
-    }
+    const description = $('.product-item-description').text();
     const descriptionWeight: string[] | null = description.match(/\d+(g|kg)/);
     if (descriptionWeight) {
       if (descriptionWeight.includes('kg')) {
@@ -174,35 +174,55 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
   };
 
   getTitle = ($: CheerioAPI): string => {
-    return $('.product-title').first().text();
+    return $('.product-item-title').text().trim();
   };
 
   getTastingNotesString = ($: CheerioAPI): string => {
-    const notes = $('h6:contains("Notes:")').next().first().text();
-    if (notes !== '') {
-      const notesArr = notes
-        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|\./)
-        .map((element) => element.trim())
-        .filter((element) => element !== '');
-      return Helper.firstLetterUppercase(notesArr).join(', ');
+    const descriptionContent = HatchHelper.getProductDetails($);
+    let notes = '';
+    for (const detail of descriptionContent) {
+      if (detail.includes('Notes:')) {
+        notes = detail.split('Notes:')[1].trim();
+      }
     }
-    return UNKNOWN;
+    if (notes === '') {
+      return UNKNOWN;
+    } else if (notes.toLowerCase().includes('brew:')) {
+      notes = notes.toLowerCase().split('brew:')[0].trim();
+    } else if (notes.toLowerCase().includes('brew method:')) {
+      notes = notes.toLowerCase().split('brew method:')[0].trim();
+    }
+    const notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|\./)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    return Helper.firstLetterUppercase(notesArr).join(', ');
   };
 
   getTastingNotes = ($: CheerioAPI): string[] => {
-    const notes = $('h6:contains("Notes:")').next().first().text();
-    if (notes !== '') {
-      const notesArr = notes
-        .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|\./)
-        .map((element) => element.trim())
-        .filter((element) => element !== '');
-      return Helper.firstLetterUppercase(notesArr);
+    const descriptionContent = HatchHelper.getProductDetails($);
+    let notes = '';
+    for (const detail of descriptionContent) {
+      if (detail.includes('Notes:')) {
+        notes = detail.split('Notes:')[1].trim();
+      }
     }
-    return UNKNOWN_ARR;
+    if (notes === '') {
+      return UNKNOWN_ARR;
+    } else if (notes.toLowerCase().includes('brew:')) {
+      notes = notes.toLowerCase().split('brew:')[0].trim();
+    } else if (notes.toLowerCase().includes('brew method:')) {
+      notes = notes.toLowerCase().split('brew method:')[0].trim();
+    }
+    const notesArr = notes
+      .split(/,| \/ | and | \+ | \&amp; | \& |\s+\|\s+|\./)
+      .map((element) => element.trim())
+      .filter((element) => element !== '');
+    return Helper.firstLetterUppercase(notesArr);
   };
 
   getType = ($: CheerioAPI, slug: string): string => {
-    const title = $('.product-title').first().text();
+    const title = $('.product-item-title').first().text();
     if (
       title.toLowerCase().includes(CoffeeType.Capsule.toLowerCase()) ||
       slug.includes(CoffeeType.Capsule.toLowerCase())

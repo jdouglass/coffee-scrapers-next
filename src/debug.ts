@@ -1,4 +1,4 @@
-// import { HatchClient } from './clients/hatchClient';
+import { HatchClient } from './clients/hatchClient';
 // import { PrototypeClient } from './clients/prototypeClient';
 import { ShopifyClient } from './clients/shopifyClient';
 import { WordpressClient } from './clients/wordpressClient';
@@ -48,7 +48,7 @@ async function main() {
   } else if (vendor === Vendor.EightOunce) {
     await ShopifyClient.run(new EightOunceScraper());
   } else if (vendor === Vendor.Hatch) {
-    // await HatchClient.run();
+    await HatchClient.run();
   } else if (vendor === Vendor.Heart) {
     await ShopifyClient.run(new HeartScraper());
   } else if (vendor === Vendor.HouseOfFunk) {

@@ -9,6 +9,7 @@ import { IShopifyBaseScraper } from '../interfaces/shopify/shopifyBaseScraper.in
 import { VendorApiUrl } from '../enums/vendorApiUrls';
 import { worldData } from '../data/worldData';
 import { MULTIPLE, UNKNOWN, UNKNOWN_ARR } from '../constants';
+import { StringUtil } from '../helper/stringUtil';
 
 export default class HeartScraper
   extends ShopifyBaseScraper
@@ -79,29 +80,27 @@ export default class HeartScraper
     item: IShopifyProductResponseData,
     _productDetails?: string[]
   ): string[] => {
-    let variety: string = '';
-    const body: string = item.body_html;
-    if (body.includes('Variety:')) {
-      variety = body.split('Variety:')[1];
-    } else if (body.includes('Varieties:')) {
-      variety = body.split('Varieties:')[1];
-    }
-    let varietyOptions = [''];
-    if (variety !== '') {
-      if (variety.includes('<')) {
-        varietyOptions = variety.split('<');
-        variety = varietyOptions[0].trim();
+    const regex = /Variet(?:y|ies)\s*[:+]\s*([\w\s-]+)(?=\s*<)/i;
+    const match = item.body_html.match(regex);
+    if (match && match[1]) {
+      const varietiesString = match[1].trim();
+
+      if (varietiesString) {
+        let varieties = varietiesString
+          .split(/(?:\s*,\s*|\s+and\s+|\s*,\s*and\s*|\s*\&amp;\s*|\s+\&\s+)/) // Split into array based on ", " " and " ", and " " &amp; "
+          .map((variety) => StringUtil.capitalizeFirstLetters(variety.trim()))
+          .filter(
+            (variety, index, array) =>
+              variety !== '' && array.indexOf(variety) === index
+          );
+
+        if (varieties.length) {
+          varieties = varieties.map((variety) =>
+            StringUtil.convertAndToComma(variety)
+          );
+          return Helper.convertToUniversalVariety(varieties);
+        }
       }
-      if (variety.includes(',')) {
-        varietyOptions = variety
-          .split(/,\s+/)
-          .map((variety: string) => variety.trim());
-      } else {
-        varietyOptions = [variety];
-      }
-      varietyOptions = Helper.firstLetterUppercase(varietyOptions);
-      varietyOptions = Helper.convertToUniversalVariety(varietyOptions);
-      return Array.from([...new Set(varietyOptions)]);
     }
     return UNKNOWN_ARR;
   };
