@@ -162,15 +162,29 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
 
   getWeight = ($: CheerioAPI): number => {
     const gramsToKg = 1000;
-    const description = $('.product-item-description').text();
-    const descriptionWeight: string[] | null = description.match(/\d+(g|kg)/);
-    if (descriptionWeight) {
-      if (descriptionWeight.includes('kg')) {
-        return Number(descriptionWeight[0].split('kg')[0]) * gramsToKg;
+    const descriptionContent = HatchHelper.getProductDetails($);
+    for (let i = 0; i < descriptionContent.length; i++) {
+      if (descriptionContent[i].match(/\d+g/)) {
+        return Number(descriptionContent[i].match(/\d+g/)![0].split('g')[0]);
+      } else if (descriptionContent[i].match(/\d+kg/)) {
+        return (
+          Number(descriptionContent[i].match(/\d+kg/)![0].split('kg')[0]) *
+          gramsToKg
+        );
       }
-      return Number(descriptionWeight[0].split('g')[0]);
     }
-    return 0;
+    const weightVariants = $('select[name="variants"]')
+      .children()
+      .text()
+      .split('\n')
+      .filter(
+        (element) =>
+          element.trim() !== '' && element.trim() !== 'Choose an option'
+      );
+    if (weightVariants[0].match(/\d+g/)) {
+      return Number(weightVariants[0].match(/\d+g/)![0]);
+    }
+    return Number(weightVariants[0].match(/\d+kg/)![0]) * gramsToKg;
   };
 
   getTitle = ($: CheerioAPI): string => {
