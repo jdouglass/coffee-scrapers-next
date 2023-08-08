@@ -173,18 +173,16 @@ export default class HatchScraper implements ICrateJoyScraper, IScraper {
         );
       }
     }
-    const weightVariants = $('select[name="variants"]')
+    const weight = $('select[name="variants"]')
       .children()
-      .text()
-      .split('\n')
-      .filter(
-        (element) =>
-          element.trim() !== '' && element.trim() !== 'Choose an option'
-      );
-    if (weightVariants[0].match(/\d+g/)) {
-      return Number(weightVariants[0].match(/\d+g/)![0]);
+      .nextAll()
+      .attr('data-name');
+    if (weight?.includes('kg')) {
+      return Number(weight.split('kg')[0]) * gramsToKg;
+    } else if (weight?.includes('g')) {
+      return Number(weight.split('g')[0]);
     }
-    return Number(weightVariants[0].match(/\d+kg/)![0]) * gramsToKg;
+    return 0;
   };
 
   getTitle = ($: CheerioAPI): string => {
